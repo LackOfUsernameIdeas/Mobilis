@@ -1,11 +1,10 @@
 import { ReactNode } from "react";
-
 import { cookies } from "next/headers";
+import { createClient } from "@/app/utils/supabase/server";
 
 import { AppSidebar } from "@/app/(main)/dashboard/_components/sidebar/app-sidebar";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { users } from "@/data/users";
 import { cn } from "@/lib/utils";
 import { getPreference } from "@/server/server-actions";
 import {
@@ -38,15 +37,28 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
     collapsible: sidebarCollapsible,
   };
 
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const currentUser = user
+    ? {
+        id: user.id,
+        name: user.user_metadata?.full_name || user.email || "User",
+        email: user.email || "",
+        avatar: user.user_metadata?.avatar_url || "",
+        role: user.user_metadata?.role || "user",
+      }
+    : null;
+
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
-      <AppSidebar variant={sidebarVariant} collapsible={sidebarCollapsible} />
+      <AppSidebar variant={sidebarVariant} collapsible={sidebarCollapsible} user={currentUser} />
       <SidebarInset
         data-content-layout={contentLayout}
         className={cn(
           "data-[content-layout=centered]:!mx-auto data-[content-layout=centered]:max-w-screen-2xl",
-          // Adds right margin for inset sidebar in centered layout up to 113rem.
-          // On wider screens with collapsed sidebar, removes margin and sets margin auto for alignment.
           "max-[113rem]:peer-data-[variant=inset]:!mr-2 min-[101rem]:peer-data-[variant=inset]:peer-data-[state=collapsed]:!mr-auto",
         )}
       >
@@ -60,7 +72,7 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
             <div className="flex items-center gap-2">
               <LayoutControls {...layoutPreferences} />
               <ThemeSwitcher />
-              <AccountSwitcher users={users} />
+              <AccountSwitcher user={currentUser} />
             </div>
           </div>
         </header>
