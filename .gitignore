@@ -35,3 +35,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# nuitrack app
+nuitrack_app/__pycache__/
+nuitrack_app/nuitrack-env
+nuirack_app/nuitrack_log.txt
