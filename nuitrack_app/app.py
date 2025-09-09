@@ -2,7 +2,9 @@ import tkinter as tk
 
 from session import start_session, stop_session, toggle_exercise
 from theme import ModernTheme, ModernWidget
-from utils import update_timer_display, run_nuitrack, perform_calibration
+
+from utils.nuitrack_runner import update_timer_display, run_nuitrack
+from utils.calibration import perform_calibration
 
 # ===== GUI SETUP =====
 class ModernExerciseApp:

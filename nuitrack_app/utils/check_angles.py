@@ -1,9 +1,10 @@
 import numpy as np
 import math
+
 from globals import logger
 
 # Функция за изчисляване на ъгъла на повдигане на ръката
-def _arm_elevation_angle(shoulder, wrist):
+def arm_elevation_angle(shoulder, wrist):
 
     # Проверка за налични данни и достатъчно confidence
     if not shoulder or not wrist or shoulder.get('confidence', 0) < 0.4 or wrist.get('confidence', 0) < 0.4:
@@ -24,7 +25,7 @@ def _arm_elevation_angle(shoulder, wrist):
     return angle
 
 # Функция за изчисляване на ъгъла на коляното
-def _calculate_knee_angle(hip, knee, ankle):
+def calculate_knee_angle(hip, knee, ankle):
 
     if not hip or not knee or not ankle or hip.get('confidence', 0) < 0.4 or knee.get('confidence', 0) < 0.4 or ankle.get('confidence', 0) < 0.4:
         logger.debug(f"Skipping knee angle calc - low confidence: hip={hip.get('confidence', 0):.2f}, knee={knee.get('confidence', 0):.2f}, ankle={ankle.get('confidence', 0):.2f}")
@@ -58,7 +59,7 @@ def _calculate_knee_angle(hip, knee, ankle):
     logger.debug("No valid angle calculation possible")
     return None
 
-def _check_single_angle(angle_name, target, user_skeleton, rel_skeleton, tolerances):
+def check_single_angle(angle_name, target, user_skeleton, rel_skeleton, tolerances):
     """Проверка на единичен ъгъл."""
     angle = None
     feedback = {}
@@ -67,15 +68,15 @@ def _check_single_angle(angle_name, target, user_skeleton, rel_skeleton, toleran
 
     # Проверка на ъглите на ръцете
     if angle_name == "right_arm_angle":
-        angle = _arm_elevation_angle(user_skeleton.get('RIGHT_SHOULDER'), user_skeleton.get('RIGHT_WRIST'))
+        angle = arm_elevation_angle(user_skeleton.get('RIGHT_SHOULDER'), user_skeleton.get('RIGHT_WRIST'))
     elif angle_name == "left_arm_angle":
-        angle = _arm_elevation_angle(user_skeleton.get('LEFT_SHOULDER'), user_skeleton.get('LEFT_WRIST'))
+        angle = arm_elevation_angle(user_skeleton.get('LEFT_SHOULDER'), user_skeleton.get('LEFT_WRIST'))
 
     # Проверка на ъглите на коленете
     elif angle_name == "right_knee_angle":
-        angle = _calculate_knee_angle(user_skeleton.get('RIGHT_HIP'), user_skeleton.get('RIGHT_KNEE'), user_skeleton.get('RIGHT_ANKLE'))
+        angle = calculate_knee_angle(user_skeleton.get('RIGHT_HIP'), user_skeleton.get('RIGHT_KNEE'), user_skeleton.get('RIGHT_ANKLE'))
     elif angle_name == "left_knee_angle":
-        angle = _calculate_knee_angle(user_skeleton.get('LEFT_HIP'), user_skeleton.get('LEFT_KNEE'), user_skeleton.get('LEFT_ANKLE'))
+        angle = calculate_knee_angle(user_skeleton.get('LEFT_HIP'), user_skeleton.get('LEFT_KNEE'), user_skeleton.get('LEFT_ANKLE'))
 
     # Проверка на лактите
     if angle_name in ['right_elbow_angle', 'left_elbow_angle']:
