@@ -62,9 +62,23 @@ def check_relative_pose(user_skeleton, required_poses, target_angles, tolerances
             checks += 1
 
     # --- Проверка на ъглите ---
+    required_joints = {
+        "right_arm_angle": ["RIGHT_SHOULDER", "RIGHT_WRIST"],
+        "left_arm_angle": ["LEFT_SHOULDER", "LEFT_WRIST"],
+        "right_elbow_angle": ["RIGHT_SHOULDER", "RIGHT_ELBOW", "RIGHT_WRIST"],
+        "left_elbow_angle": ["LEFT_SHOULDER", "LEFT_ELBOW", "LEFT_WRIST"],
+        "right_knee_angle": ["RIGHT_HIP", "RIGHT_KNEE", "RIGHT_ANKLE"],
+        "left_knee_angle": ["LEFT_HIP", "LEFT_KNEE", "LEFT_ANKLE"]
+    }
+    
     for angle_name, target in target_angles.items():
-        if angle_name not in ["right_arm_angle", "left_arm_angle"]:
-            continue  
+        joints = required_joints.get(angle_name, [])
+
+        if not all(user_skeleton.get(j) for j in joints):  
+            feedback[angle_name] = {"ok": False, "msg": "✗ Няма скелетни данни"}
+            checks += 1
+            continue
+
         fb, score, count = check_single_angle(angle_name, target, user_skeleton, rel_skeleton, tolerances)
         feedback[angle_name] = fb
         total_score += score

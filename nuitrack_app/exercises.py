@@ -138,8 +138,8 @@ EXERCISE_JSON_2 = {
                 "legs_apart": True
             },
             "target_angles": {
-                "right_knee_angle": 180,
-                "left_knee_angle": 180
+                "right_knee_angle": 160,
+                "left_knee_angle": 160
             },
             "tolerance": {
                 "angle_tolerance": 20,
@@ -153,10 +153,6 @@ EXERCISE_JSON_2 = {
             "required_poses": {
                 "arms_forward": True,
                 "knees_bent": True
-            },
-            "target_angles": {
-                "right_knee_angle": 90,
-                "left_knee_angle": 90
             },
             "tolerance": {
                 "angle_tolerance": 20,
@@ -172,8 +168,8 @@ EXERCISE_JSON_2 = {
                 "legs_apart": True
             },
             "target_angles": {
-                "right_knee_angle": 180,
-                "left_knee_angle": 180
+                "right_knee_angle": 160,
+                "left_knee_angle": 160
             },
             "tolerance": {
                 "angle_tolerance": 20,
@@ -187,10 +183,6 @@ EXERCISE_JSON_2 = {
             "required_poses": {
                 "arms_forward": True,
                 "knees_bent": True
-            },
-            "target_angles": {
-                "right_knee_angle": 90,
-                "left_knee_angle": 90
             },
             "tolerance": {
                 "angle_tolerance": 20,
@@ -206,8 +198,8 @@ EXERCISE_JSON_2 = {
                 "legs_apart": True
             },
             "target_angles": {
-                "right_knee_angle": 180,
-                "left_knee_angle": 180
+                "right_knee_angle": 160,
+                "left_knee_angle": 160
             },
             "tolerance": {
                 "angle_tolerance": 20,
@@ -221,10 +213,6 @@ EXERCISE_JSON_2 = {
             "required_poses": {
                 "arms_forward": True,
                 "knees_bent": True
-            },
-            "target_angles": {
-                "right_knee_angle": 90,
-                "left_knee_angle": 90
             },
             "tolerance": {
                 "angle_tolerance": 20,
@@ -240,8 +228,8 @@ EXERCISE_JSON_2 = {
                 "legs_apart": True
             },
             "target_angles": {
-                "right_knee_angle": 180,
-                "left_knee_angle": 180
+                "right_knee_angle": 160,
+                "left_knee_angle": 160
             },
             "tolerance": {
                 "angle_tolerance": 20,
@@ -263,8 +251,8 @@ EXERCISE_JSON_3 = {
                 "legs_apart": True
             },
             "target_angles": {
-                "right_knee_angle": 180,
-                "left_knee_angle": 180
+                "right_knee_angle": 160,
+                "left_knee_angle": 160
             },
             "tolerance": {
                 "angle_tolerance": 20,
@@ -278,10 +266,6 @@ EXERCISE_JSON_3 = {
             "required_poses": {
                 "arms_down": True,
                 "lunge_pose": True
-            },
-            "target_angles": {
-                "right_knee_angle": 90,
-                "left_knee_angle": 90
             },
             "tolerance": {
                 "angle_tolerance": 20,
@@ -297,8 +281,8 @@ EXERCISE_JSON_3 = {
                 "legs_apart": True
             },
             "target_angles": {
-                "right_knee_angle": 180,
-                "left_knee_angle": 180
+                "right_knee_angle": 160,
+                "left_knee_angle": 160
             },
             "tolerance": {
                 "angle_tolerance": 20,
@@ -312,10 +296,6 @@ EXERCISE_JSON_3 = {
             "required_poses": {
                 "arms_down": True,
                 "lunge_pose": True
-            },
-            "target_angles": {
-                "right_knee_angle": 90,
-                "left_knee_angle": 90
             },
             "tolerance": {
                 "angle_tolerance": 20,
@@ -331,8 +311,8 @@ EXERCISE_JSON_3 = {
                 "legs_apart": True
             },
             "target_angles": {
-                "right_knee_angle": 180,
-                "left_knee_angle": 180
+                "right_knee_angle": 160,
+                "left_knee_angle": 160
             },
             "tolerance": {
                 "angle_tolerance": 20,
@@ -346,10 +326,6 @@ EXERCISE_JSON_3 = {
             "required_poses": {
                 "arms_down": True,
                 "lunge_pose": True
-            },
-            "target_angles": {
-                "right_knee_angle": 90,
-                "left_knee_angle": 90
             },
             "tolerance": {
                 "angle_tolerance": 20,
@@ -365,8 +341,8 @@ EXERCISE_JSON_3 = {
                 "legs_apart": True
             },
             "target_angles": {
-                "right_knee_angle": 180,
-                "left_knee_angle": 180
+                "right_knee_angle": 160,
+                "left_knee_angle": 160
             },
             "tolerance": {
                 "angle_tolerance": 20,
@@ -388,8 +364,8 @@ EXERCISE_JSON_4 = {
                 "legs_together": True
             },
             "target_angles": {
-                "right_elbow_angle": 180,  # Straight arms down
-                "left_elbow_angle": 180
+                "right_elbow_angle": 160,  # Straight arms down
+                "left_elbow_angle": 160
             },
             "tolerance": {
                 "angle_tolerance": 20,
@@ -405,8 +381,8 @@ EXERCISE_JSON_4 = {
                 "shoulders_retracted": True  # New: Check Z-depth of shoulders closer to back (relative to torso)
             },
             "target_angles": {
-                "right_elbow_angle": 170,  # Slight bend if arms pull back
-                "left_elbow_angle": 170
+                "right_elbow_angle": 150,  # Slight bend if arms pull back
+                "left_elbow_angle": 150
             },
             "tolerance": {
                 "angle_tolerance": 20,
@@ -423,8 +399,8 @@ EXERCISE_JSON_4 = {
                 "shoulders_retracted": False
             },
             "target_angles": {
-                "right_elbow_angle": 180,
-                "left_elbow_angle": 180
+                "right_elbow_angle": 160,
+                "left_elbow_angle": 160
             },
             "tolerance": {
                 "angle_tolerance": 20,
@@ -440,8 +416,8 @@ EXERCISE_JSON_4 = {
                 "shoulders_retracted": True
             },
             "target_angles": {
-                "right_elbow_angle": 170,
-                "left_elbow_angle": 170
+                "right_elbow_angle": 150,
+                "left_elbow_angle": 150
             },
             "tolerance": {
                 "angle_tolerance": 20,
@@ -458,8 +434,8 @@ EXERCISE_JSON_4 = {
                 "shoulders_retracted": False
             },
             "target_angles": {
-                "right_elbow_angle": 180,
-                "left_elbow_angle": 180
+                "right_elbow_angle": 160,
+                "left_elbow_angle": 160
             },
             "tolerance": {
                 "angle_tolerance": 20,
@@ -475,8 +451,8 @@ EXERCISE_JSON_4 = {
                 "shoulders_retracted": True
             },
             "target_angles": {
-                "right_elbow_angle": 170,
-                "left_elbow_angle": 170
+                "right_elbow_angle": 150,
+                "left_elbow_angle": 150
             },
             "tolerance": {
                 "angle_tolerance": 20,
@@ -493,8 +469,8 @@ EXERCISE_JSON_4 = {
                 "shoulders_retracted": False
             },
             "target_angles": {
-                "right_elbow_angle": 180,
-                "left_elbow_angle": 180
+                "right_elbow_angle": 160,
+                "left_elbow_angle": 160
             },
             "tolerance": {
                 "angle_tolerance": 20,
@@ -516,8 +492,8 @@ EXERCISE_JSON_5 = {
                 "legs_together": True
             },
             "target_angles": {
-                "right_elbow_angle": 180,
-                "left_elbow_angle": 180
+                "right_elbow_angle": 160,
+                "left_elbow_angle": 160
             },
             "tolerance": {
                 "angle_tolerance": 20,
@@ -533,8 +509,8 @@ EXERCISE_JSON_5 = {
                 "shoulders_retracted": True 
             },
             "target_angles": {
-                "right_elbow_angle": 90,
-                "left_elbow_angle": 90
+                "right_elbow_angle": 30,
+                "left_elbow_angle": 30
             },
             "tolerance": {
                 "angle_tolerance": 20,
@@ -549,8 +525,8 @@ EXERCISE_JSON_5 = {
                 "arms_y_shape": True
             },
             "target_angles": {
-                "right_elbow_angle": 180,
-                "left_elbow_angle": 180
+                "right_elbow_angle": 150,
+                "left_elbow_angle": 150
             },
             "tolerance": {
                 "angle_tolerance": 20,
@@ -566,8 +542,8 @@ EXERCISE_JSON_5 = {
                 "shoulders_retracted": True 
             },
             "target_angles": {
-                "right_elbow_angle": 90,
-                "left_elbow_angle": 90
+                "right_elbow_angle": 30,
+                "left_elbow_angle": 30
             },
             "tolerance": {
                 "angle_tolerance": 20,
@@ -582,8 +558,8 @@ EXERCISE_JSON_5 = {
                 "arms_y_shape": True
             },
             "target_angles": {
-                "right_elbow_angle": 180,
-                "left_elbow_angle": 180
+                "right_elbow_angle": 150,
+                "left_elbow_angle": 150
             },
             "tolerance": {
                 "angle_tolerance": 20,
@@ -599,8 +575,8 @@ EXERCISE_JSON_5 = {
                 "shoulders_retracted": True 
             },
             "target_angles": {
-                "right_elbow_angle": 90,
-                "left_elbow_angle": 90
+                "right_elbow_angle": 30,
+                "left_elbow_angle": 30
             },
             "tolerance": {
                 "angle_tolerance": 20,
@@ -615,8 +591,8 @@ EXERCISE_JSON_5 = {
                 "arms_y_shape": True
             },
             "target_angles": {
-                "right_elbow_angle": 180,
-                "left_elbow_angle": 180
+                "right_elbow_angle": 150,
+                "left_elbow_angle": 150
             },
             "tolerance": {
                 "angle_tolerance": 20,
