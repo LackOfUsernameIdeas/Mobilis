@@ -39,153 +39,211 @@ def draw_text(img, text, pos, font_path="D:/Projects/CodeWithPros/noit_2026/ARIA
         return img_copy
 
 def draw_simple_skeleton(image, data, nuitrack):
-    """Рисува скелета върху видео потока."""
-
-    # Проверява дали има данни за скелета
-    if not hasattr(data, 'skeletons') or not data.skeletons:
+    """Draws skeleton on video stream with pose guidance."""
+    
+    if not _has_skeleton_data(data):
         return
     
-    # Списък с имената на ставите, които ще се визуализират
-    joint_names = [
-        "HEAD", "NECK", "TORSO", "WAIST", "LEFT_COLLAR", "LEFT_SHOULDER",
-        "LEFT_ELBOW", "LEFT_WRIST", "LEFT_HAND", "RIGHT_COLLAR",
-        "RIGHT_SHOULDER", "RIGHT_ELBOW", "RIGHT_WRIST", "RIGHT_HAND",
-        "LEFT_HIP", "LEFT_KNEE", "LEFT_ANKLE", "RIGHT_HIP", "RIGHT_KNEE", "RIGHT_ANKLE"
+    _draw_all_skeletons(image, data)
+    _draw_ui_overlays(image, nuitrack)
+
+def _has_skeleton_data(data):
+    """Check if skeleton data is available."""
+    return hasattr(data, 'skeletons') and data.skeletons
+
+
+def _draw_all_skeletons(image, data):
+    """Draw all detected skeletons."""
+    for skeleton in data.skeletons:
+        joints = skeleton[1:] if len(skeleton) > 1 else skeleton
+        joint_points = _get_joint_points(joints)
+        
+        _draw_joint_circles(image, joint_points)
+        _draw_skeleton_connections(image, joint_points)
+
+
+def _get_joint_points(joints):
+    """Extract joint positions from skeleton data."""
+    joint_points = []
+    
+    for joint in joints:
+        if hasattr(joint, 'projection') and len(joint.projection) >= 2:
+            x = round(joint.projection[0])
+            y = round(joint.projection[1])
+            joint_points.append((x, y))
+        else:
+            joint_points.append(None)  # Placeholder for missing joints
+    
+    return joint_points
+
+
+def _draw_joint_circles(image, joint_points):
+    """Draw circles for each joint with color coding."""
+    # Key joints that are highlighted in magenta
+    KEY_JOINT_INDICES = {0, 1, 2, 4, 5, 6, 7, 10, 11, 12}  # HEAD, NECK, etc.
+    
+    for i, point in enumerate(joint_points):
+        if point is None:
+            continue
+            
+        if i in KEY_JOINT_INDICES:
+            cv2.circle(image, point, 8, (255, 0, 255), -1)  # Magenta for key joints
+        else:
+            cv2.circle(image, point, 6, (0, 255, 0), -1)    # Green for others
+
+
+def _draw_skeleton_connections(image, joint_points):
+    """Draw lines connecting skeleton joints."""
+    # Skeleton connection structure
+    CONNECTIONS = [
+        (0, 1), (1, 2), (2, 3),                    # Spine
+        (1, 4), (4, 5), (5, 6), (6, 7), (7, 8),    # Left arm
+        (1, 9), (9, 10), (10, 11), (11, 12), (12, 13),  # Right arm
+        (3, 14), (14, 15), (15, 16),               # Left leg
+        (3, 17), (17, 18), (18, 19)                # Right leg
     ]
     
-    # Дефинира връзките между ставите за рисуване на линиите на скелета
-    connections = [
-        (0, 1), (1, 2), (2, 3),  # Гръбнак
-        (1, 4), (4, 5), (5, 6), (6, 7), (7, 8),  # Лява ръка
-        (1, 9), (9, 10), (10, 11), (11, 12), (12, 13),  # Дясна ръка
-        (3, 14), (14, 15), (15, 16),  # Ляв крак
-        (3, 17), (17, 18), (18, 19)  # Десен крак
-    ]
+    for start_idx, end_idx in CONNECTIONS:
+        if (_is_valid_connection(joint_points, start_idx, end_idx)):
+            cv2.line(image, joint_points[start_idx], joint_points[end_idx], 
+                    (0, 255, 255), 2)
 
-    # Обхожда всеки скелет в данните
-    for skel in data.skeletons:
-        # Извлича ставите, премахвайки първия елемент, ако е списък
-        joints = skel[1:] if len(skel) > 1 else skel
-        points = []
-        # Обхожда всяка става за визуализация
-        for i, joint in enumerate(joints):
-            # Проверява дали ставата има проекционни координати
-            if hasattr(joint, 'projection') and len(joint.projection) >= 2:
-                # Закръгля координатите до цели числа
-                x, y = round(joint.projection[0]), round(joint.projection[1])
-                points.append((x, y))
-                
-                # Оцветява ключови стави в магента, останалите в зелено
-                if joint_names[i] in ["HEAD", "NECK", "LEFT_COLLAR", "TORSO", "RIGHT_SHOULDER", "RIGHT_ELBOW", 
-                                    "RIGHT_WRIST", "LEFT_SHOULDER", "LEFT_ELBOW", "LEFT_WRIST"]:
-                    cv2.circle(image, (x, y), 8, (255, 0, 255), -1)  # Magenta for tracked joints
-                else:
-                    cv2.circle(image, (x, y), 6, (0, 255, 0), -1)  # Green for others
-                
-                # Рисува линиите между свързаните стави
-                for (start_idx, end_idx) in connections:
-                    if start_idx < len(points) and end_idx < len(points):
-                        cv2.line(image, points[start_idx], points[end_idx], (0, 255, 255), 2)
 
-    # Визиализация на таймер за калибриране, ако е активно
+def _is_valid_connection(joint_points, start_idx, end_idx):
+    """Check if connection can be drawn between two joints."""
+    return (start_idx < len(joint_points) and 
+            end_idx < len(joint_points) and
+            joint_points[start_idx] is not None and 
+            joint_points[end_idx] is not None)
+
+
+def _draw_ui_overlays(image, nuitrack):
+    """Draw UI overlays and pose guidance."""
+    _draw_calibration_if_active(image)
+    _draw_distance_feedback_if_available(image)
+    _draw_exercise_guidance_if_active(image, nuitrack)
+
+
+def _draw_calibration_if_active(image):
+    """Draw calibration timer overlay."""
     if globals.calibration_active[0]:
         draw_calibration_overlay(image)
 
-    # Визиализация на лента за определяне на разстоянието пред камерата, ако има данни за скелета
-    if globals.current_user_skeleton and isinstance(globals.current_user_skeleton, dict) and 'TORSO' in globals.current_user_skeleton:
-        torso_joint = globals.current_user_skeleton.get('TORSO')
-        if torso_joint and isinstance(torso_joint, dict):
-            user_z = torso_joint.get('z', 1500)
-            draw_distance_feedback(image, user_z)
 
-    # Рисува насоки за пози, ако упражнението е активно
-    if globals.exercise_active[0] and globals.current_step[0] < len(globals.EXERCISE_JSON["steps"]) and globals.current_user_skeleton:
-        # Взема данните за текущата стъпка
-        current_step_data = globals.EXERCISE_JSON["steps"][globals.current_step[0]]
-        # Рисува стрелки за повдигнати ръце
-        if "arms_raised" in current_step_data.get("required_poses", {}):
-            # Проектира позициите на раменете върху екрана
-            right_shoulder_proj = project_world_to_screen(
-                globals.current_user_skeleton.get('RIGHT_SHOULDER', {}).get('x', 0),
-                globals.current_user_skeleton.get('RIGHT_SHOULDER', {}).get('y', 0),
-                globals.current_user_skeleton.get('RIGHT_SHOULDER', {}).get('z', 0),
-                nuitrack
-            )
-            left_shoulder_proj = project_world_to_screen(
-                globals.current_user_skeleton.get('LEFT_SHOULDER', {}).get('x', 0),
-                globals.current_user_skeleton.get('LEFT_SHOULDER', {}).get('y', 0),
-                globals.current_user_skeleton.get('LEFT_SHOULDER', {}).get('z', 0),
-                nuitrack
-            )
-            # Рисува зелена стрелка нагоре за дясното рамо
-            if right_shoulder_proj:
-                cv2.arrowedLine(image, right_shoulder_proj, (right_shoulder_proj[0], right_shoulder_proj[1] - 100), (0, 255, 0), 3, tipLength=0.3)
-            # Рисува зелена стрелка нагоре за лявото рамо
-            if left_shoulder_proj:
-                cv2.arrowedLine(image, left_shoulder_proj, (left_shoulder_proj[0], left_shoulder_proj[1] - 100), (0, 255, 0), 3, tipLength=0.3)
+def _draw_distance_feedback_if_available(image):
+    """Draw distance feedback bar."""
+    skeleton = globals.current_user_skeleton
+    
+    if not (skeleton and isinstance(skeleton, dict) and 'TORSO' in skeleton):
+        return
         
-        # Рисува стрелки за раздалечени крака
-        if "legs_apart" in current_step_data.get("required_poses", {}):
-            # Проектира позициите на таза върху екрана
-            right_hip_proj = project_world_to_screen(
-                globals.current_user_skeleton.get('RIGHT_HIP', {}).get('x', 0),
-                globals.current_user_skeleton.get('RIGHT_HIP', {}).get('y', 0),
-                globals.current_user_skeleton.get('RIGHT_HIP', {}).get('z', 0),
-                nuitrack
-            )
-            left_hip_proj = project_world_to_screen(
-                globals.current_user_skeleton.get('LEFT_HIP', {}).get('x', 0),
-                globals.current_user_skeleton.get('LEFT_HIP', {}).get('y', 0),
-                globals.current_user_skeleton.get('LEFT_HIP', {}).get('z', 0),
-                nuitrack
-            )
-            # Рисува зелена стрелка надясно за десния таз
-            if right_hip_proj:
-                cv2.arrowedLine(image, right_hip_proj, (right_hip_proj[0] + 100, right_hip_proj[1]), (0, 255, 0), 3, tipLength=0.3)
-            # Рисува зелена стрелка наляво за левия таз
-            if left_hip_proj:
-                cv2.arrowedLine(image, left_hip_proj, (left_hip_proj[0] - 100, left_hip_proj[1]), (0, 255, 0), 3, tipLength=0.3)
+    torso_joint = skeleton.get('TORSO')
+    if torso_joint and isinstance(torso_joint, dict):
+        user_z = torso_joint.get('z', 1500)
+        draw_distance_feedback(image, user_z)
+
+
+def _draw_exercise_guidance_if_active(image, nuitrack):
+    """Draw pose guidance arrows during active exercise."""
+    if not _should_draw_exercise_guidance():
+        return
         
-        # Рисува стрелки за Y форма (нагоре) на китките
-        if "arms_y_shape" in current_step_data.get("required_poses", {}):
-            right_wrist_proj = project_world_to_screen(
-                globals.current_user_skeleton.get('RIGHT_WRIST', {}).get('x', 0),
-                globals.current_user_skeleton.get('RIGHT_WRIST', {}).get('y', 0),
-                globals.current_user_skeleton.get('RIGHT_WRIST', {}).get('z', 0),
-                nuitrack
-            )
-            left_wrist_proj = project_world_to_screen(
-                globals.current_user_skeleton.get('LEFT_WRIST', {}).get('x', 0),
-                globals.current_user_skeleton.get('LEFT_WRIST', {}).get('y', 0),
-                globals.current_user_skeleton.get('LEFT_WRIST', {}).get('z', 0),
-                nuitrack
-            )
-            if right_wrist_proj:
-                cv2.arrowedLine(image, right_wrist_proj, (right_wrist_proj[0], right_wrist_proj[1] - 100), (0, 255, 0), 3, tipLength=0.3)
-            if left_wrist_proj:
-                cv2.arrowedLine(image, left_wrist_proj, (left_wrist_proj[0], left_wrist_proj[1] - 100), (0, 255, 0), 3, tipLength=0.3)  
+    current_step_data = globals.EXERCISE_JSON["steps"][globals.current_step[0]]
+    required_poses = current_step_data.get("required_poses", {})
+    
+    _draw_pose_guidance_arrows(image, nuitrack, required_poses)
 
-        # Рисува стрелки за наклон на главата наляво
-        if current_step_data.get("required_poses", {}).get("head_tilted_left"):
-            head_proj = project_world_to_screen(
-                globals.current_user_skeleton.get('HEAD', {}).get('x', 0),
-                globals.current_user_skeleton.get('HEAD', {}).get('y', 0),
-                globals.current_user_skeleton.get('HEAD', {}).get('z', 0),
-                nuitrack
-            )
-            if head_proj:
-                cv2.arrowedLine(image, head_proj, (head_proj[0] + 100, head_proj[1]), (0, 255, 0), 3, tipLength=0.3)
 
-        # Рисува стрелки за наклон на главата надясно
-        if current_step_data.get("required_poses", {}).get("head_tilted_right"):
-            head_proj = project_world_to_screen(
-                globals.current_user_skeleton.get('HEAD', {}).get('x', 0),
-                globals.current_user_skeleton.get('HEAD', {}).get('y', 0),
-                globals.current_user_skeleton.get('HEAD', {}).get('z', 0),
-                nuitrack
-            )
-            if head_proj:
-                cv2.arrowedLine(image, head_proj, (head_proj[0] - 100, head_proj[1]), (0, 255, 0), 3, tipLength=0.3)
+def _should_draw_exercise_guidance():
+    """Check if exercise guidance should be drawn."""
+    return (globals.exercise_active[0] and 
+            globals.current_step[0] < len(globals.EXERCISE_JSON["steps"]) and 
+            globals.current_user_skeleton)
+
+
+def _draw_pose_guidance_arrows(image, nuitrack, required_poses):
+    """Draw guidance arrows for required poses."""
+    skeleton = globals.current_user_skeleton
+    
+    if "arms_raised" in required_poses:
+        _draw_arms_raised_arrows(image, nuitrack, skeleton)
+    
+    if "legs_apart" in required_poses:
+        _draw_legs_apart_arrows(image, nuitrack, skeleton)
+    
+    if "arms_y_shape" in required_poses:
+        _draw_y_shape_arrows(image, nuitrack, skeleton)
+    
+    if required_poses.get("head_tilted_left"):
+        _draw_head_tilt_arrow(image, nuitrack, skeleton, direction="left")
+    
+    if required_poses.get("head_tilted_right"):
+        _draw_head_tilt_arrow(image, nuitrack, skeleton, direction="right")
+
+
+def _draw_arms_raised_arrows(image, nuitrack, skeleton):
+    """Draw upward arrows for raised arms pose."""
+    joints = ['RIGHT_SHOULDER', 'LEFT_SHOULDER']
+    
+    for joint_name in joints:
+        joint_proj = _get_joint_projection(joint_name, skeleton, nuitrack)
+        if joint_proj:
+            end_point = (joint_proj[0], joint_proj[1] - 100)
+            cv2.arrowedLine(image, joint_proj, end_point, (0, 255, 0), 3, tipLength=0.3)
+
+
+def _draw_legs_apart_arrows(image, nuitrack, skeleton):
+    """Draw outward arrows for legs apart pose."""
+    right_hip_proj = _get_joint_projection('RIGHT_HIP', skeleton, nuitrack)
+    left_hip_proj = _get_joint_projection('LEFT_HIP', skeleton, nuitrack)
+    
+    if right_hip_proj:
+        end_point = (right_hip_proj[0] + 100, right_hip_proj[1])
+        cv2.arrowedLine(image, right_hip_proj, end_point, (0, 255, 0), 3, tipLength=0.3)
+    
+    if left_hip_proj:
+        end_point = (left_hip_proj[0] - 100, left_hip_proj[1])
+        cv2.arrowedLine(image, left_hip_proj, end_point, (0, 255, 0), 3, tipLength=0.3)
+
+
+def _draw_y_shape_arrows(image, nuitrack, skeleton):
+    """Draw upward arrows for Y-shape pose (wrists up)."""
+    joints = ['RIGHT_WRIST', 'LEFT_WRIST']
+    
+    for joint_name in joints:
+        joint_proj = _get_joint_projection(joint_name, skeleton, nuitrack)
+        if joint_proj:
+            end_point = (joint_proj[0], joint_proj[1] - 100)
+            cv2.arrowedLine(image, joint_proj, end_point, (0, 255, 0), 3, tipLength=0.3)
+
+
+def _draw_head_tilt_arrow(image, nuitrack, skeleton, direction):
+    """Draw horizontal arrow for head tilt."""
+    head_proj = _get_joint_projection('HEAD', skeleton, nuitrack)
+    
+    if not head_proj:
+        return
+        
+    if direction == "left":
+        end_point = (head_proj[0] + 100, head_proj[1])
+    else:  # right
+        end_point = (head_proj[0] - 100, head_proj[1])
+    
+    cv2.arrowedLine(image, head_proj, end_point, (0, 255, 0), 3, tipLength=0.3)
+
+
+def _get_joint_projection(joint_name, skeleton, nuitrack):
+    """Get screen projection coordinates for a joint."""
+    joint_data = skeleton.get(joint_name, {})
+    
+    if not joint_data:
+        return None
+        
+    x = joint_data.get('x', 0)
+    y = joint_data.get('y', 0)
+    z = joint_data.get('z', 0)
+    
+    return project_world_to_screen(x, y, z, nuitrack)
 
 def draw_calibration_overlay(image):
     """Рисува таймер с обратно броене до калибриране върху видео потока."""
