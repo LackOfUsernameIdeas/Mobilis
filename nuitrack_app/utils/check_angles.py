@@ -107,6 +107,8 @@ def check_single_angle(angle_name, target, user_skeleton, rel_skeleton, toleranc
 
             return feedback, 0, 1
 
+    logger.info(f"Angle {angle_name} calculated: {angle}")
+
     # Общ случай
     if angle is None:
         feedback = {'ok': False, 'msg': f"{angle_name}: Not detected ✗"}
