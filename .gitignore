@@ -37,6 +37,6 @@ yarn-error.log*
 next-env.d.ts
 
 # nuitrack app
-nuitrack_app/__pycache__/
+__pycache__/
 nuitrack_app/nuitrack-env
 nuitrack_log.txt
