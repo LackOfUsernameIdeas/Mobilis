@@ -52,21 +52,31 @@ def perform_calibration(nuitrack):
     
     # Усредняване на данните за всяка става
     avg_skeleton = {}
-    for joint in samples[0].keys():
-        avg_skeleton[joint] = {
-            "x": np.mean([s[joint]['x'] for s in samples]),
-            "y": np.mean([s[joint]['y'] for s in samples]),
-            "z": np.mean([s[joint]['z'] for s in samples])
-        }
-    
+    try:
+        for joint in samples[0].keys():
+            # Проверка дали всички проби съдържат тази става
+            if any(joint not in s for s in samples):
+                raise KeyError(joint)
+            
+            avg_skeleton[joint] = {
+                "x": np.mean([s[joint]['x'] for s in samples]),
+                "y": np.mean([s[joint]['y'] for s in samples]),
+                "z": np.mean([s[joint]['z'] for s in samples])
+            }
+
+    except KeyError as missing_joint:
+        globals.logger.error(f"Calibration failed: Missing joint {missing_joint}")
+        messagebox.showerror("Неуспешно калибриране", "Неуспешно калибриране. Моля, опитайте пак!")
+        return None
+
     # Проверка дали торсът е центриран и на правилна дистанция
     torso_x = avg_skeleton.get('TORSO', {}).get('x', 0)
     torso_z = avg_skeleton.get('TORSO', {}).get('z', 1500)
     if abs(torso_x) > 400 or not (1000 < torso_z < 3000):  # Relaxed X to 400mm
         globals.logger.error(f"Calibration failed: Torso off-center (X={torso_x:.0f}mm) or bad distance (Z={torso_z:.0f}mm)")
-        feedback = f"Проблем с позицията: Торс X={torso_x:.0f}мм (трябва ±400мм), Z={torso_z:.0f}мм (трябва 1000-3000мм).\n"
-        feedback += "Центрирай се наляво/надясно в изгледа на камерата. Застани на 1.5-2м разстояние.\n"
-        feedback += "Камера на височина на гърдите (~1.2-1.5м), добро осветление, прилепнали дрехи, чист фон."
+        feedback = "Торсът не е в правилна позиция. Твърде сте близо или далече.\n"
+        feedback += "Застанете изправени в центъра на кадъра на около 1.5–2м от камерата.\n"
+        feedback += "Осветлението трябва да е равномерно – не твърде тъмно и не твърде силно. Камерата да е на височината на гърдите."
         messagebox.showwarning("Нужно е коригиране на позицията", feedback)
         return None
     
