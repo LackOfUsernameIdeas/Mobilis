@@ -157,9 +157,25 @@ def update_exercise_progress():
     # Задава минимална точност и време за завършване на стъпката
     min_accuracy = 80.0
 
-    # Проверява дали стъпката е завършена (точност, време, пози, движение)
-    step_complete = (accuracy >= min_accuracy and elapsed_time >= duration and all_ok and 
-                     ((is_jumping_jacks or requires_jump) or motion_detected))
+    # Логика за задържане на позата
+    current_time = time.time()
+    if not hasattr(globals, 'hold_start_time'):
+        globals.hold_start_time = [0]  # Инициализиране при първо изпълнение
+    if not hasattr(globals, 'hold_duration'):
+        globals.hold_duration = [0]  # Натрупана продължителност на задържане
+    
+    if accuracy >= min_accuracy and all_ok and motion_detected:
+        if globals.hold_start_time[0] == 0:
+            globals.hold_start_time[0] = current_time
+        globals.hold_duration[0] = current_time - globals.hold_start_time[0]
+        remaining_time = max(0, duration - globals.hold_duration[0])
+    else:
+        globals.hold_start_time[0] = 0
+        globals.hold_duration[0] = 0
+        remaining_time = duration  # Показва пълната продължителност, докато не се постигне позата
+
+    # Проверява дали стъпката е завършена (задържане за необходимата продължителност - точност, време, пози)
+    step_complete = (globals.hold_duration[0] >= duration)
         
     try:
         # Взема името и инструкциите за текущата стъпка
@@ -202,6 +218,8 @@ def update_exercise_progress():
         
         # Ако стъпката е завършена, преминава към следващата
         if step_complete:
+            globals.hold_start_time[0] = 0
+            globals.hold_duration[0] = 0
             advance_to_next_step()
             
     except Exception as e:
@@ -214,6 +232,9 @@ def advance_to_next_step():
     globals.current_step[0] += 1
     # Записва времето на започване на новата стъпка
     globals.step_start_time[0] = time.time()
+    # Ресетва hold timers за новата стъпка
+    globals.hold_start_time[0] = 0
+    globals.hold_duration[0] = 0
     
     # Проверява дали всички стъпки са завършени
     if globals.current_step[0] >= len(globals.EXERCISE_JSON["steps"]):

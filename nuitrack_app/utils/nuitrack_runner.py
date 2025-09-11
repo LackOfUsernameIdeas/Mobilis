@@ -89,7 +89,7 @@ def run_nuitrack():
                         
                         status_lines.extend([
                             f"Упражнение: Стъпка {globals.current_step[0] + 1}/{len(globals.EXERCISE_JSON['steps'])}",
-                            f"Точност: {accuracy:.0f}% (нужни са 80+%)",
+                            f"Точност: {accuracy:.0f}%",
                             f"Цел: {step_data['name']}"
                         ])
                     
