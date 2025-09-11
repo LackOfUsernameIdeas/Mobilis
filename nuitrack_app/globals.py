@@ -1,7 +1,7 @@
 import logging
 import os
 
-from exercises import EXERCISE_JSON_4
+from exercises import ALL_EXERCISES
 
 # Настройка за логване в отделен файл
 log_file = os.path.join(os.path.dirname(__file__), 'nuitrack_log.txt')
@@ -30,5 +30,5 @@ calibration_start_time = [0]   # Време на стартиране на ка�
 
 app = None                     # Основен обект на приложението
 
-# Обект за упражнение
-EXERCISE_JSON = EXERCISE_JSON_4
+# Обект за упражнение (по подразбиране първото)
+EXERCISE_JSON = ALL_EXERCISES[0]

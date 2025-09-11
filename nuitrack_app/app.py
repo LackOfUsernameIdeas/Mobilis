@@ -6,6 +6,8 @@ from theme import ModernTheme, ModernWidget
 from utils.nuitrack_runner import update_timer_display, run_nuitrack
 from utils.calibration import perform_calibration
 
+import globals
+
 # ===== GUI SETUP =====
 class ModernExerciseApp:
     """Модерен редизайн на приложението за упражнения"""
@@ -98,6 +100,28 @@ class ModernExerciseApp:
         exercise_subtitle.pack(anchor=tk.W, pady=(0, 16))
         exercise_subtitle.configure(fg=self.theme.colors['muted_foreground'])
         
+        # Dropdown за избор на упражнение
+        select_frame = tk.Frame(exercise_content, bg=self.theme.colors['card'])
+        select_frame.pack(fill=tk.X, pady=(0, 8))
+        
+        select_label = self.widget_factory.create_label(
+            select_frame,
+            "Изберете упражнение:",
+            style="body_medium"
+        )
+        select_label.pack(side=tk.LEFT, padx=(0, 8))
+        
+        # Избрано упражнение по подразбиране
+        self.exercise_var = tk.StringVar(value=globals.ALL_EXERCISES[0]["exercise_name"])
+        self.exercise_menu = tk.OptionMenu(
+            select_frame,
+            self.exercise_var,
+            *[ex["exercise_name"] for ex in globals.ALL_EXERCISES],
+            command=self._update_exercise
+        )
+        self.exercise_menu.pack(side=tk.LEFT)
+        self.exercise_menu.config(bg=self.theme.colors['accent'], fg=self.theme.colors['foreground'])
+
         self.exercise_btn = self.widget_factory.create_button(
             exercise_content,
             "Стартиране на упражнение",
@@ -171,6 +195,26 @@ class ModernExerciseApp:
             fg=self.theme.colors['muted_foreground']
         )
     
+    def _update_exercise(self, value):
+        if globals.exercise_active[0]:
+            if tk.messagebox.askyesno(
+                "Потвърждение",
+                "Текущото упражнение е активно. Искате ли да го спрете и смените?"
+            ):
+                globals.exercise_active[0] = False
+                globals.current_step[0] = 0
+                self.exercise_btn.config(text="Стартиране на упражнение")
+            else:
+                self.exercise_var.set(globals.EXERCISE_JSON["exercise_name"])
+                return
+        
+        # Намери упражнението по име
+        for ex in globals.ALL_EXERCISES:
+            if ex["exercise_name"] == value:
+                globals.EXERCISE_JSON = ex
+                break
+        print(f"Selected exercise: {value}")
+
     def run(self):
         """Стартиране на приложението"""
         self.root.mainloop()

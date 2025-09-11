@@ -259,7 +259,7 @@ def _check_shoulders_retracted(rel_skeleton, required_poses, tolerances_data, us
     collar_z = rel_skeleton.get('LEFT_COLLAR', {}).get('z', 0)
 
     # Толеранс за прибиране (по отношение на дължината на ръката)
-    tol = tolerances_data['arm_tol'] * 0.10
+    tol = tolerances_data['arm_tol'] * 0.05
 
     # Shoulders are retracted if both are behind torso by at least
     is_right_retracted = right_shoulder_z > collar_z + tol
