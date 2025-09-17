@@ -13,7 +13,7 @@ export function GoogleButton({ className, ...props }: React.ComponentProps<typeo
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/v1/callback`,
+        redirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/auth/v1/callback`,
       },
     });
 
