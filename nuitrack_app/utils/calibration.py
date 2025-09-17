@@ -107,6 +107,8 @@ def perform_calibration(nuitrack):
         "standing_head_y": standing_head_y
     }
 
+    globals.calibration_completed[0] = True
+
     globals.logger.info(f"Calibration successful: {len(samples)} samples collected")
     return globals.user_metrics
 

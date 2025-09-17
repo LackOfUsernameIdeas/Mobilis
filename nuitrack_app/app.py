@@ -1,3 +1,4 @@
+import time
 import tkinter as tk
 
 from session import start_session, stop_session, toggle_exercise
@@ -78,6 +79,14 @@ class ModernExerciseApp:
         self.stop_btn.pack(side=tk.LEFT)
         self.stop_btn.configure(state="disabled")
         
+        self.calibrate_btn = self.widget_factory.create_button(
+            button_frame,
+            "Стартиране на калибриране",
+            command=lambda: self.start_calibration(),
+            variant="primary"
+        )
+        self.calibrate_btn.pack(side=tk.LEFT, padx=(8, 0))
+
         # Карта за упражнение
         exercise_card = self.widget_factory.create_card(main_container)
         exercise_card.pack(fill=tk.X, pady=(0, 16))
@@ -126,7 +135,8 @@ class ModernExerciseApp:
             exercise_content,
             "Стартиране на упражнение",
             command=lambda: toggle_exercise(self, perform_calibration),
-            variant="primary"
+            variant="primary",
+            state="disabled"
         )
         self.exercise_btn.pack(anchor=tk.W, pady=(0, 16))
         self.exercise_btn.configure(state="disabled")
@@ -194,6 +204,23 @@ class ModernExerciseApp:
             justify=tk.LEFT,
             fg=self.theme.colors['muted_foreground']
         )
+    
+    def start_calibration(self):
+        """Започва процеса на калибриране."""
+        if not globals.session_running[0]:
+            tk.messagebox.showwarning("Грешка", "Моля, стартирайте сесия преди калибриране!")
+            return
+        if globals.calibration_completed[0]:
+            tk.messagebox.showinfo("Информация", "Калибрирането вече е извършено!")
+            return
+        globals.calibration_active[0] = True
+        globals.calibration_start_time[0] = time.time()
+        result = perform_calibration(globals.nuitrack_instance)
+        if result:
+            globals.calibration_completed[0] = True
+            tk.messagebox.showinfo("Успех", "Калибрирането е успешно завършено!")
+            self.exercise_btn.configure(state="normal")
+        globals.calibration_active[0] = False
     
     def _update_exercise(self, value):
         if globals.exercise_active[0]:

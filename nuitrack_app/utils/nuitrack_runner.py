@@ -28,7 +28,6 @@ def run_nuitrack():
         
         # 2) Запис на началното време на сесията
         globals.session_start_time = time.time()
-        print("🎯 === EXERCISE STARTED === 🎯")
         
         # 3) Главен цикъл за обработка на данни
         while globals.session_running[0]:

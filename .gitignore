@@ -40,3 +40,6 @@ next-env.d.ts
 __pycache__/
 nuitrack_app/nuitrack-env
 nuitrack_log.txt
+nuitrack_app/build
+nuitrack_app/dist
+*.spec

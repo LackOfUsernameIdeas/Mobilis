@@ -99,8 +99,8 @@ def update_exercise_progress():
     # Декларира глобални променливи за състоянието на упражнението и скелета
     
     # Проверява дали упражнението е активно и има ли скелетни данни и метрики
-    if not globals.exercise_active[0] or not globals.current_user_skeleton or not globals.user_metrics:
-        globals.logger.debug("No exercise active, skeleton, or metrics")
+    if not globals.exercise_active[0] or not globals.current_user_skeleton or not globals.user_metrics or not globals.calibration_completed[0]:
+        globals.logger.debug("No exercise active, skeleton, metrics, or calibration incomplete")
         return
     
     # Взема данните за текущата стъпка от упражнението
