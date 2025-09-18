@@ -175,7 +175,7 @@ def _check_lunge_pose(rel_skeleton, required_poses, tolerances_data, user_metric
     has_right_ankle = 'RIGHT_ANKLE' in rel_skeleton
     has_left_ankle = 'LEFT_ANKLE' in rel_skeleton
     
-    # Stagger check (Z diff)
+    # Проверка за стъпаловидно разположение (Z разлика)
     z_diff = 0
     if has_right_knee and has_left_knee:
         z_diff = abs(rel_skeleton['RIGHT_KNEE']['z'] - rel_skeleton['LEFT_KNEE']['z'])
@@ -185,20 +185,20 @@ def _check_lunge_pose(rel_skeleton, required_poses, tolerances_data, user_metric
     
     is_staggered = z_diff > tol_dist
     
-    # Single knee bend check
+    # Проверка за сгъване на едно коляно
     is_right_bent = False
     is_left_bent = False
     fallback = False
     
     if has_right_knee:
         y_diff_right = rel_skeleton['RIGHT_HIP']['y'] - rel_skeleton['RIGHT_KNEE']['y']
-        is_right_bent = y_diff_right < user_metrics.get('leg_length', 0) - tol_bend  # Use .get() for safety
+        is_right_bent = y_diff_right < user_metrics.get('leg_length', 0) - tol_bend  # Използване на .get() за безопасност
     
     if has_left_knee:
         y_diff_left = rel_skeleton['LEFT_HIP']['y'] - rel_skeleton['LEFT_KNEE']['y']
-        is_left_bent = y_diff_left < user_metrics.get('leg_length', 0) - tol_bend  # Use .get() for safety
+        is_left_bent = y_diff_left < user_metrics.get('leg_length', 0) - tol_bend  # Използване на .get() за безопасност
     
-    # Fallback if no knees/hips: head drop as proxy
+    # Резервен метод ако няма колене/тазове: спад на главата като индикатор
     if not (has_right_knee or has_left_knee):
         if 'HEAD' in rel_skeleton:
             head_y = rel_skeleton['HEAD']['y']
@@ -207,7 +207,7 @@ def _check_lunge_pose(rel_skeleton, required_poses, tolerances_data, user_metric
                 fallback = head_y < expected_standing_head_y * 0.8
                 logger.debug(f"Fallback lunge detection: head_y={head_y:.0f}, expected={expected_standing_head_y:.0f}, bent={fallback}")
     
-    # Lunge if staggered and exactly one knee bent (or fallback)
+    # Lunge ако е стъпаловидно и точно едно коляно е сгънато (или резервен метод)
     is_bent = (is_right_bent != is_left_bent) or (fallback and not (is_right_bent and is_left_bent))
     is_lunge = is_staggered and is_bent
     
@@ -261,14 +261,14 @@ def _check_shoulders_retracted(rel_skeleton, required_poses, tolerances_data, us
     # Толеранс за прибиране (по отношение на дължината на ръката)
     tol = tolerances_data['arm_tol'] * 0.05
 
-    # Shoulders are retracted if both are behind torso by at least
+    # Раменете са прибрани, ако и двете са зад торса поне
     is_right_retracted = right_shoulder_z > collar_z + tol
     is_left_retracted = left_shoulder_z > collar_z + tol
     is_retracted = is_right_retracted and is_left_retracted
     
     is_ok = (is_retracted == required)
     
-    # Check for torso rotation (asymmetry)
+    # Проверка за ротация на торса (асиметрия)
     if abs(right_shoulder_z - left_shoulder_z) > tolerances_data['arm_tol']:
         if required:
             msg = "✓" if is_ok else "✗ Стегнете лопатките си равномерно, избягвайте завъртане на торса"

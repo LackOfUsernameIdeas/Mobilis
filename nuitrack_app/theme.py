@@ -2,14 +2,14 @@ import colorsys
 import tkinter as tk
 
 class ModernTheme:
-    """Modern design system inspired by CSS theme variables"""
+    """Модерна дизайн система, вдъхновена от CSS тематични променливи"""
     
     def __init__(self):
         self.setup_colors()
         self.setup_fonts()
         
     def setup_colors(self):
-        """Setup color palette based on CSS design system"""
+        """Настройка на цветовата палитра въз основа на CSS дизайн система"""
         self.colors = {
             'background': '#ffffff',
             'foreground': '#252525',
@@ -33,7 +33,7 @@ class ModernTheme:
         }
 
     def setup_fonts(self):
-        """Setup modern font system"""
+        """Настройка на модерна шрифтова система"""
         self.fonts = {
             'heading_large': ('Segoe UI', 20, 'bold'),
             'heading_medium': ('Segoe UI', 16, 'bold'),
@@ -46,13 +46,13 @@ class ModernTheme:
         }
 
 class ModernWidget:
-    """Helper class for creating modern styled widgets"""
+    """Помощен клас за създаване на модерно стилизирани компоненти"""
     
     def __init__(self, theme: ModernTheme):
         self.theme = theme
     
     def create_button(self, parent, text, command=None, variant="primary", **kwargs):
-        """Create modern styled button"""
+        """Създаване на модерно стилизиран бутон"""
         if variant == "primary":
             bg = self.theme.colors['primary']
             fg = self.theme.colors['primary_foreground']
@@ -91,7 +91,7 @@ class ModernWidget:
             **kwargs
         )
         
-        # Add hover effects
+        # Добавяне на hover ефекти
         def on_enter(e):
             button.config(bg=active_bg)
         
@@ -104,7 +104,7 @@ class ModernWidget:
         return button
     
     def update_button(self, button, text=None, variant=None):
-        """Update button text and/or variant"""
+        """Обновяване на текста на бутона и/или варианта"""
         if text:
             button.config(text=text)
         
@@ -137,7 +137,7 @@ class ModernWidget:
                 activeforeground=fg
             )
             
-            # Update hover binds
+            # Обновяване на hover връзки
             def on_enter(e):
                 button.config(bg=active_bg)
             
@@ -148,7 +148,7 @@ class ModernWidget:
             button.bind("<Leave>", on_leave)
     
     def create_card(self, parent, **kwargs):
-        """Create modern card container"""
+        """Създаване на модерен карта контейнер"""
         frame = tk.Frame(
             parent,
             bg=self.theme.colors['card'],
@@ -161,7 +161,7 @@ class ModernWidget:
         return frame
     
     def create_label(self, parent, text, style="body_medium", **kwargs):
-        """Create modern styled label"""
+        """Създаване на модерно стилизиран етикет"""
         label = tk.Label(
             parent,
             text=text,
@@ -173,7 +173,7 @@ class ModernWidget:
         return label
     
     def create_entry(self, parent, **kwargs):
-        """Create modern styled entry"""
+        """Създаване на модерно стилизирано поле за въвеждане"""
         entry = tk.Entry(
             parent,
             bg=self.theme.colors['input'],
@@ -189,10 +189,10 @@ class ModernWidget:
         return entry
     
     def _darken_color(self, hex_color, factor):
-        """Darken hex color by factor"""
+        """Затъмняване на hex цвят с даден фактор"""
         hex_color = hex_color.lstrip('#')
         rgb = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
         h, l, s = colorsys.rgb_to_hls(rgb[0]/255, rgb[1]/255, rgb[2]/255)
         l = max(0, l - factor)
         rgb = colorsys.hls_to_rgb(h, l, s)
-        return '#%02x%02x%02x' % (int(rgb[0]*255), int(rgb[1]*255), int(rgb[2]*255))    
+        return '#%02x%02x%02x' % (int(rgb[0]*255), int(rgb[1]*255), int(rgb[2]*255))
