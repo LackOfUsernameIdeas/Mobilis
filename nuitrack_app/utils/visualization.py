@@ -7,7 +7,7 @@ from utils.skeleton_processing import project_world_to_screen
 
 import globals
 
-def draw_text(img, text, pos, font_path="D:/Projects/next-js-and-shadcn-ui-admin-dashboard/public/fonts/ARIAL.TTF", font_size=24, color=(255,255,255)):
+def draw_text(img, text, pos, font_path="D:/Projects/Mobilis/public/fonts/ARIAL.TTF", font_size=24, color=(255,255,255)):
     # Уверете се, че работим с копие, за да избегнем промяна на оригинала
     img_copy = img.copy()
     
