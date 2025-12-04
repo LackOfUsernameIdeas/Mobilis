@@ -1,4 +1,3 @@
-// src/app/(main)/auth/v1/signout/route.ts
 import { createClient } from "@/app/utils/supabase/server";
 import { redirect } from "next/navigation";
 
