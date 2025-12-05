@@ -13,14 +13,24 @@
  */
 
 export function getBMICategory(bmi: number): string {
-  if (bmi < 16) return "Сериозно недохранване"; // Severe thinness (BMI < 16)
-  if (bmi < 17) return "Средно недохранване"; // Moderate thinness (BMI 16-16.99)
-  if (bmi < 18.5) return "Леко недохранване"; // Mild thinness (BMI 17-18.49)
-  if (bmi < 25) return "Нормално"; // Normal weight (BMI 18.5-24.9)
-  if (bmi < 30) return "Наднормено тегло"; // Overweight/Pre-obese (BMI 25-29.9)
-  if (bmi < 35) return "Затлъстяване I Клас"; // Obesity Class I (BMI 30-34.9)
-  if (bmi < 40) return "Затлъстяване II Клас"; // Obesity Class II (BMI 35-39.9)
-  return "Затлъстяване III Клас"; // Obesity Class III (BMI ≥ 40)
+  switch (true) {
+    case bmi < 16:
+      return "Сериозно недохранване"; // Severe thinness (BMI < 16)
+    case bmi >= 16 && bmi < 17:
+      return "Средно недохранване"; // Moderate thinness (BMI 16–16.99)
+    case bmi >= 17 && bmi < 18.5:
+      return "Леко недохранване"; // Mild thinness (BMI 17–18.49)
+    case bmi >= 18.5 && bmi < 25:
+      return "Нормално"; // Normal weight (BMI 18.5–24.99)
+    case bmi >= 25 && bmi < 30:
+      return "Наднормено тегло"; // Overweight / Pre-obese (BMI 25–29.99)
+    case bmi >= 30 && bmi < 35:
+      return "Затлъстяване I Клас"; // Obesity Class I (BMI 30–34.99)
+    case bmi >= 35 && bmi < 40:
+      return "Затлъстяване II Клас"; // Obesity Class II (BMI 35–39.99)
+    default:
+      return "Затлъстяване III Клас"; // Obesity Class III (BMI ≥ 40)
+  }
 }
 
 export function calculateBMI(height: number, weight: number) {
@@ -30,35 +40,6 @@ export function calculateBMI(height: number, weight: number) {
     bmi: bmi.toFixed(2),
     health: getBMICategory(bmi),
     healthy_bmi_range: "18.5 - 25",
-  };
-}
-
-export function calculatePerfectWeight(height: number, gender: string, weight: number) {
-  const heightInInches = height / 2.54; // Конвертиране от см в инчове
-  const inchesOver5Feet = heightInInches - 60; // 60 инча = 5 фута
-  let p: number | null;
-
-  if (gender === "male") {
-    // Robinson формула за мъже: 52 кг + 1.90 кг за всеки инч над 5 фута
-    p = 52 + 1.9 * inchesOver5Feet;
-  } else if (gender === "female") {
-    // Robinson формула за жени: 49 кг + 1.7 кг за всеки инч над 5 фута
-    p = 49 + 1.7 * inchesOver5Feet;
-  } else {
-    p = null;
-  }
-
-  if (p === null) throw new Error("Невалиден пол");
-
-  const perfect = parseFloat(p.toFixed(2));
-  const diff = perfect - weight;
-
-  return {
-    perfectWeight: perfect,
-    differenceFromPerfectWeight: {
-      difference: parseFloat(Math.abs(diff).toFixed(2)),
-      isUnderOrAbove: weight > perfect ? "above" : "under",
-    },
   };
 }
 

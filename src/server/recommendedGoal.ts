@@ -1,4 +1,4 @@
-import { calculateBMI, calculatePerfectWeight, calculateBodyFat } from "./health";
+import { calculateBMI, calculateBodyFat } from "./health";
 
 /**
  * Типове цели за фитнес
@@ -37,7 +37,7 @@ export interface GoalRecommendation {
 }
 
 /**
- * Биологично точни категории на телесни мазнини
+ * Категории на телесни мазнини
  */
 const BODY_FAT_CATEGORIES = {
   male: {
@@ -58,7 +58,6 @@ const BODY_FAT_CATEGORIES = {
 
 function getBodyFatCategory(bodyFat: number, gender: "male" | "female"): BodyFatCategory {
   const cats = BODY_FAT_CATEGORIES[gender];
-
   if (bodyFat < cats.essential) return "critical";
   if (bodyFat <= cats.athletes) return "athletes";
   if (bodyFat <= cats.fitness) return "fitness";
@@ -78,56 +77,35 @@ function getBMICategory(bmi: number): BMICategory {
 }
 
 /**
- * Определя препоръчана цел въз основа на BMI, телесни мазнини и перфектно тегло
+ * Определя препоръчана цел въз основа на BMI и телесни мазнини
  */
-function recommendGoal(
-  bmi: number,
-  bodyFat: number,
-  perfectWeight: number,
-  currentWeight: number,
-  gender: "male" | "female",
-): GoalRecommendation {
-  const weightDiff = currentWeight - perfectWeight;
-  const weightDiffPercent = (weightDiff / perfectWeight) * 100;
+function recommendGoal(bmi: number, bodyFat: number, gender: "male" | "female"): GoalRecommendation {
   const bmiCat = getBMICategory(bmi);
   const bfCat = getBodyFatCategory(bodyFat, gender);
 
   // Критични здравословни състояния
-  switch (bmiCat) {
-    case "severe_thin":
-    case "moderate_thin":
-      return {
-        goal: "dirty_bulk",
-        goalName: "Бързо качване (Dirty Bulk)",
-        bmi,
-        bmiCategory: bmiCat,
-        bodyFatPercentage: bodyFat,
-        bodyFatCategory: bfCat,
-        reasoning: "Критично ниско тегло. Необходимо е бързо качване на тегло, поради здравословни причини.",
-      };
+  if (bmiCat === "severe_thin" || bmiCat === "moderate_thin") {
+    return {
+      goal: "dirty_bulk",
+      goalName: "Бързо качване (Dirty Bulk)",
+      bmi,
+      bmiCategory: bmiCat,
+      bodyFatPercentage: bodyFat,
+      bodyFatCategory: bfCat,
+      reasoning: "Критично ниско тегло. Нужно е качване поради здравословен риск.",
+    };
+  }
 
-    case "obese_3":
-    case "obese_2":
-      return {
-        goal: "cut",
-        goalName: "Изгаряне на мазнини (Cut)",
-        bmi,
-        bmiCategory: bmiCat,
-        bodyFatPercentage: bodyFat,
-        bodyFatCategory: bfCat,
-        reasoning: "Сериозно наднормено тегло. Приоритет е загуба на мазнини за подобряване на здравето.",
-      };
-
-    case "obese_1":
-      return {
-        goal: "cut",
-        goalName: "Изгаряне на мазнини (Cut)",
-        bmi,
-        bmiCategory: bmiCat,
-        bodyFatPercentage: bodyFat,
-        bodyFatCategory: bfCat,
-        reasoning: "Наднормено тегло. Препоръчва се загуба на мазнини.",
-      };
+  if (bmiCat === "obese_3" || bmiCat === "obese_2" || bmiCat === "obese_1") {
+    return {
+      goal: "cut",
+      goalName: "Изгаряне на мазнини (Cut)",
+      bmi,
+      bmiCategory: bmiCat,
+      bodyFatPercentage: bodyFat,
+      bodyFatCategory: bfCat,
+      reasoning: "Наднормено тегло или затлъстяване. Препоръчва се намаляване на мазнини.",
+    };
   }
 
   // Критични телесни мазнини
@@ -139,23 +117,11 @@ function recommendGoal(
       bmiCategory: bmiCat,
       bodyFatPercentage: bodyFat,
       bodyFatCategory: bfCat,
-      reasoning: "Опасно ниски телесни мазнини. Необходимо е спешно качване на тегло.",
+      reasoning: "Опасно ниски мазнини. Нужно е качване на тегло.",
     };
   }
 
-  if (bfCat === "obese") {
-    return {
-      goal: "cut",
-      goalName: "Изгаряне на мазнини (Cut)",
-      bmi,
-      bmiCategory: bmiCat,
-      bodyFatPercentage: bodyFat,
-      bodyFatCategory: bfCat,
-      reasoning: "Високи телесни мазнини. Препоръчва се загуба на мазнини.",
-    };
-  }
-
-  // Обработка по BMI категории
+  // Комбинации BMI + body fat
   switch (bmiCat) {
     case "mild_thin":
       return {
@@ -165,12 +131,34 @@ function recommendGoal(
         bmiCategory: bmiCat,
         bodyFatPercentage: bodyFat,
         bodyFatCategory: bfCat,
-        reasoning: "Поднормено тегло. Необходимо е качване на мускулна маса и тегло.",
+        reasoning: "Поднормено тегло. Нужно е изграждане на мускули и увеличение на тегло.",
       };
 
-    case "overweight":
-      // Атлетично тяло (висок BMI, ниски мазнини)
-      if (bfCat === "athletes" || bfCat === "fitness") {
+    case "normal":
+      if (bfCat === "obese") {
+        return {
+          goal: "recomposition",
+          goalName: "Рекомпозиция (Recomposition)",
+          bmi,
+          bmiCategory: bmiCat,
+          bodyFatPercentage: bodyFat,
+          bodyFatCategory: bfCat,
+          reasoning:
+            "BMI е нормално, но мазнините са високи. Подход с паралелно изграждане на мускули и намаляване на мазнини.",
+        };
+      }
+      if (bfCat === "acceptable") {
+        return {
+          goal: "recomposition",
+          goalName: "Рекомпозиция (Recomposition)",
+          bmi,
+          bmiCategory: bmiCat,
+          bodyFatPercentage: bodyFat,
+          bodyFatCategory: bfCat,
+          reasoning: "Нормални мазнини. Подход с паралелно изграждане на мускули и леко намаляване на мазнини.",
+        };
+      }
+      if (bfCat === "fitness" || bfCat === "athletes") {
         return {
           goal: "maintenance",
           goalName: "Поддържане (Maintenance)",
@@ -178,11 +166,34 @@ function recommendGoal(
           bmiCategory: bmiCat,
           bodyFatPercentage: bodyFat,
           bodyFatCategory: bfCat,
-          reasoning: "Високо BMI но ниски телесни мазнини - мускулно тяло. Поддържане на текущото състояние.",
+          reasoning: "Добро телосложение с ниски мазнини. Поддържане на текущото състояние.",
         };
       }
+      break;
 
-      // Наднормено с високи мазнини
+    case "overweight":
+      if (bfCat === "fitness" || bfCat === "athletes") {
+        return {
+          goal: "maintenance",
+          goalName: "Поддържане (Maintenance)",
+          bmi,
+          bmiCategory: bmiCat,
+          bodyFatPercentage: bodyFat,
+          bodyFatCategory: bfCat,
+          reasoning: "Висок BMI, но ниски мазнини. Поддържане на мускулна маса.",
+        };
+      }
+      if (bfCat === "acceptable") {
+        return {
+          goal: "recomposition",
+          goalName: "Рекомпозиция (Recomposition)",
+          bmi,
+          bmiCategory: bmiCat,
+          bodyFatPercentage: bodyFat,
+          bodyFatCategory: bfCat,
+          reasoning: "Наднормено тегло с умерени мазнини. Подход с изграждане на мускули и леко намаляване на мазнини.",
+        };
+      }
       return {
         goal: "cut",
         goalName: "Изгаряне на мазнини (Cut)",
@@ -190,124 +201,20 @@ function recommendGoal(
         bmiCategory: bmiCat,
         bodyFatPercentage: bodyFat,
         bodyFatCategory: bfCat,
-        reasoning: "Наднормено тегло с излишни мазнини. Загуба на мазнини ще подобри композицията на тялото.",
-      };
-
-    case "normal":
-      // Нормално тегло - обработка по категория на телесни мазнини
-      switch (bfCat) {
-        case "athletes":
-          if (weightDiff < -3) {
-            return {
-              goal: "lean_bulk",
-              goalName: "Чисто качване (Lean Bulk)",
-              bmi,
-              bmiCategory: bmiCat,
-              bodyFatPercentage: bodyFat,
-              bodyFatCategory: bfCat,
-              reasoning: "Атлетична дефиниция но под идеалното тегло. Чисто качване на мускулна маса.",
-            };
-          }
-          return {
-            goal: "maintenance",
-            goalName: "Поддържане (Maintenance)",
-            bmi,
-            bmiCategory: bmiCat,
-            bodyFatPercentage: bodyFat,
-            bodyFatCategory: bfCat,
-            reasoning: "Отлично атлетично телосложение. Поддържане на текущото състояние.",
-          };
-
-        case "fitness":
-          if (Math.abs(weightDiffPercent) < 5) {
-            return {
-              goal: "maintenance",
-              goalName: "Поддържане (Maintenance)",
-              bmi,
-              bmiCategory: bmiCat,
-              bodyFatPercentage: bodyFat,
-              bodyFatCategory: bfCat,
-              reasoning: "Отлично телосложение, близо до идеалното тегло. Поддържане на текущото състояние.",
-            };
-          }
-          if (weightDiff < 0) {
-            return {
-              goal: "lean_bulk",
-              goalName: "Чисто качване (Lean Bulk)",
-              bmi,
-              bmiCategory: bmiCat,
-              bodyFatPercentage: bodyFat,
-              bodyFatCategory: bfCat,
-              reasoning: "Добра дефиниция но под перфектното тегло. Чисто качване на мускулна маса.",
-            };
-          }
-          return {
-            goal: "cut",
-            goalName: "Изгаряне на мазнини (Cut)",
-            bmi,
-            bmiCategory: bmiCat,
-            bodyFatPercentage: bodyFat,
-            bodyFatCategory: bfCat,
-            reasoning: "Добра форма но леко над идеалното тегло. Лека редукция на мазнини.",
-          };
-
-        case "acceptable":
-          if (Math.abs(weightDiffPercent) < 8) {
-            return {
-              goal: "recomposition",
-              goalName: "Рекомпозиция (Recomposition)",
-              bmi,
-              bmiCategory: bmiCat,
-              bodyFatPercentage: bodyFat,
-              bodyFatCategory: bfCat,
-              reasoning:
-                "Нормално тегло с умерени телесни мазнини. Рекомпозиция за подобряване на съотношението мускули/мазнини.",
-            };
-          }
-          if (weightDiff > 0) {
-            return {
-              goal: "cut",
-              goalName: "Изгаряне на мазнини (Cut)",
-              bmi,
-              bmiCategory: bmiCat,
-              bodyFatPercentage: bodyFat,
-              bodyFatCategory: bfCat,
-              reasoning: "Нормално BMI но излишни мазнини. Загуба на мазнини ще подобри композицията.",
-            };
-          }
-          return {
-            goal: "recomposition",
-            goalName: "Рекомпозиция (Recomposition)",
-            bmi,
-            bmiCategory: bmiCat,
-            bodyFatPercentage: bodyFat,
-            bodyFatCategory: bfCat,
-            reasoning: "Под перфектното тегло с умерени мазнини. Рекомпозиция за баланс.",
-          };
-
-        default:
-          return {
-            goal: "recomposition",
-            goalName: "Рекомпозиция (Recomposition)",
-            bmi,
-            bmiCategory: bmiCat,
-            bodyFatPercentage: bodyFat,
-            bodyFatCategory: bfCat,
-            reasoning: "Балансиран подход за подобряване на съотношението мускули/мазнини.",
-          };
-      }
-
-    default:
-      return {
-        goal: "recomposition",
-        goalName: "Рекомпозиция (Recomposition)",
-        bmi,
-        bmiCategory: bmiCat,
-        bodyFatPercentage: bodyFat,
-        bodyFatCategory: bfCat,
-        reasoning: "Балансиран подход за подобряване на съотношението мускули/мазнини.",
+        reasoning: "Наднормено тегло с високи мазнини. Препоръчва се намаляване.",
       };
   }
+
+  // Default
+  return {
+    goal: "recomposition",
+    goalName: "Рекомпозиция (Recomposition)",
+    bmi,
+    bmiCategory: bmiCat,
+    bodyFatPercentage: bodyFat,
+    bodyFatCategory: bfCat,
+    reasoning: "Подход за подобряване на съотношението мускули към мазнини.",
+  };
 }
 
 /**
@@ -322,12 +229,10 @@ export function getRecommendedGoal(
   hip?: number,
 ): GoalRecommendation {
   const bmiResult = calculateBMI(height, weight);
-  const perfectWeightResult = calculatePerfectWeight(height, gender, weight);
   const bodyFatResult = calculateBodyFat(height, gender, weight, neck, waist, hip);
 
   const bmi = parseFloat(bmiResult.bmi);
   const bodyFat = bodyFatResult.bodyFat;
-  const perfectWeight = perfectWeightResult.perfectWeight;
 
-  return recommendGoal(bmi, bodyFat, perfectWeight, weight, gender);
+  return recommendGoal(bmi, bodyFat, gender);
 }
