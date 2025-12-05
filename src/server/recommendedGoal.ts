@@ -18,9 +18,8 @@ export type FitnessGoal =
 export interface GoalRecommendation {
   goal: FitnessGoal;
   goalName: string;
-  description: string;
-  reason: string;
-  priority: string;
+  bmi: number;
+  bodyFat: number;
 }
 
 /**
@@ -52,9 +51,8 @@ function recommendGoal(
     return {
       goal: "cut",
       goalName: "Изгаряне на мазнини (Cut)",
-      description: "Намаляване на телесните мазнини при запазване на мускулна маса",
-      reason: `BMI: ${bmi.toFixed(1)} (${bmi >= 30 ? "затлъстяване" : "високо"}), Телесни мазнини: ${bodyFat.toFixed(1)}% (високо). Приоритет е да намалите теглото и мазнините за подобряване на здравето.`,
-      priority: "Здраве и намаляване на телесни мазнини",
+      bmi: bmi,
+      bodyFat: bodyFat,
     };
   }
 
@@ -63,9 +61,8 @@ function recommendGoal(
     return {
       goal: "cut",
       goalName: "Изгаряне на мазнини (Cut)",
-      description: "Намаляване на телесните мазнини при запазване на мускулна маса",
-      reason: `BMI: ${bmi.toFixed(1)} (наднормено), Телесни мазнини: ${bodyFat.toFixed(1)}%. Препоръчва се леко изгаряне на мазнини.`,
-      priority: "Намаляване на телесни мазнини",
+      bmi: bmi,
+      bodyFat: bodyFat,
     };
   }
 
@@ -74,9 +71,8 @@ function recommendGoal(
     return {
       goal: "lean_bulk",
       goalName: "Чисто качване (Lean Bulk)",
-      description: "Качване на мускулна маса с минимално натрупване на мазнини",
-      reason: `BMI: ${bmi.toFixed(1)} (поднормено), Телесни мазнини: ${bodyFat.toFixed(1)}%. Нуждаете се от качване на здравословно тегло и мускули.`,
-      priority: "Качване на мускулна маса и тегло",
+      bmi: bmi,
+      bodyFat: bodyFat,
     };
   }
 
@@ -85,9 +81,8 @@ function recommendGoal(
     return {
       goal: "lean_bulk",
       goalName: "Чисто качване (Lean Bulk)",
-      description: "Качване на мускулна маса с минимално натрупване на мазнини",
-      reason: `BMI: ${bmi.toFixed(1)} (нормално), но телесни мазнини: ${bodyFat.toFixed(1)}% (ниско). Добра възможност за качване на мускулна маса.`,
-      priority: "Качване на мускулна маса",
+      bmi: bmi,
+      bodyFat: bodyFat,
     };
   }
 
@@ -96,9 +91,8 @@ function recommendGoal(
     return {
       goal: "maintenance",
       goalName: "Поддържане (Maintenance)",
-      description: "Запазване на текущото тегло и мускулна маса, подобряване на фитнес формата",
-      reason: `BMI: ${bmi.toFixed(1)}, Телесни мазнини: ${bodyFat.toFixed(1)}%, Тегло: близо до идеалното (${perfectWeight.toFixed(1)} кг). Вие сте в отлична форма!`,
-      priority: "Поддържане на форма и фитнес",
+      bmi: bmi,
+      bodyFat: bodyFat,
     };
   }
 
@@ -107,9 +101,8 @@ function recommendGoal(
     return {
       goal: "recomposition",
       goalName: "Рекомпозиция (Recomposition)",
-      description: "Едновременно изграждане на мускули и изгаряне на мазнини",
-      reason: `BMI: ${bmi.toFixed(1)}, Телесни мазнини: ${bodyFat.toFixed(1)}%. Можете да подобрите телосложението си чрез рекомпозиция.`,
-      priority: "Подобряване на телесния състав",
+      bmi: bmi,
+      bodyFat: bodyFat,
     };
   }
 
@@ -117,9 +110,8 @@ function recommendGoal(
   return {
     goal: "recomposition",
     goalName: "Рекомпозиция (Recomposition)",
-    description: "Едновременно изграждане на мускули и изгаряне на мазнини",
-    reason: `BMI: ${bmi.toFixed(1)}, Телесни мазнини: ${bodyFat.toFixed(1)}%. Балансиран подход за подобряване на общата форма.`,
-    priority: "Подобряване на телесния състав",
+    bmi: bmi,
+    bodyFat: bodyFat,
   };
 }
 
