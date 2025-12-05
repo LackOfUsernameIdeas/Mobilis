@@ -48,11 +48,11 @@ const BODY_FAT_CATEGORIES = {
     obese: 25,
   },
   female: {
-    essential: 13,
-    athletes: 20,
+    essential: 11,
+    athletes: 19,
     fitness: 24,
-    acceptable: 31,
-    obese: 32,
+    acceptable: 29,
+    obese: 30,
   },
 };
 
@@ -92,7 +92,7 @@ function recommendGoal(bmi: number, bodyFat: number, gender: "male" | "female"):
       bmiCategory: bmiCat,
       bodyFatPercentage: bodyFat,
       bodyFatCategory: bfCat,
-      reasoning: "Критично ниско тегло. Нужно е качване поради здравословен риск.",
+      reasoning: "Критично ниско тегло. Препоръчва се качване поради здравословен риск.",
     };
   }
 
@@ -104,7 +104,7 @@ function recommendGoal(bmi: number, bodyFat: number, gender: "male" | "female"):
       bmiCategory: bmiCat,
       bodyFatPercentage: bodyFat,
       bodyFatCategory: bfCat,
-      reasoning: "Наднормено тегло или затлъстяване. Препоръчва се намаляване на мазнини.",
+      reasoning: "Наднормено тегло или затлъстяване. Препоръчва се сваляне на тегло и намаляване на телесните мазнини.",
     };
   }
 
@@ -117,7 +117,7 @@ function recommendGoal(bmi: number, bodyFat: number, gender: "male" | "female"):
       bmiCategory: bmiCat,
       bodyFatPercentage: bodyFat,
       bodyFatCategory: bfCat,
-      reasoning: "Опасно ниски мазнини. Нужно е качване на тегло.",
+      reasoning: "Опасно ниско ниво на телесни мазнини. Препоръчва се качване на тегло и телесни мазнини.",
     };
   }
 
@@ -131,7 +131,7 @@ function recommendGoal(bmi: number, bodyFat: number, gender: "male" | "female"):
         bmiCategory: bmiCat,
         bodyFatPercentage: bodyFat,
         bodyFatCategory: bfCat,
-        reasoning: "Поднормено тегло. Нужно е изграждане на мускули и увеличение на тегло.",
+        reasoning: "Поднормено тегло. Препоръчва се покачване на мускулна маса и увеличаване на тегло.",
       };
 
     case "normal":
@@ -144,7 +144,7 @@ function recommendGoal(bmi: number, bodyFat: number, gender: "male" | "female"):
           bodyFatPercentage: bodyFat,
           bodyFatCategory: bfCat,
           reasoning:
-            "BMI е нормално, но мазнините са високи. Подход с паралелно изграждане на мускули и намаляване на мазнини.",
+            "Стойността на BMI е нормална, но нивото на телесни мазнини е високо. Препоръчва се едновременното покачване на мускулна маса и намаляването на нивото на телесни мазнини.",
         };
       }
       if (bfCat === "acceptable") {
@@ -155,7 +155,8 @@ function recommendGoal(bmi: number, bodyFat: number, gender: "male" | "female"):
           bmiCategory: bmiCat,
           bodyFatPercentage: bodyFat,
           bodyFatCategory: bfCat,
-          reasoning: "Нормални мазнини. Подход с паралелно изграждане на мускули и леко намаляване на мазнини.",
+          reasoning:
+            "Нормално ниво на телесни мазнини. Препоръчва се едновременното покачване на мускулна маса и намаляването на нивото на телесни мазнини.",
         };
       }
       if (bfCat === "fitness" || bfCat === "athletes") {
@@ -166,7 +167,7 @@ function recommendGoal(bmi: number, bodyFat: number, gender: "male" | "female"):
           bmiCategory: bmiCat,
           bodyFatPercentage: bodyFat,
           bodyFatCategory: bfCat,
-          reasoning: "Добро телосложение с ниски мазнини. Поддържане на текущото състояние.",
+          reasoning: "Нормално ниво на телесни мазнини. Препоръчва се поддържане на текущото състояние.",
         };
       }
       break;
@@ -180,7 +181,8 @@ function recommendGoal(bmi: number, bodyFat: number, gender: "male" | "female"):
           bmiCategory: bmiCat,
           bodyFatPercentage: bodyFat,
           bodyFatCategory: bfCat,
-          reasoning: "Висок BMI, но ниски мазнини. Поддържане на мускулна маса.",
+          reasoning:
+            "Стойността на BMI е висока, но нивото на телесни мазнини е ниско. Препоръчва се поддържане на текущото състояние.",
         };
       }
       if (bfCat === "acceptable") {
@@ -191,7 +193,8 @@ function recommendGoal(bmi: number, bodyFat: number, gender: "male" | "female"):
           bmiCategory: bmiCat,
           bodyFatPercentage: bodyFat,
           bodyFatCategory: bfCat,
-          reasoning: "Наднормено тегло с умерени мазнини. Подход с изграждане на мускули и леко намаляване на мазнини.",
+          reasoning:
+            "Наднормено тегло с умерено ниво на телесни мазнини. Препоръчва се покачване на мускулна маса и леко намаляване на телесните мазнини.",
         };
       }
       return {
@@ -201,7 +204,8 @@ function recommendGoal(bmi: number, bodyFat: number, gender: "male" | "female"):
         bmiCategory: bmiCat,
         bodyFatPercentage: bodyFat,
         bodyFatCategory: bfCat,
-        reasoning: "Наднормено тегло с високи мазнини. Препоръчва се намаляване.",
+        reasoning:
+          "Наднормено тегло с високо ниво на телесни мазнини. Препоръчва се сваляне на тегло и намаляване на телесните мазнини.",
       };
   }
 
@@ -213,7 +217,7 @@ function recommendGoal(bmi: number, bodyFat: number, gender: "male" | "female"):
     bmiCategory: bmiCat,
     bodyFatPercentage: bodyFat,
     bodyFatCategory: bfCat,
-    reasoning: "Подход за подобряване на съотношението мускули към мазнини.",
+    reasoning: "Препоръчва се едновременното покачване на мускулна маса и намаляването на нивото на телесни мазнини.",
   };
 }
 
