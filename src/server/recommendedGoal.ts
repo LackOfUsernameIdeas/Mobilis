@@ -12,6 +12,17 @@ export type FitnessGoal =
   | "aesthetic"
   | "strength";
 
+export type BodyFatCategory = "critical" | "athletes" | "fitness" | "acceptable" | "obese";
+export type BMICategory =
+  | "severe_thin"
+  | "moderate_thin"
+  | "mild_thin"
+  | "normal"
+  | "overweight"
+  | "obese_1"
+  | "obese_2"
+  | "obese_3";
+
 /**
  * Интерфейс за препоръка на цел
  */
@@ -19,7 +30,9 @@ export interface GoalRecommendation {
   goal: FitnessGoal;
   goalName: string;
   bmi: number;
-  bodyFat: number;
+  bmiCategory: BMICategory;
+  bodyFatPercentage: number;
+  bodyFatCategory: BodyFatCategory;
   reasoning: string;
 }
 
@@ -42,17 +55,6 @@ const BODY_FAT_CATEGORIES = {
     obese: 32,
   },
 };
-
-type BodyFatCategory = "critical" | "athletes" | "fitness" | "acceptable" | "obese";
-type BMICategory =
-  | "severe_thin"
-  | "moderate_thin"
-  | "mild_thin"
-  | "normal"
-  | "overweight"
-  | "obese_1"
-  | "obese_2"
-  | "obese_3";
 
 function getBodyFatCategory(bodyFat: number, gender: "male" | "female"): BodyFatCategory {
   const cats = BODY_FAT_CATEGORIES[gender];
@@ -98,7 +100,9 @@ function recommendGoal(
         goal: "dirty_bulk",
         goalName: "Бързо качване (Dirty Bulk)",
         bmi,
-        bodyFat,
+        bmiCategory: bmiCat,
+        bodyFatPercentage: bodyFat,
+        bodyFatCategory: bfCat,
         reasoning: "Критично ниско тегло. Необходимо е бързо качване на тегло, поради здравословни причини.",
       };
 
@@ -108,7 +112,9 @@ function recommendGoal(
         goal: "cut",
         goalName: "Изгаряне на мазнини (Cut)",
         bmi,
-        bodyFat,
+        bmiCategory: bmiCat,
+        bodyFatPercentage: bodyFat,
+        bodyFatCategory: bfCat,
         reasoning: "Сериозно наднормено тегло. Приоритет е загуба на мазнини за подобряване на здравето.",
       };
 
@@ -117,7 +123,9 @@ function recommendGoal(
         goal: "cut",
         goalName: "Изгаряне на мазнини (Cut)",
         bmi,
-        bodyFat,
+        bmiCategory: bmiCat,
+        bodyFatPercentage: bodyFat,
+        bodyFatCategory: bfCat,
         reasoning: "Наднормено тегло. Препоръчва се загуба на мазнини.",
       };
   }
@@ -128,7 +136,9 @@ function recommendGoal(
       goal: "dirty_bulk",
       goalName: "Бързо качване (Dirty Bulk)",
       bmi,
-      bodyFat,
+      bmiCategory: bmiCat,
+      bodyFatPercentage: bodyFat,
+      bodyFatCategory: bfCat,
       reasoning: "Опасно ниски телесни мазнини. Необходимо е спешно качване на тегло.",
     };
   }
@@ -138,7 +148,9 @@ function recommendGoal(
       goal: "cut",
       goalName: "Изгаряне на мазнини (Cut)",
       bmi,
-      bodyFat,
+      bmiCategory: bmiCat,
+      bodyFatPercentage: bodyFat,
+      bodyFatCategory: bfCat,
       reasoning: "Високи телесни мазнини. Препоръчва се загуба на мазнини.",
     };
   }
@@ -150,7 +162,9 @@ function recommendGoal(
         goal: "lean_bulk",
         goalName: "Чисто качване (Lean Bulk)",
         bmi,
-        bodyFat,
+        bmiCategory: bmiCat,
+        bodyFatPercentage: bodyFat,
+        bodyFatCategory: bfCat,
         reasoning: "Поднормено тегло. Необходимо е качване на мускулна маса и тегло.",
       };
 
@@ -161,7 +175,9 @@ function recommendGoal(
           goal: "maintenance",
           goalName: "Поддържане (Maintenance)",
           bmi,
-          bodyFat,
+          bmiCategory: bmiCat,
+          bodyFatPercentage: bodyFat,
+          bodyFatCategory: bfCat,
           reasoning: "Високо BMI но ниски телесни мазнини - мускулно тяло. Поддържане на текущото състояние.",
         };
       }
@@ -171,7 +187,9 @@ function recommendGoal(
         goal: "cut",
         goalName: "Изгаряне на мазнини (Cut)",
         bmi,
-        bodyFat,
+        bmiCategory: bmiCat,
+        bodyFatPercentage: bodyFat,
+        bodyFatCategory: bfCat,
         reasoning: "Наднормено тегло с излишни мазнини. Загуба на мазнини ще подобри композицията на тялото.",
       };
 
@@ -184,7 +202,9 @@ function recommendGoal(
               goal: "lean_bulk",
               goalName: "Чисто качване (Lean Bulk)",
               bmi,
-              bodyFat,
+              bmiCategory: bmiCat,
+              bodyFatPercentage: bodyFat,
+              bodyFatCategory: bfCat,
               reasoning: "Атлетична дефиниция но под идеалното тегло. Чисто качване на мускулна маса.",
             };
           }
@@ -192,7 +212,9 @@ function recommendGoal(
             goal: "maintenance",
             goalName: "Поддържане (Maintenance)",
             bmi,
-            bodyFat,
+            bmiCategory: bmiCat,
+            bodyFatPercentage: bodyFat,
+            bodyFatCategory: bfCat,
             reasoning: "Отлично атлетично телосложение. Поддържане на текущото състояние.",
           };
 
@@ -202,7 +224,9 @@ function recommendGoal(
               goal: "maintenance",
               goalName: "Поддържане (Maintenance)",
               bmi,
-              bodyFat,
+              bmiCategory: bmiCat,
+              bodyFatPercentage: bodyFat,
+              bodyFatCategory: bfCat,
               reasoning: "Отлично телосложение, близо до идеалното тегло. Поддържане на текущото състояние.",
             };
           }
@@ -211,7 +235,9 @@ function recommendGoal(
               goal: "lean_bulk",
               goalName: "Чисто качване (Lean Bulk)",
               bmi,
-              bodyFat,
+              bmiCategory: bmiCat,
+              bodyFatPercentage: bodyFat,
+              bodyFatCategory: bfCat,
               reasoning: "Добра дефиниция но под перфектното тегло. Чисто качване на мускулна маса.",
             };
           }
@@ -219,7 +245,9 @@ function recommendGoal(
             goal: "cut",
             goalName: "Изгаряне на мазнини (Cut)",
             bmi,
-            bodyFat,
+            bmiCategory: bmiCat,
+            bodyFatPercentage: bodyFat,
+            bodyFatCategory: bfCat,
             reasoning: "Добра форма но леко над идеалното тегло. Лека редукция на мазнини.",
           };
 
@@ -229,7 +257,9 @@ function recommendGoal(
               goal: "recomposition",
               goalName: "Рекомпозиция (Recomposition)",
               bmi,
-              bodyFat,
+              bmiCategory: bmiCat,
+              bodyFatPercentage: bodyFat,
+              bodyFatCategory: bfCat,
               reasoning:
                 "Нормално тегло с умерени телесни мазнини. Рекомпозиция за подобряване на съотношението мускули/мазнини.",
             };
@@ -239,7 +269,9 @@ function recommendGoal(
               goal: "cut",
               goalName: "Изгаряне на мазнини (Cut)",
               bmi,
-              bodyFat,
+              bmiCategory: bmiCat,
+              bodyFatPercentage: bodyFat,
+              bodyFatCategory: bfCat,
               reasoning: "Нормално BMI но излишни мазнини. Загуба на мазнини ще подобри композицията.",
             };
           }
@@ -247,7 +279,9 @@ function recommendGoal(
             goal: "recomposition",
             goalName: "Рекомпозиция (Recomposition)",
             bmi,
-            bodyFat,
+            bmiCategory: bmiCat,
+            bodyFatPercentage: bodyFat,
+            bodyFatCategory: bfCat,
             reasoning: "Под перфектното тегло с умерени мазнини. Рекомпозиция за баланс.",
           };
 
@@ -256,7 +290,9 @@ function recommendGoal(
             goal: "recomposition",
             goalName: "Рекомпозиция (Recomposition)",
             bmi,
-            bodyFat,
+            bmiCategory: bmiCat,
+            bodyFatPercentage: bodyFat,
+            bodyFatCategory: bfCat,
             reasoning: "Балансиран подход за подобряване на съотношението мускули/мазнини.",
           };
       }
@@ -266,7 +302,9 @@ function recommendGoal(
         goal: "recomposition",
         goalName: "Рекомпозиция (Recomposition)",
         bmi,
-        bodyFat,
+        bmiCategory: bmiCat,
+        bodyFatPercentage: bodyFat,
+        bodyFatCategory: bfCat,
         reasoning: "Балансиран подход за подобряване на съотношението мускули/мазнини.",
       };
   }
