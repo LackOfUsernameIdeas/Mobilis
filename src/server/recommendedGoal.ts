@@ -12,7 +12,7 @@ export type FitnessGoal =
   | "aesthetic"
   | "strength";
 
-export type BodyFatCategory = "critical" | "athletes" | "fitness" | "acceptable" | "obese";
+export type BodyFatCategory = "critical" | "essential" | "athletes" | "fitness" | "average" | "obese";
 export type BMICategory =
   | "severe_thin"
   | "moderate_thin"
@@ -41,28 +41,36 @@ export interface GoalRecommendation {
  */
 const BODY_FAT_CATEGORIES = {
   male: {
-    essential: 5,
-    athletes: 13,
-    fitness: 17,
-    acceptable: 24,
-    obese: 25,
+    essential: { min: 2, max: 5 },
+    athletes: { min: 6, max: 13 },
+    fitness: { min: 14, max: 17 },
+    average: { min: 18, max: 24 },
+    obese: { min: 25, max: Infinity },
   },
   female: {
-    essential: 11,
-    athletes: 19,
-    fitness: 24,
-    acceptable: 29,
-    obese: 30,
+    essential: { min: 10, max: 13 },
+    athletes: { min: 14, max: 20 },
+    fitness: { min: 21, max: 24 },
+    average: { min: 25, max: 31 },
+    obese: { min: 32, max: Infinity },
   },
 };
 
 function getBodyFatCategory(bodyFat: number, gender: "male" | "female"): BodyFatCategory {
   const cats = BODY_FAT_CATEGORIES[gender];
-  if (bodyFat < cats.essential) return "critical";
-  if (bodyFat <= cats.athletes) return "athletes";
-  if (bodyFat <= cats.fitness) return "fitness";
-  if (bodyFat <= cats.acceptable) return "acceptable";
-  return "obese";
+
+  // Below minimum essential fat (2% for men, 10% for women)
+  const minEssential = gender === "male" ? 2 : 10;
+  if (bodyFat < minEssential) return "critical";
+
+  // Check each category
+  for (const [category, range] of Object.entries(cats)) {
+    if (bodyFat >= range.min && bodyFat <= range.max) {
+      return category as BodyFatCategory;
+    }
+  }
+
+  throw new Error(`Uncategorized body fat: ${bodyFat}% for ${gender}`);
 }
 
 function getBMICategory(bmi: number): BMICategory {
@@ -147,7 +155,7 @@ function recommendGoal(bmi: number, bodyFat: number, gender: "male" | "female"):
             "Стойността на BMI е нормална, но нивото на телесни мазнини е високо. Препоръчва се едновременното покачване на мускулна маса и намаляването на нивото на телесни мазнини.",
         };
       }
-      if (bfCat === "acceptable") {
+      if (bfCat === "average") {
         return {
           goal: "recomposition",
           goalName: "Рекомпозиция (Recomposition)",
@@ -185,7 +193,7 @@ function recommendGoal(bmi: number, bodyFat: number, gender: "male" | "female"):
             "Стойността на BMI е висока, но нивото на телесни мазнини е ниско. Препоръчва се поддържане на текущото състояние.",
         };
       }
-      if (bfCat === "acceptable") {
+      if (bfCat === "average") {
         return {
           goal: "recomposition",
           goalName: "Рекомпозиция (Recomposition)",
