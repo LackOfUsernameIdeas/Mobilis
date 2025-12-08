@@ -26,7 +26,7 @@ class ModernExerciseApp:
         """Настройка на главния прозорец с модерен стил"""
         self.root = tk.Tk()
         
-        # self.root.iconbitmap(default='icon.ico')
+        self.root.iconbitmap(default='D:\Projects\Mobilis\public\logo.png')
 
         self.root.title("Персонален треньор за упражнения")
         self.root.geometry("950x650")
