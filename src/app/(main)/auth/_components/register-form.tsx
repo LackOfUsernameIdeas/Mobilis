@@ -35,6 +35,17 @@ export function RegisterForm() {
   });
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+    const res = await fetch("/api/check-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: data.email }),
+    });
+    const { exists } = await res.json();
+    if (exists) {
+      toast.error("User already exists — try logging in or reset password");
+      return;
+    }
+
     const { error } = await supabase.auth.signUp({
       email: data.email,
       password: data.password,
