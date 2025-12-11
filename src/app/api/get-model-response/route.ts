@@ -8,8 +8,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Category and answers are required" }, { status: 400 });
     }
 
-    // Generate the prompt based on category
-    const prompt = generatePrompt(category, answers, userStats);
+    const systemPrompt = generateSystemPrompt(category);
+    const userPrompt = generateUserPrompt(category, answers, userStats);
+    const responseFormat = generateResponseFormat(category);
 
     const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
@@ -22,134 +23,14 @@ export async function POST(req: NextRequest) {
         input: [
           {
             role: "system",
-            content:
-              "Ти си професионален фитнес треньор с много години опит. Задачата ти е да създаваш персонализирани тренировъчни програми на база предоставените данни за потребителя. Винаги отговаряй САМО с валиден JSON формат, без допълнителен текст или markdown.",
+            content: systemPrompt,
           },
           {
             role: "user",
-            content: prompt,
+            content: userPrompt,
           },
         ],
-        text: {
-          format: {
-            type: "json_schema",
-            name: "fitness_program",
-            strict: true,
-            schema: {
-              type: "object",
-              properties: {
-                program_overview: {
-                  type: "object",
-                  properties: {
-                    goal: { type: "string" },
-                    estimated_time_per_session: { type: "string" },
-                  },
-                  required: ["goal", "estimated_time_per_session"],
-                  additionalProperties: false,
-                },
-                weekly_schedule: {
-                  type: "array",
-                  items: {
-                    type: "object",
-                    properties: {
-                      day: { type: "string" },
-                      focus: { type: "string" },
-                      warmup: {
-                        type: "object",
-                        properties: {
-                          duration_minutes: { type: "number" },
-                          exercises: {
-                            type: "array",
-                            items: { type: "string" },
-                          },
-                        },
-                        required: ["duration_minutes", "exercises"],
-                        additionalProperties: false,
-                      },
-                      workout: {
-                        type: "array",
-                        items: {
-                          type: "object",
-                          properties: {
-                            exercise_name: { type: "string" },
-                            sets: { type: "number" },
-                            reps: { type: "string" },
-                            muscle_activation: {
-                              type: "object",
-                              properties: {
-                                chest: { type: "boolean" },
-                                front_delts: { type: "boolean" },
-                                side_delts: { type: "boolean" },
-                                rear_delts: { type: "boolean" },
-                                biceps: { type: "boolean" },
-                                triceps: { type: "boolean" },
-                                forearms: { type: "boolean" },
-                                traps: { type: "boolean" },
-                                lats: { type: "boolean" },
-                                rhomboids: { type: "boolean" },
-                                lower_back: { type: "boolean" },
-                                abs: { type: "boolean" },
-                                obliques: { type: "boolean" },
-                                quadriceps: { type: "boolean" },
-                                hamstrings: { type: "boolean" },
-                                glutes: { type: "boolean" },
-                                calves: { type: "boolean" },
-                                adductors: { type: "boolean" },
-                              },
-                              required: [
-                                "chest",
-                                "front_delts",
-                                "side_delts",
-                                "rear_delts",
-                                "biceps",
-                                "triceps",
-                                "forearms",
-                                "traps",
-                                "lats",
-                                "rhomboids",
-                                "lower_back",
-                                "abs",
-                                "obliques",
-                                "quadriceps",
-                                "hamstrings",
-                                "glutes",
-                                "calves",
-                                "adductors",
-                              ],
-                              additionalProperties: false,
-                            },
-                          },
-                          required: ["exercise_name", "sets", "reps", "muscle_activation"],
-                          additionalProperties: false,
-                        },
-                      },
-                      cooldown: {
-                        type: "object",
-                        properties: {
-                          duration_minutes: { type: "number" },
-                          exercises: {
-                            type: "array",
-                            items: { type: "string" },
-                          },
-                        },
-                        required: ["duration_minutes", "exercises"],
-                        additionalProperties: false,
-                      },
-                    },
-                    required: ["day", "focus", "warmup", "workout", "cooldown"],
-                    additionalProperties: false,
-                  },
-                },
-                safety_considerations: {
-                  type: "array",
-                  items: { type: "string" },
-                },
-              },
-              required: ["program_overview", "weekly_schedule", "safety_considerations"],
-              additionalProperties: false,
-            },
-          },
-        },
+        text: responseFormat,
       }),
     });
 
@@ -166,7 +47,23 @@ export async function POST(req: NextRequest) {
   }
 }
 
-function generatePrompt(category: string, answers: Record<string, any>, userStats?: any): string {
+function generateSystemPrompt(category: string): string | undefined {
+  console.log("Generating system prompt for category:", category);
+
+  if (category === "gym") {
+    return "Ти си професионален фитнес треньор с много години опит. Задачата ти е да създаваш персонализирани тренировъчни програми на база предоставените данни за потребителя. Винаги отговаряй САМО с валиден JSON формат, без допълнителен текст или markdown.";
+  } else if (category === "calisthenics") {
+    return "Ти си професионален калистеника треньор с много години опит. Задачата ти е да създаваш персонализирани калистенични тренировъчни програми (упражнения САМО с тегло на собственото тяло) на база предоставените данни за потребителя. Винаги отговаряй САМО с валиден JSON формат, без допълнителен текст или markdown.";
+  } else if (category === "yoga") {
+    return "Ти си професионален йога инструктор с много години опит. Задачата ти е да създаваш персонализирани йога програми на база предоставените данни за потребителя. Винаги отговаряй САМО с валиден JSON формат, без допълнителен текст или markdown.";
+  } else if (category === "running") {
+    return "Ти си професионален треньор по бягане. Задачата ти е да създаваш персонализирани тренировъчни програми за бягане на база предоставените данни за потребителя. Винаги отговаряй САМО с валиден JSON формат, без допълнителен текст или markdown.";
+  }
+}
+
+function generateUserPrompt(category: string, answers: Record<string, any>, userStats?: any): string {
+  console.log("Generating user prompt for category:", category);
+
   if (category === "gym") {
     return `Създай персонализирана седмична фитнес програма за потребител със следните характеристики:
 
@@ -202,8 +99,28 @@ function generatePrompt(category: string, answers: Record<string, any>, userStat
 - exercise_name винаги трябва да съдържа само официалното наименование на упражнението (например: "Barbell Bench Press", "Deadlift", "Lat Pulldown")
 - Относно информацията за повторения, използвай формат като "8-12" за диапазон или "10" за точен брой
 - muscle_activation трябва да отразява точно кои мускули се активират (true/false)`;
+  } else if (category === "calisthenics") {
+    return ``;
+  } else if (category === "yoga") {
+    return ``;
+  } else if (category === "running") {
+    return ``;
   }
 
-  // Placeholder for other categories
+  // Placeholder
   return `Създай персонализирана програма за ${category} въз основа на следните данни: ${JSON.stringify(answers)}`;
+}
+
+function generateResponseFormat(category: string) {
+  console.log("Generating response format for category:", category);
+
+  if (category === "gym") {
+    return {};
+  } else if (category === "calisthenics") {
+    return {};
+  } else if (category === "yoga") {
+    return {};
+  } else if (category === "running") {
+    return {};
+  }
 }
