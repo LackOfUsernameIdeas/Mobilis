@@ -54,6 +54,11 @@ export const sidebarItems: NavGroup[] = [
         icon: LayoutDashboard,
       },
       {
+        title: "Тренировъчни препоръки",
+        url: "/dashboard/workout_recommendations",
+        icon: ChartBar,
+      },
+      {
         title: "CRM",
         url: "/dashboard/crm",
         icon: ChartBar,
