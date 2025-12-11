@@ -10,26 +10,26 @@ export default function CategorySelector({ onSelectCategory }: CategorySelectorP
   const categories = [
     {
       id: "gym",
-      title: "Gym",
-      description: "Get personalized workout plans for gym training and exercises",
+      title: "Фитнес",
+      description: "Получете персонализирани планове за тренировки в залата",
       icon: "🏋️",
     },
     {
       id: "calisthenics",
-      title: "Calisthenics",
-      description: "Get personalized workout plans for calisthenics training and exercises",
+      title: "Калистеника",
+      description: "Получете персонализирани планове за тренировки с калистеника",
       icon: "🏋️",
     },
     {
       id: "yoga",
-      title: "Yoga",
-      description: "Find yoga practices tailored to your goals and experience level",
+      title: "Йога",
+      description: "Намерете йога практики, които отговарят на вашите цели",
       icon: "🧘",
     },
     {
       id: "running",
-      title: "Running",
-      description: "Create a custom running plan based on your goals and fitness level",
+      title: "Бягане",
+      description: "Създайте персонализиран план за бягане въз основа на вашите цели",
       icon: "🏃",
     },
   ];
@@ -41,7 +41,7 @@ export default function CategorySelector({ onSelectCategory }: CategorySelectorP
           <Card
             key={category.id}
             className="hover:border-primary hover:bg-card/80 cursor-pointer transition-all duration-200 hover:shadow-md active:scale-95"
-            onClick={() => onSelectCategory(category.id as "gym" | "yoga" | "running")}
+            onClick={() => onSelectCategory(category.id as "gym" | "calisthenics" | "yoga" | "running")}
           >
             <CardHeader>
               <div className="mb-3 text-4xl sm:mb-4 sm:text-5xl">{category.icon}</div>

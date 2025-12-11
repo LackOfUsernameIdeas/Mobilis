@@ -12,9 +12,10 @@ import { Textarea } from "@/components/ui/textarea";
 
 interface YogaFormProps {
   onSubmit: (answers: Record<string, any>) => void;
+  onBack: () => void;
 }
 
-export default function YogaForm({ onSubmit }: YogaFormProps) {
+export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({
     mainGoal: "",
@@ -28,86 +29,86 @@ export default function YogaForm({ onSubmit }: YogaFormProps) {
   });
 
   const focusAreaOptions = [
-    "Spine and Back",
-    "Hips",
-    "Shoulders and Neck",
-    "Core",
-    "Legs and Balance",
-    "Breathing and Pranayama",
-    "No preference",
+    "Гръбначен стълб и гръб",
+    "Тазобедрени стави",
+    "Рамене и врат",
+    "Коремна мускулатура (core)",
+    "Крака и баланс",
+    "Дишане и пранаяма",
+    "Нямам предпочитания",
   ];
 
   const questions = [
     {
       field: "mainGoal",
-      title: "What is your main goal?",
+      title: "Каква е вашата основна цел?",
       type: "radio",
       options: [
-        { value: "flexibility_balance", label: "Flexibility and Balance" },
-        { value: "stress_relief", label: "Stress Relief and Relaxation" },
-        { value: "strength_endurance", label: "Strength and Endurance through Yoga" },
-        { value: "mindfulness", label: "Mindfulness and Meditation" },
-        { value: "posture", label: "Posture and Alignment" },
-        { value: "energy_boost", label: "Energy Boost" },
+        { value: "flexibility_balance", label: "Гъвкавост и баланс" },
+        { value: "stress_relief", label: "Намаляване на стреса и релаксация" },
+        { value: "strength_endurance", label: "Сила и издръжливост чрез йога" },
+        { value: "mindfulness", label: "Осъзнатост и медитация" },
+        { value: "posture", label: "Подобряване на постурата" },
+        { value: "energy_boost", label: "Повишаване на енергията" },
       ],
     },
     {
       field: "yogaStyle",
-      title: "What yoga style do you prefer?",
+      title: "Какъв стил йога предпочитате?",
       type: "radio",
       options: [
-        { value: "hatha", label: "Hatha (Slow pace, focus on alignment)" },
-        { value: "vinyasa", label: "Vinyasa (Flowing sequence, higher activity)" },
-        { value: "yin", label: "Yin (Long holds, deep stretching)" },
-        { value: "power_yoga", label: "Power Yoga (Dynamic, strength-focused)" },
-        { value: "restorative", label: "Restorative (Gentle, supportive)" },
-        { value: "no_preference", label: "No preference" },
+        { value: "hatha", label: "Hatha (по-бавно темпо, работа върху точната подредба на тялото)" },
+        { value: "vinyasa", label: "Vinyasa (пози в последователност с плавни преходи и по-висока активност)" },
+        { value: "yin", label: "Yin (дълго задържане на пози за по-дълбоко разтягане)" },
+        { value: "power_yoga", label: "Power Yoga (по-динамична практика с акцент върху сила и контрол)" },
+        { value: "restorative", label: "Restorative (леки пози с опора за по-добро отпускане)" },
+        { value: "no_preference", label: "Нямам предпочитания" },
       ],
     },
     {
       field: "experience",
-      title: "What is your experience level?",
+      title: "Какво е вашето ниво на опит в йогата?",
       type: "radio",
       options: [
-        { value: "beginner", label: "Beginner - Just starting out" },
-        { value: "advanced_beginner", label: "Advanced Beginner - Doing basic poses correctly" },
-        { value: "intermediate", label: "Intermediate - Know your strengths and weaknesses" },
-        { value: "advanced", label: "Advanced - Working with complex sequences" },
-        { value: "expert", label: "Expert - Years of consistent practice" },
+        { value: "beginner", label: "Начинаещ - Тренирате от кратко време" },
+        { value: "advanced_beginner", label: "Напреднал начинаещ - Изпълнявате основни упражнения правилно" },
+        { value: "intermediate", label: "Средно ниво - Познавате силните и слабите си страни" },
+        { value: "advanced", label: "Напреднал - Работите с по-сложни програми" },
+        { value: "expert", label: "Експерт - Имате дългогодишна практика" },
       ],
     },
     {
       field: "frequency",
-      title: "How often can you practice per week?",
+      title: "Колко често бихте имали възможност да практикувате йога?",
       type: "radio-grid",
       options: [2, 3, 4, 5, 6, 7],
     },
     {
       field: "warmupSavasana",
-      title: "Include warm-up and Savasana recommendations?",
+      title: "Желаете ли програмата да включва препоръки за загряване преди практика и Shavasana (медитация) след нея?",
       type: "radio-horizontal",
       options: [
-        { value: "yes", label: "Yes" },
-        { value: "no", label: "No" },
+        { value: "yes", label: "Да" },
+        { value: "no", label: "Не" },
       ],
     },
     {
       field: "focusAreas",
-      title: "Which areas do you want to focus on?",
+      title: "Има ли конкретна област на тялото или аспект, върху които желаете да се фокусирате предимно?",
       type: "checkbox",
       options: focusAreaOptions,
     },
     {
       field: "injuries",
-      title: "Any health issues or injuries?",
+      title: "Съществуват ли някакви здравословни проблеми, контузии или ограничения?",
       type: "textarea",
-      placeholder: "e.g., back pain, joint problems, high blood pressure... or 'None'",
+      placeholder: "напр. болки в кръста, проблеми със ставите, високо кръвно налягане... или 'Няма'",
     },
     {
       field: "poses",
-      title: "Any specific poses you want included?",
+      title: "Има ли конкретни йога пози, които желаете да бъдат включени в програмата?",
       type: "textarea",
-      placeholder: "e.g., Downward Dog, Warrior poses, Tree Pose, Headstand... or 'No preference'",
+      placeholder: "напр. Downward Dog, Warrior poses, Tree Pose, Headstand... или 'Нямам предпочитания'",
     },
   ];
 
@@ -157,9 +158,18 @@ export default function YogaForm({ onSubmit }: YogaFormProps) {
       <CardHeader className="border-border bg-card/50 border-b">
         <div className="space-y-2 sm:space-y-3">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-0">
-            <CardTitle className="text-foreground text-xl sm:text-2xl">Yoga Questionnaire</CardTitle>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={onBack}
+                className="text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Назад"
+              >
+                ←
+              </button>
+              <CardTitle className="text-foreground text-xl sm:text-2xl">Анкета за Йога</CardTitle>
+            </div>
             <span className="text-muted-foreground text-xs sm:text-sm">
-              Question {currentQuestion + 1} of {questions.length}
+              Въпрос {currentQuestion + 1} от {questions.length}
             </span>
           </div>
           <div className="bg-muted h-2 w-full rounded-full">
@@ -169,7 +179,7 @@ export default function YogaForm({ onSubmit }: YogaFormProps) {
             />
           </div>
           <CardDescription className="text-xs sm:text-sm">
-            Answer a few questions to get personalized recommendations
+            Отговорете на няколко въпроса, за да получите персонализирани препоръки
           </CardDescription>
         </div>
       </CardHeader>
@@ -223,7 +233,7 @@ export default function YogaForm({ onSubmit }: YogaFormProps) {
                           htmlFor={`yoga-freq-${day}`}
                           className="text-foreground flex-1 cursor-pointer text-xs font-normal sm:text-sm"
                         >
-                          {day}x/week
+                          {day}x/неделя
                         </Label>
                       </div>
                     ))}
@@ -300,7 +310,7 @@ export default function YogaForm({ onSubmit }: YogaFormProps) {
                 onClick={() => setCurrentQuestion(currentQuestion - 1)}
                 className="w-full text-xs sm:flex-1 sm:text-sm"
               >
-                Back
+                Назад
               </Button>
             )}
             {!isLastQuestion ? (
@@ -310,7 +320,7 @@ export default function YogaForm({ onSubmit }: YogaFormProps) {
                 disabled={!isCurrentQuestionAnswered()}
                 className="bg-primary text-primary-foreground hover:bg-primary/90 w-full text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:flex-1 sm:text-sm"
               >
-                Next
+                Напред
               </Button>
             ) : (
               <Button
@@ -318,7 +328,7 @@ export default function YogaForm({ onSubmit }: YogaFormProps) {
                 disabled={!isCurrentQuestionAnswered()}
                 className="bg-primary text-primary-foreground hover:bg-primary/90 w-full text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:flex-1 sm:text-sm"
               >
-                Get My Recommendations
+                Получи моите препоръки
               </Button>
             )}
           </div>

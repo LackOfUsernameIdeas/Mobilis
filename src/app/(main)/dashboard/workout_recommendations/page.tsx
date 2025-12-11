@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import CategorySelector from "./components/fitness/category-selector";
-import GymForm from "./components/fitness/gym-form";
-import CalisthenicsForm from "./components/fitness/calisthenics-form";
+import GymCalisthenicsForm from "./components/fitness/gym-calisthenics-form";
 import YogaForm from "./components/fitness/yoga-form";
 import RunningForm from "./components/fitness/running-form";
 import ResultsDisplay from "./components/fitness/results-display";
@@ -29,6 +28,11 @@ export default function Page() {
     setSubmittedAnswers(null);
   };
 
+  const handleGoBack = () => {
+    setSelectedCategory(null);
+    setSubmittedAnswers(null);
+  };
+
   return (
     <div className="bg-background text-foreground flex min-h-screen items-center justify-center p-4">
       <div className="w-full max-w-2xl">
@@ -41,10 +45,14 @@ export default function Page() {
           </div>
         ) : (
           <div className="flex flex-col gap-6">
-            {selectedCategory === "gym" && <GymForm onSubmit={handleFormSubmit} />}
-            {selectedCategory === "calisthenics" && <CalisthenicsForm onSubmit={handleFormSubmit} />}
-            {selectedCategory === "yoga" && <YogaForm onSubmit={handleFormSubmit} />}
-            {selectedCategory === "running" && <RunningForm onSubmit={handleFormSubmit} />}
+            {selectedCategory === "gym" && (
+              <GymCalisthenicsForm isCategoryGym={true} onSubmit={handleFormSubmit} onBack={handleGoBack} />
+            )}
+            {selectedCategory === "calisthenics" && (
+              <GymCalisthenicsForm isCategoryGym={false} onSubmit={handleFormSubmit} onBack={handleGoBack} />
+            )}
+            {selectedCategory === "yoga" && <YogaForm onSubmit={handleFormSubmit} onBack={handleGoBack} />}
+            {selectedCategory === "running" && <RunningForm onSubmit={handleFormSubmit} onBack={handleGoBack} />}
           </div>
         )}
       </div>

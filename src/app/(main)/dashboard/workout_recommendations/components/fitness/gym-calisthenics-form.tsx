@@ -11,11 +11,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 
-interface GymFormProps {
+interface GymCalisthenicsFormProps {
   onSubmit: (answers: Record<string, any>) => void;
+  isCategoryGym: boolean;
+  onBack: () => void;
 }
 
-export default function GymForm({ onSubmit }: GymFormProps) {
+export default function GymCalisthenicsForm({ onSubmit, isCategoryGym, onBack }: GymCalisthenicsFormProps) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({
     mainGoal: "",
@@ -29,76 +31,76 @@ export default function GymForm({ onSubmit }: GymFormProps) {
     exercises: "",
   });
 
-  const muscleGroupOptions = ["Chest", "Back", "Shoulders", "Arms", "Abs", "Legs", "No preference"];
+  const muscleGroupOptions = ["Гърди", "Гръб", "Рамене", "Ръце", "Корем", "Крака", "Нямам предпочитания"];
 
   const questions = [
     {
       field: "mainGoal",
-      title: "What is your main goal?",
+      title: "Каква е вашата основна цел?",
       type: "radio",
       options: [
-        { value: "cut", label: "Cut (Definition - Fat Loss)" },
-        { value: "lean_bulk", label: "Lean Bulk (Clean Muscle Gain)" },
-        { value: "dirty_bulk", label: "Dirty Bulk (Aggressive Mass Gain)" },
-        { value: "recomposition", label: "Recomposition (Fat Loss + Muscle Gain)" },
-        { value: "maintenance", label: "Maintenance (Maintain Current Shape)" },
-        { value: "aesthetic", label: "Aesthetic (Aesthetics & Proportions)" },
-        { value: "strength", label: "Strength (Maximum Strength)" },
+        { value: "cut", label: "Cut (Дефиниция - загуба на мазнини)" },
+        { value: "lean_bulk", label: "Lean Bulk (Чист набор на мускулна маса)" },
+        { value: "dirty_bulk", label: "Dirty Bulk (Агресивен набор на маса)" },
+        { value: "recomposition", label: "Recomposition (Едновременно изгаряне на мазнини и набиране на мускули)" },
+        { value: "maintenance", label: "Maintenance (Поддържане на текущата форма)" },
+        { value: "aesthetic", label: "Aesthetic (Естетика и пропорции)" },
+        { value: "strength", label: "Strength (Максимална сила)" },
       ],
     },
     {
       field: "experience",
-      title: "What is your experience level?",
+      title: "Какво е вашето ниво на опит в тренировките?",
       type: "radio",
       options: [
-        { value: "beginner", label: "Beginner - Just starting out" },
-        { value: "advanced_beginner", label: "Advanced Beginner - Doing basic exercises correctly" },
-        { value: "intermediate", label: "Intermediate - Know your strengths and weaknesses" },
-        { value: "advanced", label: "Advanced - Working with complex programs" },
-        { value: "expert", label: "Expert - Years of consistent practice" },
+        { value: "beginner", label: "Начинаещ - Тренирате от кратко време" },
+        { value: "advanced_beginner", label: "Напреднал начинаещ - Изпълнявате основни упражнения правилно" },
+        { value: "intermediate", label: "Средно ниво - Познавате силните и слабите си страни" },
+        { value: "advanced", label: "Напреднал - Работите с по-сложни програми" },
+        { value: "expert", label: "Експерт - Имате дългогодишна практика" },
       ],
     },
     {
       field: "frequency",
-      title: "How often can you train per week?",
+      title: "Колко често бихте имали възможност да тренирате?",
       type: "radio-grid",
       options: [2, 3, 4, 5, 6, 7],
     },
     {
       field: "warmupCooldown",
-      title: "Include warm-up and cool-down recommendations?",
+      title: "Желаете ли програмата да включва препоръки за загряване преди тренировка и разтягане след нея?",
       type: "radio-horizontal",
       options: [
-        { value: "yes", label: "Yes" },
-        { value: "no", label: "No" },
+        { value: "yes", label: "Да" },
+        { value: "no", label: "Не" },
       ],
     },
     {
       field: "muscleGroups",
-      title: "Which muscle groups do you want to focus on?",
+      title: "Има ли конкретна мускулна група, върху която желаете да се фокусирате предимно?",
       type: "checkbox",
       options: muscleGroupOptions,
     },
     {
       field: "targetWeight",
-      title: "Do you have a target weight?",
+      title: "Има ли конкретно целево тегло, до което желаете да стигнете?",
       type: "radio-horizontal",
       options: [
-        { value: "yes", label: "Yes" },
-        { value: "no", label: "No" },
+        { value: "yes", label: "Да" },
+        { value: "no", label: "Не" },
       ],
     },
     {
       field: "injuries",
-      title: "Any health issues or injuries?",
+      title: "Съществуват ли някакви здравословни проблеми, контузии или ограничения?",
       type: "textarea",
-      placeholder: "e.g., back pain, joint problems, heart conditions... or 'None'",
+      placeholder: "напр. болки в кръста, проблеми със ставите, сърдечни заболявания... или 'Няма'",
     },
     {
       field: "exercises",
-      title: "Any specific exercises you want included?",
+      title: "Има ли конкретни упражнения, които желаете да бъдат включени в програмата?",
       type: "textarea",
-      placeholder: "e.g., Bench Press, Deadlift, Squats, Pull-ups... or 'No preference'",
+      placeholder: "напр. Bench Press, Deadlift, Squats, Pull-ups... или 'Нямам предпочитания'",
     },
   ];
 
@@ -148,9 +150,20 @@ export default function GymForm({ onSubmit }: GymFormProps) {
       <CardHeader className="border-border bg-card/50 border-b">
         <div className="space-y-2 sm:space-y-3">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-0">
-            <CardTitle className="text-foreground text-xl sm:text-2xl">Gym & Calisthenics Questionnaire</CardTitle>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={onBack}
+                className="text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Назад"
+              >
+                ←
+              </button>
+              <CardTitle className="text-foreground text-xl sm:text-2xl">
+                Анкета за {isCategoryGym ? "Фитнес" : "Калистеника"}
+              </CardTitle>
+            </div>
             <span className="text-muted-foreground text-xs sm:text-sm">
-              Question {currentQuestion + 1} of {questions.length}
+              Въпрос {currentQuestion + 1} от {questions.length}
             </span>
           </div>
           <div className="bg-muted h-2 w-full rounded-full">
@@ -160,7 +173,7 @@ export default function GymForm({ onSubmit }: GymFormProps) {
             />
           </div>
           <CardDescription className="text-xs sm:text-sm">
-            Answer a few questions to get personalized recommendations
+            Отговорете на няколко въпроса, за да получите персонализирани препоръки
           </CardDescription>
         </div>
       </CardHeader>
@@ -210,7 +223,7 @@ export default function GymForm({ onSubmit }: GymFormProps) {
                           htmlFor={`freq-${day}`}
                           className="text-foreground flex-1 cursor-pointer text-xs font-normal sm:text-sm"
                         >
-                          {day}x/week
+                          {day}x/неделя
                         </Label>
                       </div>
                     ))}
@@ -280,7 +293,7 @@ export default function GymForm({ onSubmit }: GymFormProps) {
               {question.field === "targetWeight" && answers.targetWeight === "yes" && (
                 <Input
                   type="number"
-                  placeholder="Target weight (kg)"
+                  placeholder="Целево тегло (кг)"
                   value={answers.targetWeightValue}
                   onChange={(e) => handleChange("targetWeightValue", e.target.value)}
                   className="bg-input border-border text-foreground placeholder:text-muted-foreground mt-4 text-xs sm:text-sm"
@@ -297,7 +310,7 @@ export default function GymForm({ onSubmit }: GymFormProps) {
                 onClick={() => setCurrentQuestion(currentQuestion - 1)}
                 className="w-full text-xs sm:flex-1 sm:text-sm"
               >
-                Back
+                Назад
               </Button>
             )}
             {!isLastQuestion ? (
@@ -307,7 +320,7 @@ export default function GymForm({ onSubmit }: GymFormProps) {
                 disabled={!isCurrentQuestionAnswered()}
                 className="bg-primary text-primary-foreground hover:bg-primary/90 w-full text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:flex-1 sm:text-sm"
               >
-                Next
+                Напред
               </Button>
             ) : (
               <Button
@@ -315,7 +328,7 @@ export default function GymForm({ onSubmit }: GymFormProps) {
                 disabled={!isCurrentQuestionAnswered()}
                 className="bg-primary text-primary-foreground hover:bg-primary/90 w-full text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:flex-1 sm:text-sm"
               >
-                Get My Recommendations
+                Получи моите препоръки
               </Button>
             )}
           </div>

@@ -10,10 +10,10 @@ interface ResultsDisplayProps {
 }
 
 const categoryTitles = {
-  gym: "Gym Recommendations",
-  calisthenics: "Calisthenics Recommendations",
-  yoga: "Yoga Recommendations",
-  running: "Running Recommendations",
+  gym: "Препоръки за Фитнес",
+  calisthenics: "Препоръки за Калистеника",
+  yoga: "Препоръки за Йога",
+  running: "Препоръки за Бягане",
 };
 
 export default function ResultsDisplay({ category, answers, onReset }: ResultsDisplayProps) {
@@ -46,7 +46,7 @@ export default function ResultsDisplay({ category, answers, onReset }: ResultsDi
         <CardContent className="space-y-4 pt-6 sm:space-y-6 sm:pt-8">
           <div className="bg-primary/10 border-primary/30 rounded-lg border p-3 sm:p-4">
             <p className="text-primary/90 text-xs sm:text-sm">
-              ℹ️ Currently displaying your submitted answers. AI recommendations will be generated here soon.
+              ℹ️ Прилагате вашите отговори. AI препоръките ще бъдат генерирани скоро.
             </p>
           </div>
 
@@ -71,7 +71,7 @@ export default function ResultsDisplay({ category, answers, onReset }: ResultsDi
             variant="outline"
             className="border-border text-foreground hover:bg-muted w-full bg-transparent text-xs sm:text-sm"
           >
-            Start Over
+            Начало
           </Button>
         </CardContent>
       </Card>
