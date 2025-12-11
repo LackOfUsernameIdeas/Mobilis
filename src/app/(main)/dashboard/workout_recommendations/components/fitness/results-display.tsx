@@ -4,13 +4,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 interface ResultsDisplayProps {
-  category: "gym" | "yoga" | "running";
+  category: "gym" | "calisthenics" | "yoga" | "running";
   answers: Record<string, any>;
   onReset: () => void;
 }
 
 const categoryTitles = {
-  gym: "Gym & Calisthenics Recommendations",
+  gym: "Gym Recommendations",
+  calisthenics: "Calisthenics Recommendations",
   yoga: "Yoga Recommendations",
   running: "Running Recommendations",
 };
@@ -37,27 +38,29 @@ export default function ResultsDisplay({ category, answers, onReset }: ResultsDi
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <Card className="border-border bg-card">
         <CardHeader className="border-border bg-card/50 border-b">
-          <CardTitle className="text-foreground text-2xl">{categoryTitles[category]}</CardTitle>
+          <CardTitle className="text-foreground text-xl sm:text-2xl">{categoryTitles[category]}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6 pt-8">
-          <div className="bg-primary/10 border-primary/30 rounded-lg border p-4">
-            <p className="text-primary/90 text-sm">
+        <CardContent className="space-y-4 pt-6 sm:space-y-6 sm:pt-8">
+          <div className="bg-primary/10 border-primary/30 rounded-lg border p-3 sm:p-4">
+            <p className="text-primary/90 text-xs sm:text-sm">
               ℹ️ Currently displaying your submitted answers. AI recommendations will be generated here soon.
             </p>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {Object.entries(answers).map(([key, value]) => {
               if (!value || (Array.isArray(value) && value.length === 0)) {
                 return null;
               }
               return (
-                <div key={key} className="border-border border-b pb-4 last:border-b-0">
-                  <dt className="text-muted-foreground mb-2 text-sm font-semibold">{formatKey(key)}</dt>
-                  <dd className="text-foreground text-base leading-relaxed">{formatValue(value)}</dd>
+                <div key={key} className="border-border border-b pb-3 last:border-b-0 sm:pb-4">
+                  <dt className="text-muted-foreground mb-1 text-xs font-semibold sm:mb-2 sm:text-sm">
+                    {formatKey(key)}
+                  </dt>
+                  <dd className="text-foreground text-sm leading-relaxed sm:text-base">{formatValue(value)}</dd>
                 </div>
               );
             })}
@@ -66,7 +69,7 @@ export default function ResultsDisplay({ category, answers, onReset }: ResultsDi
           <Button
             onClick={onReset}
             variant="outline"
-            className="border-border text-foreground hover:bg-muted w-full bg-transparent"
+            className="border-border text-foreground hover:bg-muted w-full bg-transparent text-xs sm:text-sm"
           >
             Start Over
           </Button>

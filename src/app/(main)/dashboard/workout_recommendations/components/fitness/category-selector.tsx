@@ -3,15 +3,21 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface CategorySelectorProps {
-  onSelectCategory: (category: "gym" | "yoga" | "running") => void;
+  onSelectCategory: (category: "gym" | "calisthenics" | "yoga" | "running") => void;
 }
 
 export default function CategorySelector({ onSelectCategory }: CategorySelectorProps) {
   const categories = [
     {
       id: "gym",
-      title: "Gym & Calisthenics",
-      description: "Get personalized workout plans for gym training and calisthenics exercises",
+      title: "Gym",
+      description: "Get personalized workout plans for gym training and exercises",
+      icon: "🏋️",
+    },
+    {
+      id: "calisthenics",
+      title: "Calisthenics",
+      description: "Get personalized workout plans for calisthenics training and exercises",
       icon: "🏋️",
     },
     {
@@ -29,13 +35,8 @@ export default function CategorySelector({ onSelectCategory }: CategorySelectorP
   ];
 
   return (
-    <div className="space-y-8">
-      <div className="space-y-3">
-        <h1 className="text-foreground text-4xl font-bold">Fitness Recommendations</h1>
-        <p className="text-muted-foreground text-lg">Choose a fitness category to get personalized recommendations</p>
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-3">
+    <div className="space-y-6 sm:space-y-8">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
         {categories.map((category) => (
           <Card
             key={category.id}
@@ -43,11 +44,11 @@ export default function CategorySelector({ onSelectCategory }: CategorySelectorP
             onClick={() => onSelectCategory(category.id as "gym" | "yoga" | "running")}
           >
             <CardHeader>
-              <div className="mb-4 text-5xl">{category.icon}</div>
-              <CardTitle className="text-foreground text-xl">{category.title}</CardTitle>
+              <div className="mb-3 text-4xl sm:mb-4 sm:text-5xl">{category.icon}</div>
+              <CardTitle className="text-foreground text-lg sm:text-xl">{category.title}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground text-sm leading-relaxed">{category.description}</p>
+              <p className="text-muted-foreground text-xs leading-relaxed sm:text-sm">{category.description}</p>
             </CardContent>
           </Card>
         ))}

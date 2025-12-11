@@ -9,33 +9,27 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 
-interface YogaFormProps {
+interface CalisthenicsFormProps {
   onSubmit: (answers: Record<string, any>) => void;
 }
 
-export default function YogaForm({ onSubmit }: YogaFormProps) {
+export default function CalisthenicsForm({ onSubmit }: CalisthenicsFormProps) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({
     mainGoal: "",
-    yogaStyle: "",
     experience: "",
     frequency: "",
-    warmupSavasana: "",
-    focusAreas: [],
+    warmupCooldown: "",
+    muscleGroups: [],
+    targetWeight: "",
+    targetWeightValue: "",
     injuries: "",
-    poses: "",
+    exercises: "",
   });
 
-  const focusAreaOptions = [
-    "Spine and Back",
-    "Hips",
-    "Shoulders and Neck",
-    "Core",
-    "Legs and Balance",
-    "Breathing and Pranayama",
-    "No preference",
-  ];
+  const muscleGroupOptions = ["Chest", "Back", "Shoulders", "Arms", "Abs", "Legs", "No preference"];
 
   const questions = [
     {
@@ -43,25 +37,13 @@ export default function YogaForm({ onSubmit }: YogaFormProps) {
       title: "What is your main goal?",
       type: "radio",
       options: [
-        { value: "flexibility_balance", label: "Flexibility and Balance" },
-        { value: "stress_relief", label: "Stress Relief and Relaxation" },
-        { value: "strength_endurance", label: "Strength and Endurance through Yoga" },
-        { value: "mindfulness", label: "Mindfulness and Meditation" },
-        { value: "posture", label: "Posture and Alignment" },
-        { value: "energy_boost", label: "Energy Boost" },
-      ],
-    },
-    {
-      field: "yogaStyle",
-      title: "What yoga style do you prefer?",
-      type: "radio",
-      options: [
-        { value: "hatha", label: "Hatha (Slow pace, focus on alignment)" },
-        { value: "vinyasa", label: "Vinyasa (Flowing sequence, higher activity)" },
-        { value: "yin", label: "Yin (Long holds, deep stretching)" },
-        { value: "power_yoga", label: "Power Yoga (Dynamic, strength-focused)" },
-        { value: "restorative", label: "Restorative (Gentle, supportive)" },
-        { value: "no_preference", label: "No preference" },
+        { value: "cut", label: "Cut (Definition - Fat Loss)" },
+        { value: "lean_bulk", label: "Lean Bulk (Clean Muscle Gain)" },
+        { value: "dirty_bulk", label: "Dirty Bulk (Aggressive Mass Gain)" },
+        { value: "recomposition", label: "Recomposition (Fat Loss + Muscle Gain)" },
+        { value: "maintenance", label: "Maintenance (Maintain Current Shape)" },
+        { value: "aesthetic", label: "Aesthetic (Aesthetics & Proportions)" },
+        { value: "strength", label: "Strength (Maximum Strength)" },
       ],
     },
     {
@@ -70,21 +52,21 @@ export default function YogaForm({ onSubmit }: YogaFormProps) {
       type: "radio",
       options: [
         { value: "beginner", label: "Beginner - Just starting out" },
-        { value: "advanced_beginner", label: "Advanced Beginner - Doing basic poses correctly" },
+        { value: "advanced_beginner", label: "Advanced Beginner - Doing basic exercises correctly" },
         { value: "intermediate", label: "Intermediate - Know your strengths and weaknesses" },
-        { value: "advanced", label: "Advanced - Working with complex sequences" },
+        { value: "advanced", label: "Advanced - Working with complex programs" },
         { value: "expert", label: "Expert - Years of consistent practice" },
       ],
     },
     {
       field: "frequency",
-      title: "How often can you practice per week?",
+      title: "How often can you train per week?",
       type: "radio-grid",
       options: [2, 3, 4, 5, 6, 7],
     },
     {
-      field: "warmupSavasana",
-      title: "Include warm-up and Savasana recommendations?",
+      field: "warmupCooldown",
+      title: "Include warm-up and cool-down recommendations?",
       type: "radio-horizontal",
       options: [
         { value: "yes", label: "Yes" },
@@ -92,22 +74,31 @@ export default function YogaForm({ onSubmit }: YogaFormProps) {
       ],
     },
     {
-      field: "focusAreas",
-      title: "Which areas do you want to focus on?",
+      field: "muscleGroups",
+      title: "Which muscle groups do you want to focus on?",
       type: "checkbox",
-      options: focusAreaOptions,
+      options: muscleGroupOptions,
+    },
+    {
+      field: "targetWeight",
+      title: "Do you have a target weight?",
+      type: "radio-horizontal",
+      options: [
+        { value: "yes", label: "Yes" },
+        { value: "no", label: "No" },
+      ],
     },
     {
       field: "injuries",
       title: "Any health issues or injuries?",
       type: "textarea",
-      placeholder: "e.g., back pain, joint problems, high blood pressure... or 'None'",
+      placeholder: "e.g., back pain, joint problems, heart conditions... or 'None'",
     },
     {
-      field: "poses",
-      title: "Any specific poses you want included?",
+      field: "exercises",
+      title: "Any specific exercises you want included?",
       type: "textarea",
-      placeholder: "e.g., Downward Dog, Warrior poses, Tree Pose, Headstand... or 'No preference'",
+      placeholder: "e.g., Bench Press, Deadlift, Squats, Pull-ups... or 'No preference'",
     },
   ];
 
@@ -118,10 +109,10 @@ export default function YogaForm({ onSubmit }: YogaFormProps) {
     }));
   };
 
-  const handleFocusAreaChange = (area: string, checked: boolean) => {
+  const handleMuscleGroupChange = (group: string, checked: boolean) => {
     setAnswers((prev) => ({
       ...prev,
-      focusAreas: checked ? [...prev.focusAreas, area] : prev.focusAreas.filter((a: string) => a !== area),
+      muscleGroups: checked ? [...prev.muscleGroups, group] : prev.muscleGroups.filter((g: string) => g !== group),
     }));
   };
 
@@ -157,7 +148,7 @@ export default function YogaForm({ onSubmit }: YogaFormProps) {
       <CardHeader className="border-border bg-card/50 border-b">
         <div className="space-y-2 sm:space-y-3">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-0">
-            <CardTitle className="text-foreground text-xl sm:text-2xl">Yoga Questionnaire</CardTitle>
+            <CardTitle className="text-foreground text-xl sm:text-2xl">Calisthenics Questionnaire</CardTitle>
             <span className="text-muted-foreground text-xs sm:text-sm">
               Question {currentQuestion + 1} of {questions.length}
             </span>
@@ -214,13 +205,9 @@ export default function YogaForm({ onSubmit }: YogaFormProps) {
                         key={day}
                         className="hover:bg-muted/50 flex cursor-pointer items-center space-x-2 rounded-lg p-2 transition-colors sm:space-x-3 sm:p-3"
                       >
-                        <RadioGroupItem
-                          value={day.toString()}
-                          id={`yoga-freq-${day}`}
-                          className="h-4 w-4 flex-shrink-0"
-                        />
+                        <RadioGroupItem value={day.toString()} id={`freq-${day}`} className="h-4 w-4 flex-shrink-0" />
                         <Label
-                          htmlFor={`yoga-freq-${day}`}
+                          htmlFor={`freq-${day}`}
                           className="text-foreground flex-1 cursor-pointer text-xs font-normal sm:text-sm"
                         >
                           {day}x/week
@@ -258,22 +245,22 @@ export default function YogaForm({ onSubmit }: YogaFormProps) {
 
               {question.type === "checkbox" && (
                 <div className="space-y-2 sm:space-y-3">
-                  {(question.options as string[])?.map((area: string) => (
+                  {(question.options as string[])?.map((group: string) => (
                     <div
-                      key={area}
+                      key={group}
                       className="hover:bg-muted/50 flex cursor-pointer items-center space-x-2 rounded-lg p-2 transition-colors sm:space-x-3 sm:p-3"
                     >
                       <Checkbox
-                        id={`focus-${area}`}
-                        checked={answers.focusAreas.includes(area)}
-                        onCheckedChange={(checked) => handleFocusAreaChange(area, checked as boolean)}
+                        id={`muscle-${group}`}
+                        checked={answers.muscleGroups.includes(group)}
+                        onCheckedChange={(checked) => handleMuscleGroupChange(group, checked as boolean)}
                         className="h-4 w-4 flex-shrink-0"
                       />
                       <Label
-                        htmlFor={`focus-${area}`}
+                        htmlFor={`muscle-${group}`}
                         className="text-foreground flex-1 cursor-pointer text-xs font-normal sm:text-sm"
                       >
-                        {area}
+                        {group}
                       </Label>
                     </div>
                   ))}
@@ -287,6 +274,16 @@ export default function YogaForm({ onSubmit }: YogaFormProps) {
                   value={answers[question.field]}
                   onChange={(e) => handleChange(question.field, e.target.value)}
                   className="bg-input border-border text-foreground placeholder:text-muted-foreground min-h-24 resize-none text-xs sm:text-sm"
+                />
+              )}
+
+              {question.field === "targetWeight" && answers.targetWeight === "yes" && (
+                <Input
+                  type="number"
+                  placeholder="Target weight (kg)"
+                  value={answers.targetWeightValue}
+                  onChange={(e) => handleChange("targetWeightValue", e.target.value)}
+                  className="bg-input border-border text-foreground placeholder:text-muted-foreground mt-4 text-xs sm:text-sm"
                 />
               )}
             </fieldset>

@@ -146,10 +146,10 @@ export default function GymForm({ onSubmit }: GymFormProps) {
   return (
     <Card className="border-border bg-card">
       <CardHeader className="border-border bg-card/50 border-b">
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-foreground text-2xl">Gym & Calisthenics Questionnaire</CardTitle>
-            <span className="text-muted-foreground text-sm">
+        <div className="space-y-2 sm:space-y-3">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-0">
+            <CardTitle className="text-foreground text-xl sm:text-2xl">Gym & Calisthenics Questionnaire</CardTitle>
+            <span className="text-muted-foreground text-xs sm:text-sm">
               Question {currentQuestion + 1} of {questions.length}
             </span>
           </div>
@@ -159,30 +159,32 @@ export default function GymForm({ onSubmit }: GymFormProps) {
               style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
             />
           </div>
-          <CardDescription>Answer a few questions to get personalized recommendations</CardDescription>
+          <CardDescription className="text-xs sm:text-sm">
+            Answer a few questions to get personalized recommendations
+          </CardDescription>
         </div>
       </CardHeader>
-      <CardContent className="pt-8">
-        <form onSubmit={handleSubmit} className="space-y-8">
+      <CardContent className="pt-6 sm:pt-8">
+        <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
           <div key={currentQuestion} className="animate-fade-in">
-            <fieldset className="space-y-4">
-              <Label className="text-foreground text-base font-semibold">{question.title}</Label>
+            <fieldset className="space-y-3 sm:space-y-4">
+              <Label className="text-foreground text-sm font-semibold sm:text-base">{question.title}</Label>
 
               {question.type === "radio" && (
                 <RadioGroup
                   value={answers[question.field]}
                   onValueChange={(value) => handleChange(question.field, value)}
                 >
-                  <div className="space-y-3">
+                  <div className="space-y-2 sm:space-y-3">
                     {question.options?.map((option: any) => (
                       <div
                         key={option.value}
-                        className="hover:bg-muted/50 flex cursor-pointer items-center space-x-3 rounded-lg p-3 transition-colors"
+                        className="hover:bg-muted/50 flex cursor-pointer items-center space-x-2 rounded-lg p-2 transition-colors sm:space-x-3 sm:p-3"
                       >
-                        <RadioGroupItem value={option.value} id={option.value} className="h-4 w-4" />
+                        <RadioGroupItem value={option.value} id={option.value} className="h-4 w-4 flex-shrink-0" />
                         <Label
                           htmlFor={option.value}
-                          className="text-foreground flex-1 cursor-pointer text-sm font-normal"
+                          className="text-foreground flex-1 cursor-pointer text-xs font-normal sm:text-sm"
                         >
                           {option.label}
                         </Label>
@@ -197,16 +199,16 @@ export default function GymForm({ onSubmit }: GymFormProps) {
                   value={answers[question.field]}
                   onValueChange={(value) => handleChange(question.field, value)}
                 >
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-2 sm:gap-3">
                     {(question.options as number[])?.map((day: number) => (
                       <div
                         key={day}
-                        className="hover:bg-muted/50 flex cursor-pointer items-center space-x-3 rounded-lg p-3 transition-colors"
+                        className="hover:bg-muted/50 flex cursor-pointer items-center space-x-2 rounded-lg p-2 transition-colors sm:space-x-3 sm:p-3"
                       >
-                        <RadioGroupItem value={day.toString()} id={`freq-${day}`} className="h-4 w-4" />
+                        <RadioGroupItem value={day.toString()} id={`freq-${day}`} className="h-4 w-4 flex-shrink-0" />
                         <Label
                           htmlFor={`freq-${day}`}
-                          className="text-foreground flex-1 cursor-pointer text-sm font-normal"
+                          className="text-foreground flex-1 cursor-pointer text-xs font-normal sm:text-sm"
                         >
                           {day}x/week
                         </Label>
@@ -221,17 +223,17 @@ export default function GymForm({ onSubmit }: GymFormProps) {
                   value={answers[question.field]}
                   onValueChange={(value) => handleChange(question.field, value)}
                 >
-                  <div className="flex gap-6">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:gap-6">
                     {question.options?.map((option: any) => (
-                      <div key={option.value} className="flex items-center space-x-3">
+                      <div key={option.value} className="flex items-center space-x-2 sm:space-x-3">
                         <RadioGroupItem
                           value={option.value}
                           id={`${question.field}-${option.value}`}
-                          className="h-4 w-4"
+                          className="h-4 w-4 flex-shrink-0"
                         />
                         <Label
                           htmlFor={`${question.field}-${option.value}`}
-                          className="text-foreground cursor-pointer text-sm font-normal"
+                          className="text-foreground cursor-pointer text-xs font-normal sm:text-sm"
                         >
                           {option.label}
                         </Label>
@@ -242,21 +244,21 @@ export default function GymForm({ onSubmit }: GymFormProps) {
               )}
 
               {question.type === "checkbox" && (
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   {(question.options as string[])?.map((group: string) => (
                     <div
                       key={group}
-                      className="hover:bg-muted/50 flex cursor-pointer items-center space-x-3 rounded-lg p-3 transition-colors"
+                      className="hover:bg-muted/50 flex cursor-pointer items-center space-x-2 rounded-lg p-2 transition-colors sm:space-x-3 sm:p-3"
                     >
                       <Checkbox
                         id={`muscle-${group}`}
                         checked={answers.muscleGroups.includes(group)}
                         onCheckedChange={(checked) => handleMuscleGroupChange(group, checked as boolean)}
-                        className="h-4 w-4"
+                        className="h-4 w-4 flex-shrink-0"
                       />
                       <Label
                         htmlFor={`muscle-${group}`}
-                        className="text-foreground flex-1 cursor-pointer text-sm font-normal"
+                        className="text-foreground flex-1 cursor-pointer text-xs font-normal sm:text-sm"
                       >
                         {group}
                       </Label>
@@ -271,7 +273,7 @@ export default function GymForm({ onSubmit }: GymFormProps) {
                   placeholder={question.placeholder}
                   value={answers[question.field]}
                   onChange={(e) => handleChange(question.field, e.target.value)}
-                  className="bg-input border-border text-foreground placeholder:text-muted-foreground min-h-24 resize-none"
+                  className="bg-input border-border text-foreground placeholder:text-muted-foreground min-h-24 resize-none text-xs sm:text-sm"
                 />
               )}
 
@@ -281,19 +283,19 @@ export default function GymForm({ onSubmit }: GymFormProps) {
                   placeholder="Target weight (kg)"
                   value={answers.targetWeightValue}
                   onChange={(e) => handleChange("targetWeightValue", e.target.value)}
-                  className="bg-input border-border text-foreground placeholder:text-muted-foreground mt-4"
+                  className="bg-input border-border text-foreground placeholder:text-muted-foreground mt-4 text-xs sm:text-sm"
                 />
               )}
             </fieldset>
           </div>
 
-          <div className="mt-8 flex gap-3">
+          <div className="mt-6 flex flex-col gap-2 sm:mt-8 sm:flex-row sm:gap-3">
             {currentQuestion > 0 && (
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setCurrentQuestion(currentQuestion - 1)}
-                className="flex-1"
+                className="w-full text-xs sm:flex-1 sm:text-sm"
               >
                 Back
               </Button>
@@ -303,7 +305,7 @@ export default function GymForm({ onSubmit }: GymFormProps) {
                 type="button"
                 onClick={moveToNextQuestion}
                 disabled={!isCurrentQuestionAnswered()}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 flex-1 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 w-full text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:flex-1 sm:text-sm"
               >
                 Next
               </Button>
@@ -311,7 +313,7 @@ export default function GymForm({ onSubmit }: GymFormProps) {
               <Button
                 type="submit"
                 disabled={!isCurrentQuestionAnswered()}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 flex-1 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 w-full text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:flex-1 sm:text-sm"
               >
                 Get My Recommendations
               </Button>

@@ -3,11 +3,12 @@
 import { useState } from "react";
 import CategorySelector from "./components/fitness/category-selector";
 import GymForm from "./components/fitness/gym-form";
+import CalisthenicsForm from "./components/fitness/calisthenics-form";
 import YogaForm from "./components/fitness/yoga-form";
 import RunningForm from "./components/fitness/running-form";
 import ResultsDisplay from "./components/fitness/results-display";
 
-type Category = "gym" | "yoga" | "running" | null;
+type Category = "gym" | "calisthenics" | "yoga" | "running" | null;
 type FormAnswers = Record<string, any>;
 
 export default function Page() {
@@ -41,6 +42,7 @@ export default function Page() {
         ) : (
           <div className="flex flex-col gap-6">
             {selectedCategory === "gym" && <GymForm onSubmit={handleFormSubmit} />}
+            {selectedCategory === "calisthenics" && <CalisthenicsForm onSubmit={handleFormSubmit} />}
             {selectedCategory === "yoga" && <YogaForm onSubmit={handleFormSubmit} />}
             {selectedCategory === "running" && <RunningForm onSubmit={handleFormSubmit} />}
           </div>
