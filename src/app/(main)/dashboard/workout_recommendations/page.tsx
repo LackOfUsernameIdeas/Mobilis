@@ -39,7 +39,20 @@ export default function Page() {
         {!selectedCategory || submittedAnswers ? (
           <div className="flex flex-col gap-4 md:gap-6">
             {submittedAnswers && (
-              <ResultsDisplay category={selectedCategory!} answers={submittedAnswers} onReset={handleReset} />
+              <ResultsDisplay
+                category={selectedCategory!}
+                answers={submittedAnswers}
+                userStats={{
+                  gender: "male",
+                  height: 185,
+                  weight: 95,
+                  bmi: "27.76",
+                  bodyFat: "26.97",
+                  fatMass: "25.62",
+                  leanMass: "69.38",
+                }}
+                onReset={handleReset}
+              />
             )}
             {!submittedAnswers && <CategorySelector onSelectCategory={handleCategorySelect} />}
           </div>

@@ -223,7 +223,7 @@ export default function GymCalisthenicsForm({ onSubmit, isCategoryGym, onBack }:
                           htmlFor={`freq-${day}`}
                           className="text-foreground flex-1 cursor-pointer text-xs font-normal sm:text-sm"
                         >
-                          {day}x/неделя
+                          {day}x/седмица
                         </Label>
                       </div>
                     ))}

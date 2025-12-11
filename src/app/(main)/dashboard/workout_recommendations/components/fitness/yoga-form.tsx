@@ -233,7 +233,7 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
                           htmlFor={`yoga-freq-${day}`}
                           className="text-foreground flex-1 cursor-pointer text-xs font-normal sm:text-sm"
                         >
-                          {day}x/неделя
+                          {day}x/седмица
                         </Label>
                       </div>
                     ))}
