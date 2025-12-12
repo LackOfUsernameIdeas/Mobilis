@@ -50,7 +50,7 @@ export default function RunningForm({ onSubmit, onBack }: RunningFormProps) {
         { value: "advanced_beginner", label: "Напреднал начинаещ - Можете да бягате 20-30 минути без прекъсване" },
         { value: "intermediate", label: "Средно ниво - Бягате редовно 5-10 км комфортно" },
         { value: "advanced", label: "Напреднал - Бягате редовно 10+ км и участвате в състезания" },
-        { value: "expert", label: "Експерт - Имате дългогодишна практика и advanced training" },
+        { value: "expert", label: "Експерт - Имате дългогодишна практика" },
       ],
     },
     {
@@ -74,9 +74,9 @@ export default function RunningForm({ onSubmit, onBack }: RunningFormProps) {
       type: "radio",
       options: [
         { value: "street_park", label: "Улица/Парк" },
-        { value: "track", label: "Писта (Track)" },
+        { value: "track", label: "Писта" },
         { value: "mountain", label: "Планини" },
-        { value: "treadmill", label: "Бягаща пътека (Treadmill)" },
+        { value: "treadmill", label: "Пътека за бягане" },
         { value: "no_terrain_pref", label: "Нямам предпочитания" },
       ],
     },
