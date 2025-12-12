@@ -126,7 +126,7 @@ export default function ExerciseModal({
       <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto backdrop-blur-sm">
         <DialogHeader>
           <DialogTitle className="text-foreground text-xl text-pretty">{exercise.exercise_name}</DialogTitle>
-          <DialogDescription className="text-muted-foreground">Detailed exercise information</DialogDescription>
+          <DialogDescription className="text-muted-foreground">Основна информация</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -134,7 +134,7 @@ export default function ExerciseModal({
           <div className="bg-muted/50 space-y-3 rounded-lg p-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-muted-foreground mb-1 text-xs font-medium">Sets x Reps</p>
+                <p className="text-muted-foreground mb-1 text-xs font-medium">Серии x Повторения</p>
                 <p className="text-foreground text-lg font-semibold">
                   {exercise.sets} x {exercise.reps}
                 </p>
@@ -163,7 +163,8 @@ export default function ExerciseModal({
           {/* Muscle Activation */}
           {activeMuscles.length > 0 && (
             <div className="space-y-3">
-              <h4 className="text-foreground text-sm font-semibold">Muscle Activation</h4>
+              <h4 className="text-foreground text-sm font-semibold">Действащи мускули</h4>
+              <p className="text-foreground text-xs">Мускулите, които се натоварват при изпълнение на упражнението:</p>
               <div className="flex flex-wrap gap-2">
                 {activeMuscles.map((muscle) => (
                   <Badge
@@ -182,7 +183,7 @@ export default function ExerciseModal({
 
           {/* Video Section */}
           <div className="space-y-3">
-            <h4 className="text-foreground text-sm font-semibold">Exercise Video</h4>
+            <h4 className="text-foreground text-sm font-semibold">Видео на упражнението</h4>
             {!youtubeUrl && !videoError && (
               <Button onClick={handleFetchVideo} disabled={loadingVideo} className="w-full" variant="default">
                 {loadingVideo ? "Loading video..." : "Load Exercise Video"}

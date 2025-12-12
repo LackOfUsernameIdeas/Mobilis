@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ExerciseCard from "./exercise-card";
 import ExerciseModal from "./exercise-modal";
+import { Button } from "@/components/ui/button";
 
 interface ResultsDisplayProps {
   category: "gym" | "calisthenics" | "yoga" | "running";
@@ -97,9 +98,16 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
         <CardHeader className="border-border bg-card/50 border-b">
           <CardTitle className="text-foreground text-xl sm:text-2xl">{categoryTitles[category]}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 pt-6 sm:space-y-6 sm:pt-8">
+        <CardContent className="space-y-4 sm:space-y-6">
           {!loading && recommendations && (
             <div className="space-y-6">
+              {/* Reset Button */}
+              <div className="flex gap-2">
+                <Button onClick={onReset} variant="outline" className="w-full bg-transparent">
+                  Генерирайте отново
+                </Button>
+              </div>
+              {/* Weekly Schedule */}
               {recommendations.weekly_schedule && (
                 <div className="space-y-4">
                   <h3 className="text-foreground text-lg font-semibold">Седмична програма</h3>
@@ -122,6 +130,19 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
                             </CardTitle>
                           </CardHeader>
                           <CardContent className="space-y-4">
+                            {/* Warmup */}
+                            <div>
+                              <h4 className="text-muted-foreground mb-2 text-sm font-semibold">
+                                🔥 Загряване ({day.warmup.duration_minutes} мин)
+                              </h4>
+                              <ul className="text-foreground/80 list-inside list-disc space-y-1 text-sm">
+                                {day.warmup.exercises.map((ex: string, i: number) => (
+                                  <li key={i}>{ex}</li>
+                                ))}
+                              </ul>
+                            </div>
+
+                            {/* Workout */}
                             <div>
                               <h4 className="text-muted-foreground mb-3 text-sm font-semibold">💪 Тренировка</h4>
                               <div className="grid gap-3 sm:grid-cols-2">
@@ -134,11 +155,35 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
                                 ))}
                               </div>
                             </div>
+
+                            {/* Cooldown */}
+                            <div>
+                              <h4 className="text-muted-foreground mb-2 text-sm font-semibold">
+                                ❄️ Разтягане ({day.cooldown.duration_minutes} мин)
+                              </h4>
+                              <ul className="text-foreground/80 list-inside list-disc space-y-1 text-sm">
+                                {day.cooldown.exercises.map((ex: string, i: number) => (
+                                  <li key={i}>{ex}</li>
+                                ))}
+                              </ul>
+                            </div>
                           </CardContent>
                         </Card>
                       </TabsContent>
                     ))}
                   </Tabs>
+                </div>
+              )}
+
+              {/* Safety Considerations */}
+              {recommendations.safety_considerations && recommendations.safety_considerations.length > 0 && (
+                <div className="bg-destructive/10 border-destructive/30 rounded-lg border p-4">
+                  <h3 className="text-foreground mb-2 font-semibold">⚠️ Важни съображения за безопасност</h3>
+                  <ul className="text-foreground/90 list-inside list-disc space-y-1 text-sm">
+                    {recommendations.safety_considerations.map((item: string, i: number) => (
+                      <li key={i}>{item}</li>
+                    ))}
+                  </ul>
                 </div>
               )}
             </div>

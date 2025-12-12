@@ -47,7 +47,7 @@ export default function RunningForm({ onSubmit, onBack }: RunningFormProps) {
       type: "radio",
       options: [
         { value: "beginner", label: "Начинаещ - Току-що започвате или бягате рядко" },
-        { value: "advanced_beginner", label: "Напреднал начинаещ - Можете да бягате 20-30 минути без прекъсване" },
+        { value: "basic", label: "Базово ниво - Можете да бягате 20-30 минути без прекъсване" },
         { value: "intermediate", label: "Средно ниво - Бягате редовно 5-10 км комфортно" },
         { value: "advanced", label: "Напреднал - Бягате редовно 10+ км и участвате в състезания" },
         { value: "expert", label: "Експерт - Имате дългогодишна практика" },

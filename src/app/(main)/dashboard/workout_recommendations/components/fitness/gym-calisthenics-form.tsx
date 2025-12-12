@@ -39,7 +39,7 @@ export default function GymCalisthenicsForm({ onSubmit, isCategoryGym, onBack }:
       title: "Каква е вашата основна цел?",
       type: "radio",
       options: [
-        { value: "cut", label: "Cut (Дефиниция - загуба на мазнини)" },
+        { value: "cut", label: "Cut (Загуба на мазнини)" },
         { value: "lean_bulk", label: "Lean Bulk (Чист набор на мускулна маса)" },
         { value: "dirty_bulk", label: "Dirty Bulk (Агресивен набор на маса)" },
         { value: "recomposition", label: "Recomposition (Едновременно изгаряне на мазнини и набиране на мускули)" },
@@ -54,7 +54,7 @@ export default function GymCalisthenicsForm({ onSubmit, isCategoryGym, onBack }:
       type: "radio",
       options: [
         { value: "beginner", label: "Начинаещ - Тренирате от кратко време" },
-        { value: "advanced_beginner", label: "Напреднал начинаещ - Изпълнявате основни упражнения правилно" },
+        { value: "basic", label: "Базово ниво - Изпълнявате основни упражнения правилно" },
         { value: "intermediate", label: "Средно ниво - Познавате силните и слабите си страни" },
         { value: "advanced", label: "Напреднал - Работите с по-сложни програми" },
         { value: "expert", label: "Експерт - Имате дългогодишна практика" },

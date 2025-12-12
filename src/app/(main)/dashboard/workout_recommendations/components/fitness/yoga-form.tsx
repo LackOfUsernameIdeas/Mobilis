@@ -71,7 +71,7 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
       type: "radio",
       options: [
         { value: "beginner", label: "Начинаещ - Тренирате от кратко време" },
-        { value: "advanced_beginner", label: "Напреднал начинаещ - Изпълнявате основни упражнения правилно" },
+        { value: "basic", label: "Базово ниво - Изпълнявате основни упражнения правилно" },
         { value: "intermediate", label: "Средно ниво - Познавате силните и слабите си страни" },
         { value: "advanced", label: "Напреднал - Работите с по-сложни програми" },
         { value: "expert", label: "Експерт - Имате дългогодишна практика" },

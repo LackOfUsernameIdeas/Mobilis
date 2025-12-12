@@ -99,17 +99,6 @@ export default function HomePage() {
         </p>
       </div>
 
-      <Alert
-        variant="destructive"
-        className="border-orange-200 bg-orange-50 text-orange-900 dark:border-orange-900/50 dark:bg-orange-950/50 dark:text-orange-200"
-      >
-        <AlertTriangle className="h-4 w-4" />
-        <AlertDescription className="leading-relaxed text-pretty">
-          Тези стойности са приблизителни и може да е необходима преоценка от здравен специалист, за да се адаптират към
-          индивидуалните ви нужди. В никакъв случай не поощряваме прескачането на лекарска препоръка.
-        </AlertDescription>
-      </Alert>
-
       {bmiData && bodyFatData && goalData && (
         <>
           <HealthStatsCards bmiData={bmiData} bodyFatData={bodyFatData} goalData={goalData} />
@@ -120,6 +109,17 @@ export default function HomePage() {
           </div>
         </>
       )}
+
+      <Alert
+        variant="destructive"
+        className="border-orange-200 bg-orange-50 text-orange-900 dark:border-orange-900/50 dark:bg-orange-950/50 dark:text-orange-200"
+      >
+        <AlertTriangle className="h-4 w-4" />
+        <AlertDescription className="leading-relaxed text-pretty">
+          Тези стойности са приблизителни и може да е необходима преоценка от здравен специалист, за да се адаптират към
+          индивидуалните ви нужди. В никакъв случай не поощряваме прескачането на лекарска препоръка.
+        </AlertDescription>
+      </Alert>
     </div>
   );
 }
