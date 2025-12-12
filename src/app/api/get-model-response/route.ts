@@ -48,8 +48,6 @@ export async function POST(req: NextRequest) {
 }
 
 function generateSystemPrompt(category: string): string | undefined {
-  console.log("Generating system prompt for category:", category);
-
   if (category === "gym") {
     return "Ти си професионален фитнес треньор с много години опит. Задачата ти е да създаваш персонализирани тренировъчни програми на база предоставените данни за потребителя. Винаги отговаряй САМО с валиден JSON формат, без допълнителен текст или markdown.";
   } else if (category === "calisthenics") {
@@ -62,8 +60,6 @@ function generateSystemPrompt(category: string): string | undefined {
 }
 
 function generateUserPrompt(category: string, answers: Record<string, any>, userStats?: any): string {
-  console.log("Generating user prompt for category:", category);
-
   if (category === "gym") {
     return `Създай персонализирана седмична фитнес програма за потребител със следните характеристики:
 
@@ -304,8 +300,6 @@ function generateUserPrompt(category: string, answers: Record<string, any>, user
 }
 
 function generateResponseFormat(category: string) {
-  console.log("Generating response format for category:", category);
-
   if (category === "gym") {
     return {
       format: {
