@@ -24,8 +24,8 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
     frequency: "",
     warmupSavasana: "",
     focusAreas: [],
-    injuries: "",
-    poses: "",
+    healthIssues: "",
+    specificExercises: "",
   });
 
   const focusAreaOptions = [
@@ -99,13 +99,13 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
       options: focusAreaOptions,
     },
     {
-      field: "injuries",
+      field: "healthIssues",
       title: "Съществуват ли някакви здравословни проблеми, контузии или ограничения?",
       type: "textarea",
       placeholder: "напр. болки в кръста, проблеми със ставите, високо кръвно налягане... или 'Няма'",
     },
     {
-      field: "poses",
+      field: "specificExercises",
       title: "Има ли конкретни йога пози, които желаете да бъдат включени в програмата?",
       type: "textarea",
       placeholder: "напр. Downward Dog, Warrior poses, Tree Pose, Headstand... или 'Нямам предпочитания'",

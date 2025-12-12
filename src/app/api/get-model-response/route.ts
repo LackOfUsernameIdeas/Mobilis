@@ -4,6 +4,7 @@ export async function POST(req: NextRequest) {
   try {
     const { category, answers, userStats } = await req.json();
 
+    console.log();
     if (!category || !answers) {
       return NextResponse.json({ error: "Category and answers are required" }, { status: 400 });
     }
@@ -67,44 +68,236 @@ function generateUserPrompt(category: string, answers: Record<string, any>, user
   if (category === "gym") {
     return `Създай персонализирана седмична фитнес програма за потребител със следните характеристики:
 
-**Лични данни:**
-- Пол: ${userStats?.gender || "не е посочен"}
-- Височина: ${userStats?.height || "не е посочена"} см
-- Тегло: ${userStats?.weight || "не е посочено"} кг
-- BMI: ${userStats?.bmi || "не е изчислен"} (при здравословен диапазон: 18.5-25)
-- Body Fat: ${userStats?.bodyFat || "не е изчислен"}%
-- Маса на телесните мазнини: ${userStats?.fatMass || "не е изчислена"} кг
-- Чиста телесна маса: ${userStats?.leanMass || "не е изчислена"} кг
+      **Лични данни:**
+      - Пол: ${userStats?.gender || "не е посочен"}
+      - Височина: ${userStats?.height || "не е посочена"} см
+      - Тегло: ${userStats?.weight || "не е посочено"} кг
+      - BMI: ${userStats?.bmi || "не е изчислен"} (при здравословен диапазон: 18.5-25)
+      - Body Fat: ${userStats?.bodyFat || "не е изчислен"}%
+      - Маса на телесните мазнини: ${userStats?.fatMass || "не е изчислена"} кг
+      - Чиста телесна маса: ${userStats?.leanMass || "не е изчислена"} кг
 
-**Тренировъчни предпочитания:**
-- Цел: ${answers.goal || "не е посочена"}
-- Ниво на опит: ${answers.experience || "не е посочено"}
-- Честота на тренировки: ${answers.frequency || "не е посочена"} дни седмично
-- Загряване преди и разтягане след тренировка: ${answers.warmupCooldown || "не е посочено"}
-- Фокус върху конкретна мускулна група: ${answers.muscleGroupFocus || "Нямам предпочитания"}
-- Целево тегло: ${answers.targetWeight || "не е посочено"} кг 
-- Здравословни проблеми, контузии или ограничения: ${answers.healthIssues || "Няма"}
-- Специфични упражнения за включване: ${answers.specificExercises || "Нямам предпочитания"}
+      **Тренировъчни предпочитания:**
+      - Цел: ${answers.mainGoal || "не е посочена"}
+      - Ниво на опит: ${answers.experience || "не е посочено"}
+      - Честота на тренировки: ${answers.frequency || "не е посочена"} дни седмично
+      - Загряване преди и разтягане след тренировка: ${answers.warmupCooldown || "не е посочено"}
+      - Фокус върху конкретна мускулна група: ${answers.muscleGroups || "Нямам предпочитания"}
+      - Целево тегло: ${answers.targetWeight === "yes" ? answers.targetWeightValue : "не е посочено"} кг 
+      - Здравословни проблеми, контузии или ограничения: ${answers.healthIssues || "Няма"}
+      - Специфични упражнения за включване: ${answers.specificExercises || "Нямам предпочитания"}
 
-Важни насоки:
-- Вземи предвид личните данни и целта на потребителя
-- При цел 'cut' се фокусирай върху упражнения за запазване на мускулна маса при калориен дефицит с умерени до високи повторения (10-15)
-- При цел 'lean_bulk' се фокусирай върху упражнения с прогресивно натоварване и набиране на чиста мускулна маса и умерени повторения (6-12)
-- При цел 'dirty_bulk' препоръчвай тежки съставни упражнения с по-малко повторения (4-8) за максимален мускулен растеж и сила
-- При цел 'recomposition' балансирай между силови и хипертрофични упражнения, комбинирай средни тежести с разнообразен диапазон на повторения (6-15)
-- При цел 'maintenance' препоръчвай упражнения за поддържане на текущата форма с балансиран обем и интензивност, умерени повторения (8-12)
-- При цел 'aesthetic' се фокусирай върху симетрията и пропорциите на тялото, препоръчвай изолационни упражнения с по-високи повторения (10-15)
-- При цел 'strength' приоритизирай тежки съставни упражнения с ниски повторения (1-6) и дълги паузи за почивка
-- Адаптирай програмата с посочената информация за здравословни проблеми, ако има такава (избягвай упражнения, които биха влошили здравословното състояние на потребителя или дай алтернативни упражнения)
-- exercise_name винаги трябва да съдържа само официалното наименование на упражнението (например: "Barbell Bench Press", "Deadlift", "Lat Pulldown")
-- Относно информацията за повторения, използвай формат като "8-12" за диапазон или "10" за точен брой
-- muscle_activation трябва да отразява точно кои мускули се активират (true/false)`;
+      Важни насоки:
+      - Вземи предвид личните данни и целта на потребителя
+      - При цел 'cut' се фокусирай върху упражнения за запазване на мускулна маса при калориен дефицит с умерени до високи повторения (10-15)
+      - При цел 'lean_bulk' се фокусирай върху упражнения с прогресивно натоварване и набиране на чиста мускулна маса и умерени повторения (6-12)
+      - При цел 'dirty_bulk' препоръчвай тежки съставни упражнения с по-малко повторения (4-8) за максимален мускулен растеж и сила
+      - При цел 'recomposition' балансирай между силови и хипертрофични упражнения, комбинирай средни тежести с разнообразен диапазон на повторения (6-15)
+      - При цел 'maintenance' препоръчвай упражнения за поддържане на текущата форма с балансиран обем и интензивност, умерени повторения (8-12)
+      - При цел 'aesthetic' се фокусирай върху симетрията и пропорциите на тялото, препоръчвай изолационни упражнения с по-високи повторения (10-15)
+      - При цел 'strength' приоритизирай тежки съставни упражнения с ниски повторения (1-6) и дълги паузи за почивка
+      - Адаптирай програмата с посочената информация за здравословни проблеми, ако има такава (избягвай упражнения, които биха влошили здравословното състояние на потребителя или дай алтернативни упражнения)
+      - exercise_name винаги трябва да съдържа само официалното наименование на упражнението (например: "Barbell Bench Press", "Deadlift", "Lat Pulldown")
+      - Относно информацията за повторения, използвай формат като "8-12" за диапазон или "10" за точен брой
+      - muscle_activation трябва да отразява точно кои мускули се активират (true/false)`;
   } else if (category === "calisthenics") {
-    return ``;
+    return `Създай персонализирана седмична калистенична програма за потребител със следните характеристики:
+
+      **Лични данни:**
+      - Пол: ${userStats?.gender || "не е посочен"}
+      - Височина: ${userStats?.height || "не е посочена"} см
+      - Тегло: ${userStats?.weight || "не е посочено"} кг
+      - BMI: ${userStats?.bmi || "не е изчислен"} (при здравословен диапазон: 18.5-25)
+      - Body Fat: ${userStats?.bodyFat || "не е изчислен"}%
+      - Маса на телесните мазнини: ${userStats?.fatMass || "не е изчислена"} кг
+      - Чиста телесна маса: ${userStats?.leanMass || "не е изчислена"} кг
+
+      **Тренировъчни предпочитания:**
+      - Цел: ${answers.mainGoal || "не е посочена"}
+      - Ниво на опит: ${answers.experience || "не е посочено"}
+      - Честота на тренировки: ${answers.frequency || "не е посочена"} дни седмично
+      - Загряване преди и разтягане след тренировка: ${answers.warmupCooldown || "не е посочено"}
+      - Фокус върху конкретна мускулна група: ${answers.muscleGroups || "Нямам предпочитания"}
+      - Целево тегло: ${answers.targetWeight === "yes" ? answers.targetWeightValue : "не е посочено"} кг 
+      - Здравословни проблеми, контузии или ограничения: ${answers.healthIssues || "Няма"}
+      - Специфични упражнения за включване: ${answers.specificExercises || "Нямам предпочитания"}
+
+      **Важни насоки за калистеника:**
+      - Използвай САМО калистенични упражнения (упражнения с тегло на собственото тяло)
+      - Забранени са всякакви упражнения с тежести, дъмбели, щанги или машини
+      - При цел 'cut' се фокусирай върху високообемни калистенични упражнения за запазване на мускулна маса при калориен дефицит с умерени до високи повторения (12-20)
+      - При цел 'lean_bulk' използвай по-трудни прогресивни вариации на калистеничните упражнения с умерени повторения (8-15)
+      - При цел 'dirty_bulk' препоръчвай най-трудните калистенични вариации с по-малко повторения (5-10) и допълнителни сетове
+      - При цел 'recomposition' балансирай между различни калистенични вариации с разнообразен диапазон на повторения (8-20)
+      - При цел 'maintenance' препоръчвай умерени калистенични вариации за поддържане на текущата форма (10-15 повторения)
+      - При цел 'aesthetic' се фокусирай върху изолационни калистенични упражнения с по-високи повторения (12-20)
+      - При цел 'strength' приоритизирай най-трудните калистенични вариации с ниски повторения (3-8) и дълги паузи за почивка
+      - Адаптирай програмата според нивото на опит чрез подходящи прогресии/регресии на упражненията
+      - При начинаещи използвай по-леки вариации (knee push-ups, assisted pull-ups, wall push-ups)
+      - При напреднали използвай по-трудни вариации (one-arm push-ups, muscle-ups, pistol squats, planche)
+      - Адаптирай програмата с посочената информация за здравословни проблеми, ако има такава
+      - exercise_name винаги трябва да съдържа само официалното наименование на калистеничното упражнение (например: "Push-Ups", "Pull-Ups", "Dips", "Squats", "Plank")
+      - При нужда от прогресия посочвай конкретната вариация (например: "Diamond Push-Ups", "Archer Pull-Ups", "Bulgarian Split Squats")
+      - Относно информацията за повторения, използвай формат като "12-20" за диапазон или "15" за точен брой
+      - muscle_activation трябва да отразява точно кои мускули се активират (true/false)`;
   } else if (category === "yoga") {
-    return ``;
+    return `Създай персонализирана седмична йога програма за потребител със следните предпочитания:
+
+      **Предпочитания за йога практика:**
+      - Цел: ${answers.mainGoal || "не е посочена"}
+      - Предпочитан стил: ${answers.yogaStyle || "нямам предпочитания"}
+      - Ниво на опит: ${answers.experience || "не е посочено"}
+      - Честота на практики: ${answers.frequency || "не е посочена"} дни седмично
+      - Програмата да включва ли загряване преди и Shavasana (медитация) след йогата: ${answers.warmupSavasana || "не е посочено"}
+      - Фокус върху конкретна област: ${answers.focusArea || "Нямам предпочитания"}
+      - Здравословни проблеми, контузии или ограничения: ${answers.healthIssues || "Няма"}
+      - Специфични пози за включване: ${answers.specificExercises || "Нямам предпочитания"}
+
+      **Важни насоки за йога:**
+      - Използвай САМО йога пози (асани) и йога практики
+      - Забранени са всякакви упражнения с тежести, дъмбели, щанги или машини
+
+      **Цели и подход:**
+      - При цел 'flexibility_and_balance' се фокусирай върху пози за разтягане, гъвкавост и баланс
+      - При цел 'stress_relief_and_relaxation' използвай restorative yoga, gentle flows и дишателни техники (пранаяма)
+      - При цел 'strength_and_endurance' препоръчвай динамични йога стилове (Vinyasa, Power Yoga, Ashtanga) с по-силови пози
+      - При цел 'mindfulness_and_meditation' балансирай между медитативни пози, gentle flows и пранаяма
+      - При цел 'posture_and_alignment' се фокусирай върху коригиращи пози за гръбначния стълб и постура
+      - При цел 'energy_boost' използвай бодри, активни последователности с backbends и invigorating flows
+
+      **Стилове на йога:**
+      - При стил 'hatha' използвай по-бавно темпо с фокус върху точна подредба и задържане на позите (30-60 секунди)
+      - При стил 'vinyasa' създавай плавни последователности (flows) с координация между движение и дишане
+      - При стил 'yin' използвай пасивни пози с дълго задържане (3-5 минути) за дълбоко разтягане на съединителната тъкан
+      - При стил 'power_yoga' фокусирай се върху динамични силови пози с по-високо темпо и физическо предизвикателство
+      - При стил 'restorative' използвай много леки, подкрепящи пози с реквизити за максимална релаксация
+      - При 'нямам предпочитания' комбинирай елементи от различни стилове според целта
+
+      **Ниво на опит:**
+      - При начинаещи използвай по-леки вариации и модификации с реквизити (блокчета, колани, одеяла)
+      - При напреднал начинаещ включвай основни пози с правилна техника и леки вариации
+      - При средно ниво добавяй по-сложни вариации и по-дълго задържане
+      - При напреднали използвай сложни пози и вариации (инверсии, arm balances, deep backbends)
+      - При експерти включвай най-предизвикателните пози и advanced вариации
+
+      **Структура на практиката:**
+      - При 'Да' за пълна структура:
+        * warmup трябва да включва: Центриране/медитация (1-2 мин), Пранаяма/дишателни техники (2-3 мин), Sun Salutations (Surya Namaskar)
+        * cooldown трябва да включва: Gentle stretches, Shavasana (5-10 минути финална релаксация)
+      - При 'Не' за пълна структура:
+        * warmup: Само леки подготвителни пози (Cat-Cow, Child's Pose)
+        * cooldown: Кратки заключителни разтягания
+
+      **Фокус области:**
+      - Адаптирай избора на пози според посочените области на фокус (гръб, тазобедрени стави, рамене, core, крака, дишане)
+      - Ако няма специфичен фокус, създавай балансирана практика за цялото тяло
+
+      **Здравословни съображения:**
+      - Адаптирай програмата с посочената информация за здравословни проблеми, ако има такава
+      - Избягвай или модифицирай пози, които биха могли да влошат състоянието
+      - Винаги давай по-леки алтернативи за начинаещи
+
+      **Номенклатура:**
+      - exercise_name винаги трябва да съдържа официалното наименование на йога позата на английски и санскрит в скоби (например: "Downward Facing Dog (Adho Mukha Svanasana)", "Warrior I (Virabhadrasana I)", "Tree Pose (Vrksasana)")
+      - При нужда от модификация посочвай конкретната вариация (например: "Modified Chaturanga", "Supported Headstand", "Half Pigeon Pose")
+
+      **Повторения и задържане:**
+      - За статични пози използвай формат: "5-8 дишания" или "30-60 секунди" или "1-2 минути"
+      - За динамични потоци (flows) използвай: "3-5 цикъла" или "5-10 повторения"
+      - За Yin пози използвай: "3-5 минути"
+      - За Vinyasa flows посочвай броя цикли на Sun Salutations или последователности
+
+      **Активация на мускули:**
+      - muscle_activation трябва да отразява точно кои мускули се активират в позата (true/false)
+      - Бъди прецизен - различните пози активират различни мускулни групи`;
   } else if (category === "running") {
-    return ``;
+    return `Създай персонализирана седмична програма за бягане за потребител със следните характеристики:
+
+      **Лични данни:**
+      - Пол: ${userStats?.gender || "не е посочен"}
+      - Височина: ${userStats?.height || "не е посочена"} см
+      - Тегло: ${userStats?.weight || "не е посочено"} кг
+      - BMI: ${userStats?.bmi || "не е изчислен"} (при здравословен диапазон: 18.5-25)
+      - Body Fat: ${userStats?.bodyFat || "не е изчислен"}%
+      - Маса на телесните мазнини: ${userStats?.fatMass || "не е изчислена"} кг
+      - Чиста телесна маса: ${userStats?.leanMass || "не е изчислена"} кг
+
+      **Тренировъчни предпочитания:**
+      - Цел: ${answers.mainGoal || "не е посочена"}
+      - Ниво на опит: ${answers.experience || "не е посочено"}
+      - Честота на тренировки: ${answers.frequency || "не е посочена"} дни седмично
+      - Загряване преди и разтягане след тренировка: ${answers.warmupCooldown || "не е посочено"}
+      - Предпочитан терен: ${answers.terrain || "нямам предпочитания"}
+      - Здравословни проблеми, контузии или ограничения: ${answers.healthIssues || "Няма"}
+
+      **Важни насоки за бягане:**
+
+      **Цели и подход:**
+      - Вземи предвид личните данни и целта на потребителя
+      - При цел 'weight_loss' (отслабване) се фокусирай върху по-дълги, умерени бягания със зона на сърдечната честота от 2 до 3 (60-75%), интервални тренировки (редуване на по-бързи и по-бавни сегменти) за максимално изгаряне на калории
+      - При цел 'endurance' (издръжливост) приоритизирай постепенно увеличаване на дистанцията с по-бавно темпо, дълги бягания и градивно натрупване на седмичен километраж
+      - При цел 5k_race използвай темпо бягания, интервали от 400 до 1000 метра и едно по-дълго бягане за седмицата
+      - При цел 10k_race развивай издръжливост чрез стабилно темпо и по-дълги интервали
+      - При цел half_marathon увеличавай километража постепенно, включвай дълги бягания до 18–20 км и работа в състезателно темпо
+      - При цел marathon следвай по-дълъг план, натрупвай километри, прави дълги бягания до 32–35 км и поддържай контролирана издръжливост
+      - При цел speed включвай спринтове от 200 до 400 метра, хълмове, темпо бягания и fartlek
+      - При цел general_fitness балансирай между лесни бягания, темпо тренировки и интервали за поддържане на форма.
+
+      **Нива на опит:**
+      - При начинаещи препоръчвай интервали на бягане и тичане (например 2 мин бягане / 1 мин ходене), много къси дистанции (1-3 км), бавно темпо, фокус върху изграждане на аеробна база
+      - При напреднал начинаещ включвай непрекъснато бягане, 3-5 км дистанции, бързо темпо, въвеждане на лек fartlek
+      - При средно ниво препоръчвай средно темпо, интервални тренировки - редуване на по-бързи и по-бавни сегменти (800m-1km повторения), 5-10 км дистанции, 1 дълго бягане седмично
+      - При напреднали включвай сложни тренировки, hill repeats, по-агресивни интервали (400m-1200m), fartlek, 10-15 км дистанции
+      - При експерти препоръчвай интензивни тренировки, голям пробег (60-100+ км седмично)
+
+      **Терен:**
+      - При 'улица/парк' планирай равни повърхности, асфалт, паркови пътеки - стандартни бягания с постоянно темпо
+      - При 'писта' (track) се фокусирай върху точни интервали (200m, 400m, 800m, 1km повторения) и контрол на темпото с прецизно измерване
+      - При 'планини' включвай hill training, неравен терен, по-бавно темпо, фокус върху сила и техника, внимание към терена
+      - При 'бягаща пътека' давай точни настройки за наклон и скорост (km/h или min/km темпо), контролирана среда
+      - При 'нямам предпочитания' комбинирай различни терени според типа тренировка
+
+      **Структура на тренировките:**
+      - При 'Да' за загряване и разтягане:
+        * warmup трябва да включва: Бързо ходене (3-5 мин), Упражнения за разтягане - leg swings, high knees, butt kicks (5-7 мин), Лек джогинг (5-10 мин)
+        * cooldown трябва да включва: Лек джогинг/ходене (5-10 мин), Упражнения за разтягане на долната част на тялото - hamstrings, quads, calves, hip flexors (10-15 мин)
+
+      **Здравословни съображения:**
+      - Адаптирай програмата, според посочените здравословни проблеми, ако има такава (избягвай упражнения, които биха влошили здравословното състояние на потребителя или дай алтернативни упражнения)
+      - При проблеми със ставите (колене, глезени, тазобедрени стави) давай по-кратки дистанции, избягвай hill repeats
+      - При астма или дихателни проблеми поддържай по-ниска интензивност, избягвай студен въздух, включвай повече леки тичания
+      - При сърдечни проблеми поддържай ниска интензивност (зона на сърдечната честота от 1 до 2)
+      - При контузии модифицирай или изключи проблемни тренировки
+
+      **Номенклатура на тренировките:**
+      - exercise_name трябва да съдържа английското име и В СКОБИ българския превод (например: "Easy Run (Леко бягане)", "Tempo Run (Темпо бягане)", "Interval Training (Интервална тренировка)", "Long Run (Дълго бягане)", "Hill Repeats (Повторения по наклон)", "Fartlek Run (Фартлек)", "Recovery Run (Възстановително бягане)", "Race Pace Run (Състезателно темпо)", "Run/Walk Intervals (Бягане/Ходене)")
+      - focus трябва да е изцяло на български (например: "Издръжливост и изгаряне на калории", "Интервална тренировка (редуване на по-бързи и по-бавни сегменти) за скорост", "Възстановяване", "Темпо работа")
+
+      **Типове бягания:**
+      - **Easy Run (Леко бягане)** - Леко бягане, леко темпо, 65-75% (сърдечната честота) 
+      - **Long Run (Дълго бягане)** - Дълго бягане, стабилно темпо, издръжливост
+      - **Tempo Run (Темпо бягане)** - Темпо бягане, 80-90% (сърдечната честота)
+      - **Interval Training (Интервална тренировка)** - Интервални тренировки с повторения
+      - **Fartlek Run (Фартлек)** - Свободни интервали, променливо темпо
+      - **Hill Repeats (Повторения по наклон)** - Повторения по наклон
+      - **Recovery Run (Възстановително бягане)** - Възстановително бягане, много лесно
+      - **Race Pace Run (Състезателно темпо)** - Състезателно темпо
+      - **Run/Walk Intervals (Бягане/Ходене)** - Комбинация бягане и ходене
+
+      **Формат на полетата:**
+      - distance: "5 km" или "3.2 km" или null (ако е базирано на време)
+      - duration: "30 minutes" или "45 minutes" или null (ако е базирано на дистанция)
+      - repetitions: число (8, 6, 10) або null (за continuous runs)
+      - interval_distance: "400m" или "800m" или "2 minutes" (за интервали)
+      - rest.duration: НА БЪЛГАРСКИ - "90 секунди" vagy "2 минути" (само времето)
+      - intensity.level: НА БЪЛГАРСКИ - "Лесно", "Темпо", "Интензивно" (само нивото)
+      - intensity.heart_rate: "65-75%" или "80-90%" или "85-95%" (само процентите)
+      - focus: НА БЪЛГАРСКИ - "Издръжливост", "Интервална работа", "Възстановяване", и т.н.
+
+      **Прогресия:**
+      - Увеличавай обем с максимум 10% седмично
+      - Всяка 3-4 седмици recovery week (намалено натоварване)
+      - Балансирай hard days с easy/recovery days`;
   }
 
   // Placeholder
@@ -115,12 +308,682 @@ function generateResponseFormat(category: string) {
   console.log("Generating response format for category:", category);
 
   if (category === "gym") {
-    return {};
+    return {
+      format: {
+        type: "json_schema",
+        name: "fitness_program",
+        strict: true,
+        schema: {
+          type: "object",
+          properties: {
+            program_overview: {
+              type: "object",
+              properties: {
+                goal: {
+                  type: "string",
+                },
+                estimated_time_per_session: {
+                  type: "string",
+                },
+              },
+              required: ["goal", "estimated_time_per_session"],
+              additionalProperties: false,
+            },
+            weekly_schedule: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  day: {
+                    type: "string",
+                  },
+                  focus: {
+                    type: "string",
+                  },
+                  warmup: {
+                    type: "object",
+                    properties: {
+                      duration_minutes: {
+                        type: "number",
+                      },
+                      exercises: {
+                        type: "array",
+                        items: {
+                          type: "string",
+                        },
+                      },
+                    },
+                    required: ["duration_minutes", "exercises"],
+                    additionalProperties: false,
+                  },
+                  workout: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        exercise_name: {
+                          type: "string",
+                        },
+                        sets: {
+                          type: "number",
+                        },
+                        reps: {
+                          type: "string",
+                        },
+                        muscle_activation: {
+                          type: "object",
+                          properties: {
+                            chest: {
+                              type: "boolean",
+                            },
+                            front_delts: {
+                              type: "boolean",
+                            },
+                            side_delts: {
+                              type: "boolean",
+                            },
+                            rear_delts: {
+                              type: "boolean",
+                            },
+                            biceps: {
+                              type: "boolean",
+                            },
+                            triceps: {
+                              type: "boolean",
+                            },
+                            forearms: {
+                              type: "boolean",
+                            },
+                            traps: {
+                              type: "boolean",
+                            },
+                            lats: {
+                              type: "boolean",
+                            },
+                            rhomboids: {
+                              type: "boolean",
+                            },
+                            lower_back: {
+                              type: "boolean",
+                            },
+                            abs: {
+                              type: "boolean",
+                            },
+                            obliques: {
+                              type: "boolean",
+                            },
+                            quadriceps: {
+                              type: "boolean",
+                            },
+                            hamstrings: {
+                              type: "boolean",
+                            },
+                            glutes: {
+                              type: "boolean",
+                            },
+                            calves: {
+                              type: "boolean",
+                            },
+                            adductors: {
+                              type: "boolean",
+                            },
+                          },
+                          required: [
+                            "chest",
+                            "front_delts",
+                            "side_delts",
+                            "rear_delts",
+                            "biceps",
+                            "triceps",
+                            "forearms",
+                            "traps",
+                            "lats",
+                            "rhomboids",
+                            "lower_back",
+                            "abs",
+                            "obliques",
+                            "quadriceps",
+                            "hamstrings",
+                            "glutes",
+                            "calves",
+                            "adductors",
+                          ],
+                          additionalProperties: false,
+                        },
+                      },
+                      required: ["exercise_name", "sets", "reps", "muscle_activation"],
+                      additionalProperties: false,
+                    },
+                  },
+                  cooldown: {
+                    type: "object",
+                    properties: {
+                      duration_minutes: {
+                        type: "number",
+                      },
+                      exercises: {
+                        type: "array",
+                        items: {
+                          type: "string",
+                        },
+                      },
+                    },
+                    required: ["duration_minutes", "exercises"],
+                    additionalProperties: false,
+                  },
+                },
+                required: ["day", "focus", "warmup", "workout", "cooldown"],
+                additionalProperties: false,
+              },
+            },
+            safety_considerations: {
+              type: "array",
+              items: {
+                type: "string",
+              },
+            },
+          },
+          required: ["program_overview", "weekly_schedule", "safety_considerations"],
+          additionalProperties: false,
+        },
+      },
+    };
   } else if (category === "calisthenics") {
-    return {};
+    return {
+      format: {
+        type: "json_schema",
+        name: "calisthenics_program",
+        strict: true,
+        schema: {
+          type: "object",
+          properties: {
+            program_overview: {
+              type: "object",
+              properties: {
+                goal: {
+                  type: "string",
+                },
+                estimated_time_per_session: {
+                  type: "string",
+                },
+              },
+              required: ["goal", "estimated_time_per_session"],
+              additionalProperties: false,
+            },
+            weekly_schedule: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  day: {
+                    type: "string",
+                  },
+                  focus: {
+                    type: "string",
+                  },
+                  warmup: {
+                    type: "object",
+                    properties: {
+                      duration_minutes: {
+                        type: "number",
+                      },
+                      exercises: {
+                        type: "array",
+                        items: {
+                          type: "string",
+                        },
+                      },
+                    },
+                    required: ["duration_minutes", "exercises"],
+                    additionalProperties: false,
+                  },
+                  workout: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        exercise_name: {
+                          type: "string",
+                        },
+                        sets: {
+                          type: "number",
+                        },
+                        reps: {
+                          type: "string",
+                        },
+                        muscle_activation: {
+                          type: "object",
+                          properties: {
+                            chest: {
+                              type: "boolean",
+                            },
+                            front_delts: {
+                              type: "boolean",
+                            },
+                            side_delts: {
+                              type: "boolean",
+                            },
+                            rear_delts: {
+                              type: "boolean",
+                            },
+                            biceps: {
+                              type: "boolean",
+                            },
+                            triceps: {
+                              type: "boolean",
+                            },
+                            forearms: {
+                              type: "boolean",
+                            },
+                            traps: {
+                              type: "boolean",
+                            },
+                            lats: {
+                              type: "boolean",
+                            },
+                            rhomboids: {
+                              type: "boolean",
+                            },
+                            lower_back: {
+                              type: "boolean",
+                            },
+                            abs: {
+                              type: "boolean",
+                            },
+                            obliques: {
+                              type: "boolean",
+                            },
+                            quadriceps: {
+                              type: "boolean",
+                            },
+                            hamstrings: {
+                              type: "boolean",
+                            },
+                            glutes: {
+                              type: "boolean",
+                            },
+                            calves: {
+                              type: "boolean",
+                            },
+                            adductors: {
+                              type: "boolean",
+                            },
+                          },
+                          required: [
+                            "chest",
+                            "front_delts",
+                            "side_delts",
+                            "rear_delts",
+                            "biceps",
+                            "triceps",
+                            "forearms",
+                            "traps",
+                            "lats",
+                            "rhomboids",
+                            "lower_back",
+                            "abs",
+                            "obliques",
+                            "quadriceps",
+                            "hamstrings",
+                            "glutes",
+                            "calves",
+                            "adductors",
+                          ],
+                          additionalProperties: false,
+                        },
+                      },
+                      required: ["exercise_name", "sets", "reps", "muscle_activation"],
+                      additionalProperties: false,
+                    },
+                  },
+                  cooldown: {
+                    type: "object",
+                    properties: {
+                      duration_minutes: {
+                        type: "number",
+                      },
+                      exercises: {
+                        type: "array",
+                        items: {
+                          type: "string",
+                        },
+                      },
+                    },
+                    required: ["duration_minutes", "exercises"],
+                    additionalProperties: false,
+                  },
+                },
+                required: ["day", "focus", "warmup", "workout", "cooldown"],
+                additionalProperties: false,
+              },
+            },
+            safety_considerations: {
+              type: "array",
+              items: {
+                type: "string",
+              },
+            },
+          },
+          required: ["program_overview", "weekly_schedule", "safety_considerations"],
+          additionalProperties: false,
+        },
+      },
+    };
   } else if (category === "yoga") {
-    return {};
+    return {
+      format: {
+        type: "json_schema",
+        name: "yoga_program",
+        strict: true,
+        schema: {
+          type: "object",
+          properties: {
+            program_overview: {
+              type: "object",
+              properties: {
+                estimated_time_per_session: {
+                  type: "string",
+                },
+              },
+              required: ["estimated_time_per_session"],
+              additionalProperties: false,
+            },
+            weekly_schedule: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  day: {
+                    type: "string",
+                  },
+                  focus: {
+                    type: "string",
+                  },
+                  warmup: {
+                    type: "object",
+                    properties: {
+                      duration_minutes: {
+                        type: "number",
+                      },
+                      exercises: {
+                        type: "array",
+                        items: {
+                          type: "string",
+                        },
+                      },
+                    },
+                    required: ["duration_minutes", "exercises"],
+                    additionalProperties: false,
+                  },
+                  workout: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        exercise_name: {
+                          type: "string",
+                        },
+                        sets: {
+                          type: "number",
+                        },
+                        reps: {
+                          type: "string",
+                        },
+                        muscle_activation: {
+                          type: "object",
+                          properties: {
+                            chest: {
+                              type: "boolean",
+                            },
+                            front_delts: {
+                              type: "boolean",
+                            },
+                            side_delts: {
+                              type: "boolean",
+                            },
+                            rear_delts: {
+                              type: "boolean",
+                            },
+                            biceps: {
+                              type: "boolean",
+                            },
+                            triceps: {
+                              type: "boolean",
+                            },
+                            forearms: {
+                              type: "boolean",
+                            },
+                            traps: {
+                              type: "boolean",
+                            },
+                            lats: {
+                              type: "boolean",
+                            },
+                            rhomboids: {
+                              type: "boolean",
+                            },
+                            lower_back: {
+                              type: "boolean",
+                            },
+                            abs: {
+                              type: "boolean",
+                            },
+                            obliques: {
+                              type: "boolean",
+                            },
+                            quadriceps: {
+                              type: "boolean",
+                            },
+                            hamstrings: {
+                              type: "boolean",
+                            },
+                            glutes: {
+                              type: "boolean",
+                            },
+                            calves: {
+                              type: "boolean",
+                            },
+                            adductors: {
+                              type: "boolean",
+                            },
+                          },
+                          required: [
+                            "chest",
+                            "front_delts",
+                            "side_delts",
+                            "rear_delts",
+                            "biceps",
+                            "triceps",
+                            "forearms",
+                            "traps",
+                            "lats",
+                            "rhomboids",
+                            "lower_back",
+                            "abs",
+                            "obliques",
+                            "quadriceps",
+                            "hamstrings",
+                            "glutes",
+                            "calves",
+                            "adductors",
+                          ],
+                          additionalProperties: false,
+                        },
+                      },
+                      required: ["exercise_name", "sets", "reps", "muscle_activation"],
+                      additionalProperties: false,
+                    },
+                  },
+                  cooldown: {
+                    type: "object",
+                    properties: {
+                      duration_minutes: {
+                        type: "number",
+                      },
+                      exercises: {
+                        type: "array",
+                        items: {
+                          type: "string",
+                        },
+                      },
+                    },
+                    required: ["duration_minutes", "exercises"],
+                    additionalProperties: false,
+                  },
+                },
+                required: ["day", "focus", "warmup", "workout", "cooldown"],
+                additionalProperties: false,
+              },
+            },
+            safety_considerations: {
+              type: "array",
+              items: {
+                type: "string",
+              },
+            },
+          },
+          required: ["program_overview", "weekly_schedule", "safety_considerations"],
+          additionalProperties: false,
+        },
+      },
+    };
   } else if (category === "running") {
-    return {};
+    return {
+      format: {
+        type: "json_schema",
+        name: "running_program",
+        strict: true,
+        schema: {
+          type: "object",
+          properties: {
+            program_overview: {
+              type: "object",
+              properties: {
+                goal: {
+                  type: "string",
+                },
+                estimated_time_per_session: {
+                  type: "string",
+                },
+              },
+              required: ["goal", "estimated_time_per_session"],
+              additionalProperties: false,
+            },
+            weekly_schedule: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  day: {
+                    type: "string",
+                  },
+                  focus: {
+                    type: "string",
+                  },
+                  warmup: {
+                    type: "object",
+                    properties: {
+                      duration_minutes: {
+                        type: "number",
+                      },
+                      exercises: {
+                        type: "array",
+                        items: {
+                          type: "string",
+                        },
+                      },
+                    },
+                    required: ["duration_minutes", "exercises"],
+                    additionalProperties: false,
+                  },
+                  workout: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        exercise_name: {
+                          type: "string",
+                        },
+                        distance: {
+                          type: ["string", "null"],
+                        },
+                        duration: {
+                          type: ["string", "null"],
+                        },
+                        repetitions: {
+                          type: ["number", "null"],
+                        },
+                        interval_distance: {
+                          type: ["string", "null"],
+                        },
+                        rest: {
+                          type: ["object", "null"],
+                          properties: {
+                            duration: {
+                              type: "string",
+                            },
+                          },
+                          required: ["duration"],
+                          additionalProperties: false,
+                        },
+                        intensity: {
+                          type: "object",
+                          properties: {
+                            level: {
+                              type: "string",
+                            },
+                            heart_rate: {
+                              type: "string",
+                            },
+                          },
+                          required: ["level", "heart_rate"],
+                          additionalProperties: false,
+                        },
+                      },
+                      required: [
+                        "exercise_name",
+                        "distance",
+                        "duration",
+                        "repetitions",
+                        "interval_distance",
+                        "rest",
+                        "intensity",
+                      ],
+                      additionalProperties: false,
+                    },
+                  },
+                  cooldown: {
+                    type: "object",
+                    properties: {
+                      duration_minutes: {
+                        type: "number",
+                      },
+                      exercises: {
+                        type: "array",
+                        items: {
+                          type: "string",
+                        },
+                      },
+                    },
+                    required: ["duration_minutes", "exercises"],
+                    additionalProperties: false,
+                  },
+                },
+                required: ["day", "focus", "warmup", "workout", "cooldown"],
+                additionalProperties: false,
+              },
+            },
+            safety_considerations: {
+              type: "array",
+              items: {
+                type: "string",
+              },
+            },
+          },
+          required: ["program_overview", "weekly_schedule", "safety_considerations"],
+          additionalProperties: false,
+        },
+      },
+    };
   }
 }

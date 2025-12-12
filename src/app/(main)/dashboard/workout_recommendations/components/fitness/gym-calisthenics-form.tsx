@@ -27,8 +27,8 @@ export default function GymCalisthenicsForm({ onSubmit, isCategoryGym, onBack }:
     muscleGroups: [],
     targetWeight: "",
     targetWeightValue: "",
-    injuries: "",
-    exercises: "",
+    healthIssues: "",
+    specificExercises: "",
   });
 
   const muscleGroupOptions = ["Гърди", "Гръб", "Рамене", "Ръце", "Корем", "Крака", "Нямам предпочитания"];
@@ -91,13 +91,13 @@ export default function GymCalisthenicsForm({ onSubmit, isCategoryGym, onBack }:
       ],
     },
     {
-      field: "injuries",
+      field: "healthIssues",
       title: "Съществуват ли някакви здравословни проблеми, контузии или ограничения?",
       type: "textarea",
       placeholder: "напр. болки в кръста, проблеми със ставите, сърдечни заболявания... или 'Няма'",
     },
     {
-      field: "exercises",
+      field: "specificExercises",
       title: "Има ли конкретни упражнения, които желаете да бъдат включени в програмата?",
       type: "textarea",
       placeholder: "напр. Bench Press, Deadlift, Squats, Pull-ups... или 'Нямам предпочитания'",

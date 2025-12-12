@@ -22,7 +22,7 @@ export default function RunningForm({ onSubmit, onBack }: RunningFormProps) {
     frequency: "",
     warmupCooldown: "",
     terrain: "",
-    injuries: "",
+    healthIssues: "",
   });
 
   const questions = [
@@ -81,7 +81,7 @@ export default function RunningForm({ onSubmit, onBack }: RunningFormProps) {
       ],
     },
     {
-      field: "injuries",
+      field: "healthIssues",
       title: "Съществуват ли някакви здравословни проблеми, контузии или ограничения?",
       type: "textarea",
       placeholder: "напр. болки в коленете, проблеми със ставите, астма... или 'Няма'",
