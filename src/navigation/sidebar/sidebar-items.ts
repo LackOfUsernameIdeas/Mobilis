@@ -59,6 +59,11 @@ export const sidebarItems: NavGroup[] = [
         icon: ChartBar,
       },
       {
+        title: "Статистики",
+        url: "/dashboard/stats",
+        icon: ChartBar,
+      },
+      {
         title: "CRM",
         url: "/dashboard/crm",
         icon: ChartBar,
