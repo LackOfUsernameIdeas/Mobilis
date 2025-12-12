@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -115,8 +115,13 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
   const [recommendations, setRecommendations] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const hasFetched = useRef(false);
 
   useEffect(() => {
+    // Only fetch once when component mounts
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+
     const fetchRecommendations = async () => {
       setLoading(true);
       setError(null);
@@ -134,17 +139,19 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
           }),
         });
 
+        if (!response.ok) {
+          setError("An error occurred while fetching recommendations");
+          return;
+        }
+
         const responseJson = await response.json();
         const workoutProgram = JSON.parse(responseJson);
         console.log("workoutProgram: ", workoutProgram);
         console.log("answers: ", answers);
 
         const exampleURL = fetchYouTubeEmbed("Incline Dumbbell Press");
-
         console.log("exampleURL: ", exampleURL);
-        if (!response.ok) {
-          setError("An error occurred while fetching recommendations");
-        }
+
         setRecommendations(workoutProgram);
       } catch (err) {
         setError("Failed to fetch recommendations");
@@ -155,7 +162,7 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
     };
 
     fetchRecommendations();
-  }, [category, answers, userStats]);
+  }, []);
 
   return (
     <div className="space-y-4 sm:space-y-6">
