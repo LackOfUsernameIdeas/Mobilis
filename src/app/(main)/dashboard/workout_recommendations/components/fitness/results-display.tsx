@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { fetchYouTubeEmbed } from "../../helper_functions";
 
 interface ResultsDisplayProps {
   category: "gym" | "calisthenics" | "yoga" | "running";
@@ -138,6 +139,9 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
         console.log("workoutProgram: ", workoutProgram);
         console.log("answers: ", answers);
 
+        const exampleURL = fetchYouTubeEmbed("Incline Dumbbell Press");
+
+        console.log("exampleURL: ", exampleURL);
         if (!response.ok) {
           setError("An error occurred while fetching recommendations");
         }
