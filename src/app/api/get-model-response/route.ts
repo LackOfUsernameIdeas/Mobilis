@@ -4,7 +4,6 @@ export async function POST(req: NextRequest) {
   try {
     const { category, answers, userStats } = await req.json();
 
-    console.log();
     if (!category || !answers) {
       return NextResponse.json({ error: "Category and answers are required" }, { status: 400 });
     }
