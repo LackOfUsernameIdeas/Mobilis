@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +18,8 @@ interface ExerciseModalProps {
     notes?: string;
     muscle_activation?: Record<string, boolean>;
   };
+  cachedVideoUrl?: string;
+  onVideoFetched: (exerciseName: string, url: string) => void;
 }
 
 const muscleColors = {
@@ -66,10 +68,23 @@ const muscleLabels: Record<string, string> = {
   adductors: "Adductors",
 };
 
-export default function ExerciseModal({ open, onOpenChange, exercise }: ExerciseModalProps) {
+export default function ExerciseModal({
+  open,
+  onOpenChange,
+  exercise,
+  cachedVideoUrl,
+  onVideoFetched,
+}: ExerciseModalProps) {
   const [youtubeUrl, setYoutubeUrl] = useState<string | null>(null);
   const [loadingVideo, setLoadingVideo] = useState(false);
   const [videoError, setVideoError] = useState(false);
+
+  // Load cached URL when modal opens
+  useEffect(() => {
+    if (open && cachedVideoUrl) {
+      setYoutubeUrl(cachedVideoUrl);
+    }
+  }, [open, cachedVideoUrl]);
 
   const handleFetchVideo = async () => {
     setLoadingVideo(true);
@@ -78,6 +93,8 @@ export default function ExerciseModal({ open, onOpenChange, exercise }: Exercise
       const url = await fetchYouTubeEmbed(exercise.exercise_name);
       if (url) {
         setYoutubeUrl(url);
+        // Cache the URL in parent component
+        onVideoFetched(exercise.exercise_name, url);
       } else {
         setVideoError(true);
       }
@@ -91,7 +108,7 @@ export default function ExerciseModal({ open, onOpenChange, exercise }: Exercise
 
   const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen) {
-      // Reset video state when closing
+      // Reset video state when closing (but keep in cache)
       setYoutubeUrl(null);
       setVideoError(false);
     }

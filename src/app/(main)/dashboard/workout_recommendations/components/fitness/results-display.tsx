@@ -35,6 +35,9 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
   const [selectedExercise, setSelectedExercise] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Video URL cache - stores fetched URLs for this recommendation set
+  const [videoCache, setVideoCache] = useState<Record<string, string>>({});
+
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
@@ -78,6 +81,14 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
   const handleExerciseClick = (exercise: any) => {
     setSelectedExercise(exercise);
     setIsModalOpen(true);
+  };
+
+  // Function to update the video cache
+  const handleVideoFetched = (exerciseName: string, url: string) => {
+    setVideoCache((prev) => ({
+      ...prev,
+      [exerciseName]: url,
+    }));
   };
 
   return (
@@ -136,7 +147,13 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
       </Card>
 
       {selectedExercise && (
-        <ExerciseModal open={isModalOpen} onOpenChange={setIsModalOpen} exercise={selectedExercise} />
+        <ExerciseModal
+          open={isModalOpen}
+          onOpenChange={setIsModalOpen}
+          exercise={selectedExercise}
+          cachedVideoUrl={videoCache[selectedExercise.exercise_name]}
+          onVideoFetched={handleVideoFetched}
+        />
       )}
     </div>
   );
