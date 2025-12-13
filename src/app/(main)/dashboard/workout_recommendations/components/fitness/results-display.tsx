@@ -8,7 +8,7 @@ import ExerciseModal from "./exercise-modal";
 import { Button } from "@/components/ui/button";
 
 interface ResultsDisplayProps {
-  category: "gym" | "calisthenics" | "yoga" | "running";
+  category: "gym" | "calisthenics" | "yoga";
   answers: Record<string, any>;
   userStats?: {
     gender?: "male" | "female";
@@ -26,7 +26,6 @@ const categoryTitles = {
   gym: "Препоръки за Фитнес",
   calisthenics: "Препоръки за Калистеника",
   yoga: "Препоръки за Йога",
-  running: "Препоръки за Бягане",
 };
 
 export default function ResultsDisplay({ category, answers, userStats, onReset }: ResultsDisplayProps) {

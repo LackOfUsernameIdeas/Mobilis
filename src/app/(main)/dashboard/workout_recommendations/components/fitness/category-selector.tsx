@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface CategorySelectorProps {
-  onSelectCategory: (category: "gym" | "calisthenics" | "yoga" | "running") => void;
+  onSelectCategory: (category: "gym" | "calisthenics" | "yoga") => void;
 }
 
 export default function CategorySelector({ onSelectCategory }: CategorySelectorProps) {
@@ -18,19 +18,13 @@ export default function CategorySelector({ onSelectCategory }: CategorySelectorP
       id: "calisthenics",
       title: "Калистеника",
       description: "Получете персонализирани планове за тренировки с калистеника",
-      icon: "🏋️",
+      icon: "🏃",
     },
     {
       id: "yoga",
       title: "Йога",
       description: "Намерете йога практики, които отговарят на вашите цели",
       icon: "🧘",
-    },
-    {
-      id: "running",
-      title: "Бягане",
-      description: "Създайте персонализиран план за бягане въз основа на вашите цели",
-      icon: "🏃",
     },
   ];
 
@@ -41,7 +35,7 @@ export default function CategorySelector({ onSelectCategory }: CategorySelectorP
           <Card
             key={category.id}
             className="hover:border-primary hover:bg-card/80 cursor-pointer transition-all duration-200 hover:shadow-md active:scale-95"
-            onClick={() => onSelectCategory(category.id as "gym" | "calisthenics" | "yoga" | "running")}
+            onClick={() => onSelectCategory(category.id as "gym" | "calisthenics" | "yoga")}
           >
             <CardHeader>
               <div className="mb-3 text-4xl sm:mb-4 sm:text-5xl">{category.icon}</div>

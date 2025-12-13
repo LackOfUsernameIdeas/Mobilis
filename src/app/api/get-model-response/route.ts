@@ -54,8 +54,6 @@ function generateSystemPrompt(category: string): string | undefined {
     return "Ти си професионален треньор по калистеника. Задачата ти е да създаваш персонализирани калистенични тренировъчни програми (упражнения, използващи САМО теглото на собственото тяло) на база предоставените данни за потребителя. Винаги отговаряй САМО с валиден JSON формат, без допълнителен текст или markdown.";
   } else if (category === "yoga") {
     return "Ти си професионален йога инструктор. Задачата ти е да създаваш персонализирани йога програми на база предоставените данни за потребителя. Винаги отговаряй САМО с валиден JSON формат, без допълнителен текст или markdown.";
-  } else if (category === "running") {
-    return "Ти си професионален треньор по бягане. Задачата ти е да създаваш персонализирани тренировъчни програми за бягане на база предоставените данни за потребителя. Винаги отговаряй САМО с валиден JSON формат, без допълнителен текст или markdown.";
   }
 }
 
@@ -224,106 +222,6 @@ function generateUserPrompt(category: string, answers: Record<string, any>, user
       - warmup.exercises: ВСИЧКИ упражнения и обяснения САМО на БЪЛГАРСКИ (например: "Центриране и медитация (1-2 минути)", "Дихателни техники - дълбоко коремно дишане (2-3 минути)", "Слънчеви поздрави (Сурия Намаскар) - 3-5 цикъла")
       - cooldown.exercises: ВСИЧКИ упражнения и обяснения САМО на БЪЛГАРСКИ (например: "Леки разтягания в седнало положение", "Шавасана - финална релаксация (5-10 минути)")
       - safety_considerations: ДО 3 съвета и ВСИЧКИ да са на български`;
-  } else if (category === "running") {
-    return `Създай персонализирана седмична програма за бягане за потребител със следните характеристики:
-
-      **Лични данни:**
-      - Пол: ${userStats?.gender || "не е посочен"}
-      - Височина: ${userStats?.height || "не е посочена"} см
-      - Тегло: ${userStats?.weight || "не е посочено"} кг
-      - BMI: ${userStats?.bmi || "не е изчислен"} (при здравословен диапазон: 18.5-25)
-      - Body Fat: ${userStats?.bodyFat || "не е изчислен"}%
-      - Маса на телесните мазнини: ${userStats?.fatMass || "не е изчислена"} кг
-      - Чиста телесна маса: ${userStats?.leanMass || "не е изчислена"} кг
-
-      **Тренировъчни предпочитания:**
-      - Цел: ${answers.mainGoal || "не е посочена"}
-      - Ниво на опит: ${answers.experience || "не е посочено"}
-      - Честота на тренировки: ${answers.frequency || "не е посочена"} дни седмично
-      - Загряване преди и разтягане след тренировка: ${answers.warmupCooldown || "не е посочено"}
-      - Предпочитан терен: ${answers.terrain || "нямам предпочитания"}
-      - Здравословни проблеми, контузии или ограничения: ${answers.healthIssues || "Няма"}
-
-      **Цели и подход:**
-      - Вземи предвид личните данни и целта на потребителя
-      - При цел 'weight_loss' (отслабване) се фокусирай върху по-дълги, умерени бягания със зона на сърдечната честота от 2 до 3 (60-75%), интервални тренировки (редуване на по-бързи и по-бавни сегменти) за максимално изгаряне на калории
-      - При цел 'endurance' (издръжливост) приоритизирай постепенно увеличаване на дистанцията с по-бавно темпо, дълги бягания и градивно натрупване на километри
-      - При цел '5k_race' препоръчвай темпо бягания, интервали от 400 до 1000 метра и едно по-дълго бягане за седмицата
-      - При цел '10k_race' развивай издръжливост чрез стабилно темпо и по-дълги интервали
-      - При цел 'half_marathon' увеличавай километрите постепенно, включвай дълги бягания до 18–20 км и работа в състезателно темпо
-      - При цел 'marathon' следвай по-дълъг план, натрупвай километри, прави дълги бягания до 32–35 км и поддържай контролирана издръжливост
-      - При цел 'speed' включвай спринтове от 200 до 400 метра, хълмове, темпо бягания и фартлек
-      - При цел 'general_fitness' балансирай между лесни бягания, темпо тренировки и интервали за поддържане на форма
-
-      **Ниво на опит:**
-      - При 'beginner' ниво препоръчвай интервали на бягане и тичане (например 2 мин бягане / 1 мин ходене), много къси дистанции (1-3 км), бавно темпо, фокус върху изграждане на аеробна база
-      - При 'basic' ниво включвай непрекъснато бягане, 3-5 км дистанции, бързо темпо, въвеждане на лек фартлек
-      - При 'intermediate' ниво препоръчвай средно темпо, интервални тренировки - редуване на по-бързи и по-бавни сегменти (800m-1km повторения), 5-10 км дистанции, 1 дълго бягане седмично
-      - При 'advanced' ниво включвай сложни тренировки, hill repeats, по-агресивни интервали (400m-1200m), фартлек, 10-15 км дистанции
-      - При 'expert' ниво препоръчвай интензивни тренировки, голям пробег (60-100+ км седмично)
-
-      **Терен:**
-      - При 'улица/парк' планирай равни повърхности, асфалт, паркови пътеки - стандартни бягания с постоянно темпо
-      - При 'писта' (track) се фокусирай върху точни интервали (200m, 400m, 800m, 1km повторения) и контрол на темпото с прецизно измерване
-      - При 'планини' включвай hill training, неравен терен, по-бавно темпо, фокус върху сила и техника, внимание към терена
-      - При 'бягаща пътека' давай точни настройки за наклон и скорост в контролирана среда
-      - При 'нямам предпочитания' комбинирай различни терени според типа тренировка
-
-      **Структура на тренировките:**
-      - При 'Да' за загряване и разтягане:
-        * warmup трябва да включва: Бързо ходене (3-5 мин), Упражнения за разтягане - раздвижване на краката напред-назад/в страни (leg swings), high knees, butt kicks (5-7 мин), Лек джогинг (5-10 мин)
-        * cooldown трябва да включва: Лек джогинг/ходене (5-10 мин), Упражнения за разтягане на долната част на тялото - бедрени мускули, прасци, хип флексори (10-15 мин)
-
-      **Здравословни съображения:**
-      - Адаптирай програмата, според посочените здравословни проблеми, ако има такава (избягвай упражнения, които биха влошили здравословното състояние на потребителя или дай алтернативни упражнения)
-      - При проблеми със ставите (колене, глезени, тазобедрени стави) давай по-кратки дистанции, избягвай hill repeats
-      - При астма или дихателни проблеми поддържай по-ниска интензивност, избягвай студен въздух, включвай повече леки тичания
-      - При сърдечни проблеми поддържай ниска интензивност (зона на сърдечната честота от 1 до 2)
-      - При контузии модифицирай или изключи проблемни тренировки
-
-      **Наименования:**
-      - exercise_name трябва да съдържа английското име и В СКОБИ българския превод (например: "Easy Run (Леко бягане)", "Tempo Run (Темпо бягане)", "Interval Training (Интервална тренировка)", "Long Run (Дълго бягане)", "Hill Repeats (Повторения по наклон)", "Fartlek Run (Фартлек)", "Recovery Run (Възстановително бягане)", "Race Pace Run (Бягане със състезателно темпо)", "Run/Walk Intervals (Интервали на бягане и ходене)")
-      - focus трябва да е изцяло на български (например: "Издръжливост и изгаряне на калории", "Интервална тренировка (редуване на по-бързи и по-бавни сегменти) за скорост", "Възстановяване", "Темпо работа")
-
-      **Типове бягания:**
-      - **Easy Run (Леко бягане)** - Леко бягане, леко темпо, 65-75% (сърдечната честота) 
-      - **Long Run (Дълго бягане)** - Дълго бягане, стабилно темпо, издръжливост
-      - **Tempo Run (Темпо бягане)** - Темпо бягане, 80-90% (сърдечната честота)
-      - **Interval Training (Интервална тренировка)** - Интервални тренировки с повторения
-      - **Fartlek Run (Фартлек)** - Свободни интервали, променливо темпо
-      - **Hill Repeats (Повторения по наклон)** - Повторения по наклон
-      - **Recovery Run (Възстановително бягане)** - Възстановително бягане, много лесно
-      - **Race Pace Run (Бягане със състезателно темпо)** - Състезателно темпо
-      - **Run/Walk Intervals (Интервали на бягане и ходене)** - Комбинация бягане и ходене
-
-      **Формат на полетата:**
-      - distance: "5 km" или "3.2 km" или null (ако е базирано на време)
-      - duration: "30 minutes" или "45 minutes" или null (ако е базирано на дистанция)
-      - repetitions: число (8, 6, 10) или null (за продължителни бягания)
-      - interval_distance: "400m" или "800m" или "2 minutes" (за интервали на бягане и ходене)
-      - rest.duration: НА БЪЛГАРСКИ - "90 секунди" или "2 минути" (само времето)
-      - intensity.level: НА БЪЛГАРСКИ - "Лесно", "Темпо", "Интензивно" (само нивото)
-      - intensity.heart_rate: "65-75%" или "80-90%" или "85-95%" (само процентите)
-      - focus: НА БЪЛГАРСКИ - "Издръжливост", "Интервална работа", "Възстановяване", и т.н.
-      
-      **КРИТИЧНО ВАЖНО - ЗАДЪЛЖИТЕЛНИ ПРАВИЛА ЗА ЕЗИК И ФОРМАТ:**
-      - day: ВИНАГИ използвай формат "Ден 1", "Ден 2", "Ден 3", "Ден 4" и т.н. (НИКОГА "Day 1", "Day 2")
-      - focus: ВИНАГИ на БЪЛГАРСКИ (например: "Издръжливост и изгаряне на калории", "Интервална тренировка за скорост", "Възстановяване")
-      - exercise_name: ВИНАГИ английско име и В СКОБИ българския превод (например: "Easy Run (Леко бягане)", "Tempo Run (Темпо бягане)", "Interval Training (Интервална тренировка)")
-      - notes: ВИНАГИ на БЪЛГАРСКИ (например: "Поддържай стабилно темпо", "Фокусирай се върху правилната техника")
-      - distance: "5 km" или "3.2 km" или null
-      - duration: "30 minutes" или "45 minutes" или null
-      - interval_distance: "400m" или "800m" или "2 minutes"
-      - rest.duration: ВИНАГИ на БЪЛГАРСКИ (например: "90 секунди", "2 минути")
-      - intensity.level: ВИНАГИ на БЪЛГАРСКИ (например: "Лесно", "Темпо", "Интензивно")
-      - intensity.heart_rate: "65-75%" или "80-90%" или "85-95%"
-      - warmup.exercises: ВСИЧКИ упражнения и обяснения САМО на БЪЛГАРСКИ (например: "Бързо ходене (3-5 мин)", "Лек джогинг (5-10 мин)")
-      - warmup.duration: ВИНАГИ на БЪЛГАРСКИ (например: "10-15 минути")
-      - cooldown.exercises: ВСИЧКИ упражнения и обяснения САМО на БЪЛГАРСКИ (например: "Лек джогинг/ходене (5-10 мин)", "Разтягания на hamstrings, quads, calves, hip flexors (10-15 мин)")
-      - cooldown.duration: ВИНАГИ на БЪЛГАРСКИ (например: "10-15 минути")
-      - nutrition_tips: ДО 3 съвета и ВСИЧКИ да са на бЪЛГАРСКИ
-      - safety_considerations: ДО 3 съвета и ВСИЧКИ да са на бЪЛГАРСКИ
-      `;
   }
 
   // Placeholder
@@ -340,19 +238,6 @@ function generateResponseFormat(category: string) {
         schema: {
           type: "object",
           properties: {
-            program_overview: {
-              type: "object",
-              properties: {
-                goal: {
-                  type: "string",
-                },
-                estimated_time_per_session: {
-                  type: "string",
-                },
-              },
-              required: ["goal", "estimated_time_per_session"],
-              additionalProperties: false,
-            },
             weekly_schedule: {
               type: "array",
               items: {
@@ -507,7 +392,7 @@ function generateResponseFormat(category: string) {
               },
             },
           },
-          required: ["program_overview", "weekly_schedule", "safety_considerations"],
+          required: ["weekly_schedule", "safety_considerations"],
           additionalProperties: false,
         },
       },
@@ -521,19 +406,6 @@ function generateResponseFormat(category: string) {
         schema: {
           type: "object",
           properties: {
-            program_overview: {
-              type: "object",
-              properties: {
-                goal: {
-                  type: "string",
-                },
-                estimated_time_per_session: {
-                  type: "string",
-                },
-              },
-              required: ["goal", "estimated_time_per_session"],
-              additionalProperties: false,
-            },
             weekly_schedule: {
               type: "array",
               items: {
@@ -688,7 +560,7 @@ function generateResponseFormat(category: string) {
               },
             },
           },
-          required: ["program_overview", "weekly_schedule", "safety_considerations"],
+          required: ["weekly_schedule", "safety_considerations"],
           additionalProperties: false,
         },
       },
@@ -702,16 +574,6 @@ function generateResponseFormat(category: string) {
         schema: {
           type: "object",
           properties: {
-            program_overview: {
-              type: "object",
-              properties: {
-                estimated_time_per_session: {
-                  type: "string",
-                },
-              },
-              required: ["estimated_time_per_session"],
-              additionalProperties: false,
-            },
             weekly_schedule: {
               type: "array",
               items: {
@@ -866,145 +728,7 @@ function generateResponseFormat(category: string) {
               },
             },
           },
-          required: ["program_overview", "weekly_schedule", "safety_considerations"],
-          additionalProperties: false,
-        },
-      },
-    };
-  } else if (category === "running") {
-    return {
-      format: {
-        type: "json_schema",
-        name: "running_program",
-        strict: true,
-        schema: {
-          type: "object",
-          properties: {
-            program_overview: {
-              type: "object",
-              properties: {
-                goal: {
-                  type: "string",
-                },
-                estimated_time_per_session: {
-                  type: "string",
-                },
-              },
-              required: ["goal", "estimated_time_per_session"],
-              additionalProperties: false,
-            },
-            weekly_schedule: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  day: {
-                    type: "string",
-                  },
-                  focus: {
-                    type: "string",
-                  },
-                  warmup: {
-                    type: "object",
-                    properties: {
-                      duration_minutes: {
-                        type: "number",
-                      },
-                      exercises: {
-                        type: "array",
-                        items: {
-                          type: "string",
-                        },
-                      },
-                    },
-                    required: ["duration_minutes", "exercises"],
-                    additionalProperties: false,
-                  },
-                  workout: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      properties: {
-                        exercise_name: {
-                          type: "string",
-                        },
-                        distance: {
-                          type: ["string", "null"],
-                        },
-                        duration: {
-                          type: ["string", "null"],
-                        },
-                        repetitions: {
-                          type: ["number", "null"],
-                        },
-                        interval_distance: {
-                          type: ["string", "null"],
-                        },
-                        rest: {
-                          type: ["object", "null"],
-                          properties: {
-                            duration: {
-                              type: "string",
-                            },
-                          },
-                          required: ["duration"],
-                          additionalProperties: false,
-                        },
-                        intensity: {
-                          type: "object",
-                          properties: {
-                            level: {
-                              type: "string",
-                            },
-                            heart_rate: {
-                              type: "string",
-                            },
-                          },
-                          required: ["level", "heart_rate"],
-                          additionalProperties: false,
-                        },
-                      },
-                      required: [
-                        "exercise_name",
-                        "distance",
-                        "duration",
-                        "repetitions",
-                        "interval_distance",
-                        "rest",
-                        "intensity",
-                      ],
-                      additionalProperties: false,
-                    },
-                  },
-                  cooldown: {
-                    type: "object",
-                    properties: {
-                      duration_minutes: {
-                        type: "number",
-                      },
-                      exercises: {
-                        type: "array",
-                        items: {
-                          type: "string",
-                        },
-                      },
-                    },
-                    required: ["duration_minutes", "exercises"],
-                    additionalProperties: false,
-                  },
-                },
-                required: ["day", "focus", "warmup", "workout", "cooldown"],
-                additionalProperties: false,
-              },
-            },
-            safety_considerations: {
-              type: "array",
-              items: {
-                type: "string",
-              },
-            },
-          },
-          required: ["program_overview", "weekly_schedule", "safety_considerations"],
+          required: ["weekly_schedule", "safety_considerations"],
           additionalProperties: false,
         },
       },

@@ -4,10 +4,9 @@ import { useState } from "react";
 import CategorySelector from "./components/fitness/category-selector";
 import GymCalisthenicsForm from "./components/fitness/gym-calisthenics-form";
 import YogaForm from "./components/fitness/yoga-form";
-import RunningForm from "./components/fitness/running-form";
 import ResultsDisplay from "./components/fitness/results-display";
 
-type Category = "gym" | "calisthenics" | "yoga" | "running" | null;
+type Category = "gym" | "calisthenics" | "yoga" | null;
 type FormAnswers = Record<string, any>;
 
 export default function Page() {
@@ -65,7 +64,6 @@ export default function Page() {
               <GymCalisthenicsForm isCategoryGym={false} onSubmit={handleFormSubmit} onBack={handleGoBack} />
             )}
             {selectedCategory === "yoga" && <YogaForm onSubmit={handleFormSubmit} onBack={handleGoBack} />}
-            {selectedCategory === "running" && <RunningForm onSubmit={handleFormSubmit} onBack={handleGoBack} />}
           </div>
         )}
       </div>
