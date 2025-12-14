@@ -94,28 +94,57 @@ export default function GymCalisthenicsForm({ onSubmit, isCategoryGym, onBack }:
       field: "healthIssues",
       title: "Съществуват ли някакви здравословни проблеми, контузии или ограничения?",
       type: "textarea",
-      placeholder: "напр. болки в кръста, проблеми със ставите, сърдечни заболявания... или 'Няма'",
+      placeholder: "напр. болки в кръста, проблеми със ставите, сърдечни заболявания",
     },
     {
       field: "specificExercises",
       title: "Има ли конкретни упражнения, които желаете да бъдат включени в програмата?",
       type: "textarea",
-      placeholder: "напр. Bench Press, Deadlift, Squats, Pull-ups... или 'Нямам предпочитания'",
+      placeholder: "напр. Bench Press, Deadlift, Squats, Pull-ups",
     },
   ];
 
   const handleChange = (field: string, value: any) => {
-    setAnswers((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setAnswers((prev) => {
+      // If changing targetWeight to "no", clear the targetWeightValue
+      if (field === "targetWeight" && value === "no") {
+        return {
+          ...prev,
+          [field]: value,
+          targetWeightValue: "",
+        };
+      }
+      return {
+        ...prev,
+        [field]: value,
+      };
+    });
   };
 
   const handleMuscleGroupChange = (group: string, checked: boolean) => {
-    setAnswers((prev) => ({
-      ...prev,
-      muscleGroups: checked ? [...prev.muscleGroups, group] : prev.muscleGroups.filter((g: string) => g !== group),
-    }));
+    setAnswers((prev) => {
+      // If "Нямам предпочитания" is being checked, clear all others
+      if (group === "Нямам предпочитания" && checked) {
+        return {
+          ...prev,
+          muscleGroups: ["Нямам предпочитания"],
+        };
+      }
+
+      // If any other group is being checked, remove "Нямам предпочитания"
+      if (checked && prev.muscleGroups.includes("Нямам предпочитания")) {
+        return {
+          ...prev,
+          muscleGroups: [group],
+        };
+      }
+
+      // Normal checkbox behavior
+      return {
+        ...prev,
+        muscleGroups: checked ? [...prev.muscleGroups, group] : prev.muscleGroups.filter((g: string) => g !== group),
+      };
+    });
   };
 
   const isCurrentQuestionAnswered = (): boolean => {
@@ -281,13 +310,36 @@ export default function GymCalisthenicsForm({ onSubmit, isCategoryGym, onBack }:
               )}
 
               {question.type === "textarea" && (
-                <Textarea
-                  id={question.field}
-                  placeholder={question.placeholder}
-                  value={answers[question.field]}
-                  onChange={(e) => handleChange(question.field, e.target.value)}
-                  className="bg-input border-border text-foreground placeholder:text-muted-foreground min-h-24 resize-none text-xs sm:text-sm"
-                />
+                <div className="space-y-3">
+                  <Textarea
+                    id={question.field}
+                    placeholder={question.placeholder}
+                    value={answers[question.field]}
+                    onChange={(e) => handleChange(question.field, e.target.value)}
+                    disabled={answers[question.field] === "Няма"}
+                    className="bg-input border-border text-foreground placeholder:text-muted-foreground min-h-24 resize-none text-xs disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm"
+                  />
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`${question.field}-none`}
+                      checked={answers[question.field] === "Няма"}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          handleChange(question.field, "Няма");
+                        } else {
+                          handleChange(question.field, "");
+                        }
+                      }}
+                      className="h-4 w-4 flex-shrink-0"
+                    />
+                    <Label
+                      htmlFor={`${question.field}-none`}
+                      className="text-muted-foreground cursor-pointer text-xs font-normal sm:text-sm"
+                    >
+                      Няма
+                    </Label>
+                  </div>
+                </div>
               )}
 
               {question.field === "targetWeight" && answers.targetWeight === "yes" && (

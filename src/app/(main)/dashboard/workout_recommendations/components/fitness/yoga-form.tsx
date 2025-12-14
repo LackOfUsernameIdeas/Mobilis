@@ -102,13 +102,13 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
       field: "healthIssues",
       title: "Съществуват ли някакви здравословни проблеми, контузии или ограничения?",
       type: "textarea",
-      placeholder: "напр. болки в кръста, проблеми със ставите, високо кръвно налягане... или 'Няма'",
+      placeholder: "напр. болки в кръста, проблеми със ставите, високо кръвно налягане",
     },
     {
       field: "specificExercises",
       title: "Има ли конкретни йога пози, които желаете да бъдат включени в програмата?",
       type: "textarea",
-      placeholder: "напр. Downward Dog, Warrior poses, Tree Pose, Headstand... или 'Нямам предпочитания'",
+      placeholder: "напр. Downward Dog, Warrior poses, Tree Pose, Headstand",
     },
   ];
 
@@ -120,10 +120,29 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
   };
 
   const handleFocusAreaChange = (area: string, checked: boolean) => {
-    setAnswers((prev) => ({
-      ...prev,
-      focusAreas: checked ? [...prev.focusAreas, area] : prev.focusAreas.filter((a: string) => a !== area),
-    }));
+    setAnswers((prev) => {
+      // If "Нямам предпочитания" is being checked, clear all others
+      if (area === "Нямам предпочитания" && checked) {
+        return {
+          ...prev,
+          focusAreas: ["Нямам предпочитания"],
+        };
+      }
+
+      // If any other area is being checked, remove "Нямам предпочитания"
+      if (checked && prev.focusAreas.includes("Нямам предпочитания")) {
+        return {
+          ...prev,
+          focusAreas: [area],
+        };
+      }
+
+      // Normal checkbox behavior
+      return {
+        ...prev,
+        focusAreas: checked ? [...prev.focusAreas, area] : prev.focusAreas.filter((a: string) => a !== area),
+      };
+    });
   };
 
   const isCurrentQuestionAnswered = (): boolean => {
@@ -152,6 +171,8 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
 
   const question = questions[currentQuestion];
   const isLastQuestion = currentQuestion === questions.length - 1;
+
+  console.log("Current Answers: ", answers);
 
   return (
     <Card className="border-border bg-card">
@@ -291,13 +312,36 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
               )}
 
               {question.type === "textarea" && (
-                <Textarea
-                  id={question.field}
-                  placeholder={question.placeholder}
-                  value={answers[question.field]}
-                  onChange={(e) => handleChange(question.field, e.target.value)}
-                  className="bg-input border-border text-foreground placeholder:text-muted-foreground min-h-24 resize-none text-xs sm:text-sm"
-                />
+                <div className="space-y-3">
+                  <Textarea
+                    id={question.field}
+                    placeholder={question.placeholder}
+                    value={answers[question.field]}
+                    onChange={(e) => handleChange(question.field, e.target.value)}
+                    disabled={answers[question.field] === "Няма"}
+                    className="bg-input border-border text-foreground placeholder:text-muted-foreground min-h-24 resize-none text-xs disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm"
+                  />
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`${question.field}-none`}
+                      checked={answers[question.field] === "Няма"}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          handleChange(question.field, "Няма");
+                        } else {
+                          handleChange(question.field, "");
+                        }
+                      }}
+                      className="h-4 w-4 flex-shrink-0"
+                    />
+                    <Label
+                      htmlFor={`${question.field}-none`}
+                      className="text-muted-foreground cursor-pointer text-xs font-normal sm:text-sm"
+                    >
+                      Няма
+                    </Label>
+                  </div>
+                </div>
               )}
             </fieldset>
           </div>

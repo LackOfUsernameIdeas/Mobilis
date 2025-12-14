@@ -78,7 +78,7 @@ function generateUserPrompt(category: string, answers: Record<string, any>, user
       - Фокус върху конкретна мускулна група: ${answers.muscleGroups || "Нямам предпочитания"}
       - Целево тегло: ${answers.targetWeight === "yes" ? answers.targetWeightValue : "не е посочено"} кг 
       - Здравословни проблеми, контузии или ограничения: ${answers.healthIssues || "Няма"}
-      - Специфични упражнения за включване: ${answers.specificExercises || "Нямам предпочитания"}
+      - Специфични упражнения за включване: ${answers.specificExercises || "Няма"}
 
       Важни насоки:
       - Вземи предвид личните данни и целта на потребителя
@@ -120,7 +120,7 @@ function generateUserPrompt(category: string, answers: Record<string, any>, user
       - Фокус върху конкретна мускулна група: ${answers.muscleGroups || "Нямам предпочитания"}
       - Целево тегло: ${answers.targetWeight === "yes" ? answers.targetWeightValue : "не е посочено"} кг 
       - Здравословни проблеми, контузии или ограничения: ${answers.healthIssues || "Няма"}
-      - Специфични упражнения за включване: ${answers.specificExercises || "Нямам предпочитания"}
+      - Специфични упражнения за включване: ${answers.specificExercises || "Няма"}
 
       **Важни насоки за калистениката:**
       - Препоръчвай САМО калистенични упражнения (упражнения, използващи теглото на собственото тяло)
@@ -157,7 +157,7 @@ function generateUserPrompt(category: string, answers: Record<string, any>, user
       - Програмата да включва ли загряване преди и Shavasana (медитация) след йогата: ${answers.warmupSavasana || "не е посочено"}
       - Фокус върху конкретна област: ${answers.focusArea || "Нямам предпочитания"}
       - Здравословни проблеми, контузии или ограничения: ${answers.healthIssues || "Няма"}
-      - Специфични пози за включване: ${answers.specificExercises || "Нямам предпочитания"}
+      - Специфични пози за включване: ${answers.specificExercises || "Няма"}
 
       **Важни насоки за йога:**
       - Препоръчвай САМО йога пози (асани) и йога практики
