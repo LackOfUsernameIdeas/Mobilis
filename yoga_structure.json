@@ -1,0 +1,1003 @@
+{
+  "weekly_schedule": [
+    {
+      "day": "Ден 1",
+      "focus": "Сила и издръжливост - цялостна динамична Vinyasa практика",
+      "warmup": {
+        "duration_minutes": 10,
+        "exercises": [
+          "Центриране и кратка медитация в удобен седеж (1-2 минути) с фокус върху дишането",
+          "Пранаяма – дълбоко диафрагмално дишане с удължено издишване (2-3 минути)",
+          "Нежни кръгове с шия и рамене, мобилизация на китки и глезени (2-3 минути)",
+          "Слънчеви поздрави (Сурия Намаскар A) – 3-5 цикъла в умерено темпо"
+        ]
+      },
+      "workout": [
+        {
+          "exercise_name": "Chair Pose (Utkatasana)",
+          "sets": 2,
+          "reps": "5-8 дишания",
+          "muscle_activation": {
+            "chest": false,
+            "front_delts": true,
+            "side_delts": false,
+            "rear_delts": false,
+            "biceps": false,
+            "triceps": false,
+            "forearms": false,
+            "traps": true,
+            "lats": false,
+            "rhomboids": false,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": true,
+            "adductors": true
+          }
+        },
+        {
+          "exercise_name": "Crescent Lunge (Anjaneyasana)",
+          "sets": 2,
+          "reps": "5-8 дишания на страна",
+          "muscle_activation": {
+            "chest": true,
+            "front_delts": true,
+            "side_delts": false,
+            "rear_delts": false,
+            "biceps": false,
+            "triceps": false,
+            "forearms": false,
+            "traps": true,
+            "lats": false,
+            "rhomboids": false,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": true,
+            "adductors": true
+          }
+        },
+        {
+          "exercise_name": "Warrior II (Virabhadrasana II)",
+          "sets": 2,
+          "reps": "5-8 дишания на страна",
+          "muscle_activation": {
+            "chest": false,
+            "front_delts": true,
+            "side_delts": true,
+            "rear_delts": false,
+            "biceps": false,
+            "triceps": false,
+            "forearms": false,
+            "traps": true,
+            "lats": false,
+            "rhomboids": false,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": true,
+            "adductors": true
+          }
+        },
+        {
+          "exercise_name": "Extended Side Angle Pose (Utthita Parsvakonasana)",
+          "sets": 2,
+          "reps": "5-8 дишания на страна",
+          "muscle_activation": {
+            "chest": true,
+            "front_delts": true,
+            "side_delts": true,
+            "rear_delts": false,
+            "biceps": false,
+            "triceps": true,
+            "forearms": false,
+            "traps": true,
+            "lats": true,
+            "rhomboids": false,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": true,
+            "adductors": true
+          }
+        },
+        {
+          "exercise_name": "Four-Limbed Staff Pose (Chaturanga Dandasana)",
+          "sets": 3,
+          "reps": "5-10 повторения",
+          "muscle_activation": {
+            "chest": true,
+            "front_delts": true,
+            "side_delts": false,
+            "rear_delts": true,
+            "biceps": true,
+            "triceps": true,
+            "forearms": true,
+            "traps": true,
+            "lats": true,
+            "rhomboids": true,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": false,
+            "adductors": false
+          }
+        },
+        {
+          "exercise_name": "Upward Facing Dog (Urdhva Mukha Svanasana)",
+          "sets": 2,
+          "reps": "5-8 дишания",
+          "muscle_activation": {
+            "chest": true,
+            "front_delts": true,
+            "side_delts": false,
+            "rear_delts": false,
+            "biceps": false,
+            "triceps": true,
+            "forearms": false,
+            "traps": true,
+            "lats": true,
+            "rhomboids": true,
+            "lower_back": true,
+            "abs": true,
+            "obliques": false,
+            "quadriceps": true,
+            "hamstrings": false,
+            "glutes": true,
+            "calves": false,
+            "adductors": false
+          }
+        },
+        {
+          "exercise_name": "Side Plank (Vasisthasana)",
+          "sets": 2,
+          "reps": "5-8 дишания на страна",
+          "muscle_activation": {
+            "chest": true,
+            "front_delts": true,
+            "side_delts": true,
+            "rear_delts": true,
+            "biceps": false,
+            "triceps": true,
+            "forearms": true,
+            "traps": true,
+            "lats": true,
+            "rhomboids": true,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": true,
+            "adductors": true
+          }
+        }
+      ],
+      "cooldown": {
+        "duration_minutes": 10,
+        "exercises": [
+          "Нежни разтягания в седеж – навеждане напред и странични наклони",
+          "Леко усукване в седеж за отпускане на гръбнака",
+          "Поза на детето за отпускане на рамене и кръст",
+          "Шавасана - финална релаксация (5-10 минути)"
+        ]
+      }
+    },
+    {
+      "day": "Ден 2",
+      "focus": "Сила и издръжливост - Power Yoga с фокус върху горна част и core",
+      "warmup": {
+        "duration_minutes": 10,
+        "exercises": [
+          "Кратка медитация в седеж с настройка на намерение (1-2 минути)",
+          "Пранаяма – Капалабхати или енергизиращо дишане (2-3 минути, ако е познато и комфортно)",
+          "Мобилизация на рамене, китки, лакти и гръбнак (котка–крава, кръгове)",
+          "Слънчеви поздрави (Сурия Намаскар A и B) – общо 4-6 цикъла в динамично темпо"
+        ]
+      },
+      "workout": [
+        {
+          "exercise_name": "Plank Pose (Phalakasana)",
+          "sets": 3,
+          "reps": "30-60 секунди",
+          "muscle_activation": {
+            "chest": true,
+            "front_delts": true,
+            "side_delts": false,
+            "rear_delts": true,
+            "biceps": true,
+            "triceps": true,
+            "forearms": true,
+            "traps": true,
+            "lats": true,
+            "rhomboids": true,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": true,
+            "adductors": true
+          }
+        },
+        {
+          "exercise_name": "Side Plank with Leg Lift (Vasisthasana variation)",
+          "sets": 2,
+          "reps": "5-8 дишания на страна",
+          "muscle_activation": {
+            "chest": true,
+            "front_delts": true,
+            "side_delts": true,
+            "rear_delts": true,
+            "biceps": false,
+            "triceps": true,
+            "forearms": true,
+            "traps": true,
+            "lats": true,
+            "rhomboids": true,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": true,
+            "adductors": true
+          }
+        },
+        {
+          "exercise_name": "Crow Pose (Bakasana)",
+          "sets": 3,
+          "reps": "3-5 опита по 5-8 дишания",
+          "muscle_activation": {
+            "chest": true,
+            "front_delts": true,
+            "side_delts": true,
+            "rear_delts": true,
+            "biceps": true,
+            "triceps": true,
+            "forearms": true,
+            "traps": true,
+            "lats": true,
+            "rhomboids": true,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": true,
+            "adductors": true
+          }
+        },
+        {
+          "exercise_name": "Dolphin Pose (Ardha Pincha Mayurasana)",
+          "sets": 2,
+          "reps": "30-60 секунди",
+          "muscle_activation": {
+            "chest": false,
+            "front_delts": true,
+            "side_delts": true,
+            "rear_delts": true,
+            "biceps": false,
+            "triceps": true,
+            "forearms": true,
+            "traps": true,
+            "lats": true,
+            "rhomboids": true,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": true,
+            "adductors": false
+          }
+        },
+        {
+          "exercise_name": "Forearm Plank (Makara Adho Mukha Svanasana)",
+          "sets": 2,
+          "reps": "30-60 секунди",
+          "muscle_activation": {
+            "chest": false,
+            "front_delts": true,
+            "side_delts": true,
+            "rear_delts": true,
+            "biceps": false,
+            "triceps": true,
+            "forearms": true,
+            "traps": true,
+            "lats": true,
+            "rhomboids": true,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": true,
+            "adductors": true
+          }
+        },
+        {
+          "exercise_name": "Boat Pose (Navasana)",
+          "sets": 3,
+          "reps": "30-60 секунди",
+          "muscle_activation": {
+            "chest": true,
+            "front_delts": true,
+            "side_delts": false,
+            "rear_delts": false,
+            "biceps": false,
+            "triceps": false,
+            "forearms": false,
+            "traps": true,
+            "lats": false,
+            "rhomboids": false,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": false,
+            "adductors": false
+          }
+        }
+      ],
+      "cooldown": {
+        "duration_minutes": 10,
+        "exercises": [
+          "Нежно отпускане в Поза на детето",
+          "Разтягане на рамене в седеж или по гръб (прегръдка на раменете)",
+          "Усукане по гръб с кръстосани крака за освобождаване на кръста",
+          "Шавасана - финална релаксация (5-10 минути)"
+        ]
+      }
+    },
+    {
+      "day": "Ден 3",
+      "focus": "Сила и издръжливост - динамична практика с фокус върху крака и тазобедрени стави",
+      "warmup": {
+        "duration_minutes": 10,
+        "exercises": [
+          "Кратко центриране в стоеж – осъзнаване на стъпалата и стойката (1-2 минути)",
+          "Дълбоко диафрагмално дишане с меко уджайи (2-3 минути)",
+          "Динамична мобилизация на тазобедрени стави – кръгове с бедра, леки клекове",
+          "Слънчеви поздрави (Сурия Намаскар B) – 3-5 цикъла с акцент върху загряване на краката"
+        ]
+      },
+      "workout": [
+        {
+          "exercise_name": "Warrior I (Virabhadrasana I)",
+          "sets": 2,
+          "reps": "5-8 дишания на страна",
+          "muscle_activation": {
+            "chest": true,
+            "front_delts": true,
+            "side_delts": false,
+            "rear_delts": false,
+            "biceps": false,
+            "triceps": false,
+            "forearms": false,
+            "traps": true,
+            "lats": false,
+            "rhomboids": false,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": true,
+            "adductors": true
+          }
+        },
+        {
+          "exercise_name": "Warrior III (Virabhadrasana III)",
+          "sets": 2,
+          "reps": "5-8 дишания на страна",
+          "muscle_activation": {
+            "chest": true,
+            "front_delts": true,
+            "side_delts": true,
+            "rear_delts": true,
+            "biceps": false,
+            "triceps": false,
+            "forearms": false,
+            "traps": true,
+            "lats": true,
+            "rhomboids": true,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": true,
+            "adductors": true
+          }
+        },
+        {
+          "exercise_name": "Chair Pose Twist (Parivrtta Utkatasana)",
+          "sets": 2,
+          "reps": "5-8 дишания на страна",
+          "muscle_activation": {
+            "chest": true,
+            "front_delts": true,
+            "side_delts": false,
+            "rear_delts": false,
+            "biceps": false,
+            "triceps": false,
+            "forearms": false,
+            "traps": true,
+            "lats": false,
+            "rhomboids": true,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": true,
+            "adductors": true
+          }
+        },
+        {
+          "exercise_name": "Goddess Pose (Utkata Konasana)",
+          "sets": 2,
+          "reps": "30-60 секунди",
+          "muscle_activation": {
+            "chest": true,
+            "front_delts": true,
+            "side_delts": true,
+            "rear_delts": false,
+            "biceps": false,
+            "triceps": false,
+            "forearms": false,
+            "traps": true,
+            "lats": false,
+            "rhomboids": false,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": true,
+            "adductors": true
+          }
+        },
+        {
+          "exercise_name": "High Lunge with Dynamic Pulses (Alanasana variation)",
+          "sets": 2,
+          "reps": "10-15 динамични повторения на страна",
+          "muscle_activation": {
+            "chest": false,
+            "front_delts": true,
+            "side_delts": false,
+            "rear_delts": false,
+            "biceps": false,
+            "triceps": false,
+            "forearms": false,
+            "traps": true,
+            "lats": false,
+            "rhomboids": false,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": true,
+            "adductors": true
+          }
+        },
+        {
+          "exercise_name": "Chair Pose to Tiptoes (Utkatasana variation)",
+          "sets": 2,
+          "reps": "10-15 повторения",
+          "muscle_activation": {
+            "chest": false,
+            "front_delts": true,
+            "side_delts": false,
+            "rear_delts": false,
+            "biceps": false,
+            "triceps": false,
+            "forearms": false,
+            "traps": true,
+            "lats": false,
+            "rhomboids": false,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": true,
+            "adductors": true
+          }
+        }
+      ],
+      "cooldown": {
+        "duration_minutes": 10,
+        "exercises": [
+          "Пирамида или навеждане над изпънат крак за разтягане на задната част на бедрата",
+          "Нисък напад с разтягане на сгъвачите на тазобедрените стави",
+          "Нежно усукване по гръб с кръстосани колене",
+          "Шавасана - финална релаксация (5-10 минути)"
+        ]
+      }
+    },
+    {
+      "day": "Ден 4",
+      "focus": "Сила и издръжливост - инверсии и баланс на ръце",
+      "warmup": {
+        "duration_minutes": 12,
+        "exercises": [
+          "Центриране в седеж с фокус върху стабилност на раменете и ядрото (1-2 минути)",
+          "Пранаяма – уджайи дишане за фокус и поддържане на ритъм (2-3 минути)",
+          "Мобилизация на китки, рамене и гръб (котка–крава, кръгове с рамене, делфинови напред–назад движения)",
+          "Слънчеви поздрави (Сурия Намаскар A) – 4-5 цикъла, постепенно засилване на Чатуранга и Делфин поза"
+        ]
+      },
+      "workout": [
+        {
+          "exercise_name": "Dolphin Plank (Makara Ardha Pincha Mayurasana)",
+          "sets": 2,
+          "reps": "30-60 секунди",
+          "muscle_activation": {
+            "chest": false,
+            "front_delts": true,
+            "side_delts": true,
+            "rear_delts": true,
+            "biceps": false,
+            "triceps": true,
+            "forearms": true,
+            "traps": true,
+            "lats": true,
+            "rhomboids": true,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": true,
+            "adductors": true
+          }
+        },
+        {
+          "exercise_name": "Handstand Preparation at Wall (Adho Mukha Vrksasana prep)",
+          "sets": 3,
+          "reps": "3-5 опита по 5-8 дишания",
+          "muscle_activation": {
+            "chest": true,
+            "front_delts": true,
+            "side_delts": true,
+            "rear_delts": true,
+            "biceps": true,
+            "triceps": true,
+            "forearms": true,
+            "traps": true,
+            "lats": true,
+            "rhomboids": true,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": true,
+            "adductors": true
+          }
+        },
+        {
+          "exercise_name": "Headstand (Sirsasana) или Supported Headstand",
+          "sets": 2,
+          "reps": "30-60 секунди",
+          "muscle_activation": {
+            "chest": true,
+            "front_delts": true,
+            "side_delts": true,
+            "rear_delts": true,
+            "biceps": true,
+            "triceps": true,
+            "forearms": true,
+            "traps": true,
+            "lats": true,
+            "rhomboids": true,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": true,
+            "adductors": true
+          }
+        },
+        {
+          "exercise_name": "Eight-Angle Pose (Astavakrasana) или подготовка",
+          "sets": 2,
+          "reps": "3-5 опита по 5-8 дишания",
+          "muscle_activation": {
+            "chest": true,
+            "front_delts": true,
+            "side_delts": true,
+            "rear_delts": true,
+            "biceps": true,
+            "triceps": true,
+            "forearms": true,
+            "traps": true,
+            "lats": true,
+            "rhomboids": true,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": true,
+            "adductors": true
+          }
+        },
+        {
+          "exercise_name": "Side Crow (Parsva Bakasana)",
+          "sets": 2,
+          "reps": "3-5 опита по 5-8 дишания на страна",
+          "muscle_activation": {
+            "chest": true,
+            "front_delts": true,
+            "side_delts": true,
+            "rear_delts": true,
+            "biceps": true,
+            "triceps": true,
+            "forearms": true,
+            "traps": true,
+            "lats": true,
+            "rhomboids": true,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": true,
+            "adductors": true
+          }
+        }
+      ],
+      "cooldown": {
+        "duration_minutes": 12,
+        "exercises": [
+          "Нежно разтягане на китки и предмишници в четири опори",
+          "Поза на детето с ръце назад за отпускане на раменете и врата",
+          "Леко усукване в лег по гръб за освобождаване на кръста",
+          "Шавасана - финална релаксация (5-10 минути) с фокус върху отпускане на раменете и шията"
+        ]
+      }
+    },
+    {
+      "day": "Ден 5",
+      "focus": "Сила и издръжливост - асани за гръб, задни вериги и core",
+      "warmup": {
+        "duration_minutes": 10,
+        "exercises": [
+          "Кратка медитация в седеж със сканиране на гръбнака (1-2 минути)",
+          "Дълбоко коремно дишане с удължено издишване (2-3 минути)",
+          "Котка–крава, странични извивания и кръгове с таза за мобилизиране на гръбнака",
+          "Слънчеви поздрави (Сурия Намаскар A) – 3-5 цикъла с акцент върху стабилизиране на корема"
+        ]
+      },
+      "workout": [
+        {
+          "exercise_name": "Locust Pose (Salabhasana)",
+          "sets": 3,
+          "reps": "30-60 секунди",
+          "muscle_activation": {
+            "chest": false,
+            "front_delts": false,
+            "side_delts": false,
+            "rear_delts": true,
+            "biceps": false,
+            "triceps": false,
+            "forearms": false,
+            "traps": true,
+            "lats": true,
+            "rhomboids": true,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": false,
+            "adductors": false
+          }
+        },
+        {
+          "exercise_name": "Bow Pose (Dhanurasana)",
+          "sets": 2,
+          "reps": "30-60 секунди",
+          "muscle_activation": {
+            "chest": true,
+            "front_delts": true,
+            "side_delts": false,
+            "rear_delts": true,
+            "biceps": false,
+            "triceps": false,
+            "forearms": false,
+            "traps": true,
+            "lats": true,
+            "rhomboids": true,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": false,
+            "adductors": false
+          }
+        },
+        {
+          "exercise_name": "Bridge Pose (Setu Bandhasana)",
+          "sets": 3,
+          "reps": "30-60 секунди",
+          "muscle_activation": {
+            "chest": true,
+            "front_delts": false,
+            "side_delts": false,
+            "rear_delts": false,
+            "biceps": false,
+            "triceps": false,
+            "forearms": false,
+            "traps": true,
+            "lats": true,
+            "rhomboids": true,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": true,
+            "adductors": true
+          }
+        },
+        {
+          "exercise_name": "Half Locust Pose – single leg lifts (Ardha Salabhasana)",
+          "sets": 2,
+          "reps": "5-10 повторения на страна",
+          "muscle_activation": {
+            "chest": false,
+            "front_delts": false,
+            "side_delts": false,
+            "rear_delts": true,
+            "biceps": false,
+            "triceps": false,
+            "forearms": false,
+            "traps": true,
+            "lats": true,
+            "rhomboids": true,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": false,
+            "adductors": false
+          }
+        },
+        {
+          "exercise_name": "Revolved Chair Pose (Parivrtta Utkatasana)",
+          "sets": 2,
+          "reps": "5-8 дишания на страна",
+          "muscle_activation": {
+            "chest": true,
+            "front_delts": true,
+            "side_delts": false,
+            "rear_delts": false,
+            "biceps": false,
+            "triceps": false,
+            "forearms": false,
+            "traps": true,
+            "lats": false,
+            "rhomboids": true,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": true,
+            "adductors": true
+          }
+        }
+      ],
+      "cooldown": {
+        "duration_minutes": 10,
+        "exercises": [
+          "Нежно навеждане напред в седеж за отпускане на гърба и задната част на бедрата",
+          "Леко усукване в седеж с поддръжка на ръката зад гърба",
+          "Поза щастливо бебе по гръб за отпускане на кръста и тазобедрените стави",
+          "Шавасана - финална релаксация (5-10 минути)"
+        ]
+      }
+    },
+    {
+      "day": "Ден 6",
+      "focus": "Сила и издръжливост - балансирана цялостна практика с елементи на Yin за възстановяване",
+      "warmup": {
+        "duration_minutes": 10,
+        "exercises": [
+          "Кратко центриране в лежан или седеж с наблюдение на дишането (1-2 минути)",
+          "Пранаяма – редувано дишане през ноздрите (Нади Шодхана) или меко уджайи (2-3 минути)",
+          "Нежни движения на гръб – колене към гърди, странично поклащане",
+          "Кратка серия Слънчеви поздрави (Сурия Намаскар A) – 3 цикъла в по-бавно темпо"
+        ]
+      },
+      "workout": [
+        {
+          "exercise_name": "Tree Pose (Vrksasana)",
+          "sets": 2,
+          "reps": "5-8 дишания на страна",
+          "muscle_activation": {
+            "chest": false,
+            "front_delts": false,
+            "side_delts": false,
+            "rear_delts": false,
+            "biceps": false,
+            "triceps": false,
+            "forearms": false,
+            "traps": true,
+            "lats": false,
+            "rhomboids": false,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": true,
+            "adductors": true
+          }
+        },
+        {
+          "exercise_name": "Eagle Pose (Garudasana)",
+          "sets": 2,
+          "reps": "5-8 дишания на страна",
+          "muscle_activation": {
+            "chest": false,
+            "front_delts": true,
+            "side_delts": true,
+            "rear_delts": true,
+            "biceps": true,
+            "triceps": true,
+            "forearms": true,
+            "traps": true,
+            "lats": false,
+            "rhomboids": true,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": true,
+            "adductors": true
+          }
+        },
+        {
+          "exercise_name": "Triangle Pose (Trikonasana)",
+          "sets": 2,
+          "reps": "5-8 дишания на страна",
+          "muscle_activation": {
+            "chest": true,
+            "front_delts": true,
+            "side_delts": true,
+            "rear_delts": false,
+            "biceps": false,
+            "triceps": false,
+            "forearms": false,
+            "traps": true,
+            "lats": true,
+            "rhomboids": true,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": true,
+            "adductors": true
+          }
+        },
+        {
+          "exercise_name": "Half Moon Pose (Ardha Chandrasana)",
+          "sets": 2,
+          "reps": "5-8 дишания на страна",
+          "muscle_activation": {
+            "chest": true,
+            "front_delts": true,
+            "side_delts": true,
+            "rear_delts": true,
+            "biceps": false,
+            "triceps": false,
+            "forearms": false,
+            "traps": true,
+            "lats": true,
+            "rhomboids": true,
+            "lower_back": true,
+            "abs": true,
+            "obliques": true,
+            "quadriceps": true,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": true,
+            "adductors": true
+          }
+        },
+        {
+          "exercise_name": "Pigeon Pose (Eka Pada Rajakapotasana prep) – динамично влизане/излизане",
+          "sets": 2,
+          "reps": "5-10 динамични повторения на страна, после 1-2 минути задържане",
+          "muscle_activation": {
+            "chest": false,
+            "front_delts": false,
+            "side_delts": false,
+            "rear_delts": false,
+            "biceps": false,
+            "triceps": false,
+            "forearms": false,
+            "traps": false,
+            "lats": false,
+            "rhomboids": false,
+            "lower_back": true,
+            "abs": false,
+            "obliques": false,
+            "quadriceps": false,
+            "hamstrings": true,
+            "glutes": true,
+            "calves": false,
+            "adductors": true
+          }
+        }
+      ],
+      "cooldown": {
+        "duration_minutes": 12,
+        "exercises": [
+          "Yin стил – дълбоко разтягане в Пеперуда (3-5 минути)",
+          "Yin навеждане напред в седеж (3-5 минути)",
+          "Нежно усукване в лег за отпускане на гръбнака",
+          "Шавасана - финална релаксация (5-10 минути) с пълно отпускане на цялото тяло"
+        ]
+      }
+    }
+  ],
+  "safety_considerations": [
+    "Слушай тялото си и избягвай болка в ставите – особено при инверсии и баланси на ръце; излизай веднага, ако усетиш остра или нетипична болка.",
+    "Подготвяй добре китките, раменете и кръста с качествено загряване преди по-силови асани като Чатуранга, Хендстенд и Бакасана.",
+    "Поддържай стабилно и равномерно дишане през цялата практика; ако дишането се задъхва или задържа, намали интензивността или направи кратка почивка в Поза на детето."
+  ]
+}
