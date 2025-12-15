@@ -43,9 +43,9 @@ export async function POST(req: NextRequest) {
 
     const data = await response.json();
 
-    return NextResponse.json(data.output[0].content[0].text);
+    // await save...(userId, category, data);
 
-    return NextResponse.json({ message: "Recommendations generated successfully" });
+    return NextResponse.json(data.output[0].content[0].text);
   } catch (error) {
     console.error("Error generating recommendations:", error);
     return NextResponse.json({ error: "Failed to generate recommendations" }, { status: 500 });

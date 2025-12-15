@@ -5,6 +5,7 @@ const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env
 
 interface UserPreferences {
   user_id: string;
+  category: string;
   mainGoal: string;
   experience: string;
   frequency: number;
@@ -34,6 +35,7 @@ export const saveUserPreferences = async (userId: string, category: string, answ
 
     const preferences: UserPreferences = {
       user_id: userId,
+      category: category,
       mainGoal: answers.mainGoal || "",
       experience: answers.experience || "",
       frequency: parseInt(answers.frequency) || 0,
