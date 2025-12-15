@@ -42,7 +42,7 @@ export function LoginForm() {
       });
     } else {
       toast.success("Logged in successfully!");
-      router.push("/dashboard/default");
+      router.push("/dashboard/measurements");
     }
   };
 
