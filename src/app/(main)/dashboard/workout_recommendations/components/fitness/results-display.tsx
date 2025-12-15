@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ExerciseCard from "./exercise-card";
 import ExerciseModal from "./exercise-modal";
 import { Button } from "@/components/ui/button";
+import { createClient } from "@/app/utils/supabase/client";
 
 interface ResultsDisplayProps {
   category: "gym" | "calisthenics" | "yoga";
@@ -46,12 +47,24 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
       setLoading(true);
 
       try {
+        // Get the current user
+        const supabase = createClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (!user) {
+          console.error("User not authenticated");
+          return;
+        }
+
         const response = await fetch("/api/get-model-response", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
+            userId: user.id,
             category,
             answers,
             userStats,
@@ -65,7 +78,6 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
         const responseJson = await response.json();
         const workoutProgram = JSON.parse(responseJson);
         console.log("workoutProgram: ", workoutProgram);
-        console.log("answers: ", answers);
 
         setRecommendations(workoutProgram);
       } catch (err) {

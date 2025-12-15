@@ -175,8 +175,6 @@ export default function GymCalisthenicsForm({ onSubmit, isCategoryGym, onBack }:
   const question = questions[currentQuestion];
   const isLastQuestion = currentQuestion === questions.length - 1;
 
-  console.log("answers: ", answers);
-
   return (
     <Card className="border-border bg-card">
       <CardHeader className="border-border bg-card/50 border-b">

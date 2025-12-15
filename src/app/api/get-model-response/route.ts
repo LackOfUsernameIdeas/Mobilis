@@ -1,12 +1,15 @@
+import { saveUserPreferences } from "@/server/saveFunctionts";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const { category, answers, userStats } = await req.json();
+    const { userId, category, answers, userStats } = await req.json();
 
-    if (!category || !answers) {
-      return NextResponse.json({ error: "Category and answers are required" }, { status: 400 });
+    if (!category || !userId || !answers) {
+      return NextResponse.json({ error: "Category, user id and answers are required" }, { status: 400 });
     }
+
+    await saveUserPreferences(userId, category, answers);
 
     const systemPrompt = generateSystemPrompt(category);
     const userPrompt = generateUserPrompt(category, answers, userStats);
@@ -41,6 +44,8 @@ export async function POST(req: NextRequest) {
     const data = await response.json();
 
     return NextResponse.json(data.output[0].content[0].text);
+
+    return NextResponse.json({ message: "Recommendations generated successfully" });
   } catch (error) {
     console.error("Error generating recommendations:", error);
     return NextResponse.json({ error: "Failed to generate recommendations" }, { status: 500 });
