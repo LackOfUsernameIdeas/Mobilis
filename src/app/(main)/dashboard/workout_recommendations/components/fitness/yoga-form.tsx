@@ -21,7 +21,7 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
     mainGoal: "",
     yogaStyle: "",
     experience: "",
-    frequency: "",
+    frequency: 0,
     warmupSavasana: "",
     focusAreas: [],
     healthIssues: "",
@@ -150,6 +150,7 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
     const answer = answers[currentField];
 
     if (typeof answer === "string") return answer.trim() !== "";
+    if (typeof answer === "number") return answer > 0;
     if (Array.isArray(answer)) return answer.length > 0;
     return false;
   };
@@ -236,8 +237,8 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
 
               {question.type === "radio-grid" && (
                 <RadioGroup
-                  value={answers[question.field]}
-                  onValueChange={(value) => handleChange(question.field, value)}
+                  value={answers[question.field]?.toString()}
+                  onValueChange={(value) => handleChange(question.field, Number(value))}
                 >
                   <div className="grid grid-cols-2 gap-2 sm:gap-3">
                     {(question.options as number[])?.map((day: number) => (

@@ -22,11 +22,11 @@ export default function GymCalisthenicsForm({ onSubmit, isCategoryGym, onBack }:
   const [answers, setAnswers] = useState<Record<string, any>>({
     mainGoal: "",
     experience: "",
-    frequency: "",
+    frequency: 0,
     warmupCooldown: "",
     muscleGroups: [],
     targetWeight: "",
-    targetWeightValue: "",
+    targetWeightValue: 0,
     healthIssues: "",
     specificExercises: "",
   });
@@ -111,7 +111,7 @@ export default function GymCalisthenicsForm({ onSubmit, isCategoryGym, onBack }:
         return {
           ...prev,
           [field]: value,
-          targetWeightValue: "",
+          targetWeightValue: null,
         };
       }
       return {
@@ -152,6 +152,7 @@ export default function GymCalisthenicsForm({ onSubmit, isCategoryGym, onBack }:
     const answer = answers[currentField];
 
     if (typeof answer === "string") return answer.trim() !== "";
+    if (typeof answer === "number") return answer > 0;
     if (Array.isArray(answer)) return answer.length > 0;
     return false;
   };
@@ -173,6 +174,8 @@ export default function GymCalisthenicsForm({ onSubmit, isCategoryGym, onBack }:
 
   const question = questions[currentQuestion];
   const isLastQuestion = currentQuestion === questions.length - 1;
+
+  console.log("answers: ", answers);
 
   return (
     <Card className="border-border bg-card">
@@ -238,8 +241,8 @@ export default function GymCalisthenicsForm({ onSubmit, isCategoryGym, onBack }:
 
               {question.type === "radio-grid" && (
                 <RadioGroup
-                  value={answers[question.field]}
-                  onValueChange={(value) => handleChange(question.field, value)}
+                  value={answers[question.field]?.toString()}
+                  onValueChange={(value) => handleChange(question.field, Number(value))}
                 >
                   <div className="grid grid-cols-2 gap-2 sm:gap-3">
                     {(question.options as number[])?.map((day: number) => (
@@ -262,7 +265,7 @@ export default function GymCalisthenicsForm({ onSubmit, isCategoryGym, onBack }:
 
               {question.type === "radio-horizontal" && (
                 <RadioGroup
-                  value={answers[question.field]}
+                  value={answers[question.field]?.toString()}
                   onValueChange={(value) => handleChange(question.field, value)}
                 >
                   <div className="flex flex-col gap-3 sm:flex-row sm:gap-6">
@@ -346,8 +349,8 @@ export default function GymCalisthenicsForm({ onSubmit, isCategoryGym, onBack }:
                 <Input
                   type="number"
                   placeholder="Целево тегло (кг)"
-                  value={answers.targetWeightValue}
-                  onChange={(e) => handleChange("targetWeightValue", e.target.value)}
+                  value={answers.targetWeightValue || ""}
+                  onChange={(e) => handleChange("targetWeightValue", Number(e.target.value))}
                   className="bg-input border-border text-foreground placeholder:text-muted-foreground mt-4 text-xs sm:text-sm"
                 />
               )}
