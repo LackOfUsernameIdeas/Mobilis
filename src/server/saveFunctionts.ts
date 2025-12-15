@@ -26,6 +26,57 @@ interface UserPreferences {
   specificExercises: string;
 }
 
+interface WorkoutDayRecommendation {
+  day: string;
+  generation_id: number;
+  focus: string;
+  warmup: {
+    duration_minutes: number;
+    exercises: string[];
+  };
+  workout?: WorkoutExercise[];
+  cooldown: {
+    duration_minutes: number;
+    exercises: string[];
+  };
+}
+
+interface WorkoutExercise {
+  exercise_name: string;
+  exercise_id: string;
+  generation_id: number;
+  day: string;
+  sets: number;
+  reps: string;
+  muscle_activation?: MuscleActivation;
+}
+
+interface MuscleActivation {
+  chest: boolean;
+  front_delts: boolean;
+  side_delts: boolean;
+  rear_delts: boolean;
+  biceps: boolean;
+  triceps: boolean;
+  forearms: boolean;
+  traps: boolean;
+  lats: boolean;
+  rhomboids: boolean;
+  lower_back: boolean;
+  abs: boolean;
+  obliques: boolean;
+  quadriceps: boolean;
+  hamstrings: boolean;
+  glutes: boolean;
+  calves: boolean;
+  adductors: boolean;
+}
+
+interface WorkoutRecommendationsResponse {
+  weekly_schedule: WorkoutDayRecommendation[];
+  safety_considerations: string[];
+}
+
 export const saveUserPreferences = async (userId: string, category: string, answers: Record<string, any>) => {
   try {
     if (category !== "gym" && category !== "calisthenics" && category !== "yoga") {
@@ -69,6 +120,169 @@ export const saveUserPreferences = async (userId: string, category: string, answ
     return { success: true, data };
   } catch (error) {
     console.error("Error in saveUserPreferences:", error);
+    throw error;
+  }
+};
+
+export const saveWorkoutRecommendations = async (
+  userId: string,
+  category: string,
+  recommendations: WorkoutRecommendationsResponse,
+) => {
+  try {
+    const { weekly_schedule, safety_considerations } = recommendations;
+
+    if (!weekly_schedule || weekly_schedule.length === 0) {
+      throw new Error("No workout schedule provided");
+    }
+
+    // Step 1: Get the latest user_preferences id for this user and category
+    const { data: preferencesData, error: preferencesError } = await supabase
+      .from("user_preferences")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("category", category)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
+
+    if (preferencesError) {
+      console.error("Error fetching user preferences:", preferencesError);
+      throw new Error(`Failed to fetch preferences: ${preferencesError.message}`);
+    }
+
+    const preferencesId = preferencesData.id;
+    console.log(`Using preferences ID: ${preferencesId}`);
+
+    // Step 2: Create a new generation entry and get the ID
+    const { data: generationData, error: generationError } = await supabase
+      .from("workout_generations")
+      .insert({
+        user_id: userId,
+        preferences_id: preferencesId,
+        safety_considerations: safety_considerations || [],
+      })
+      .select()
+      .single();
+
+    if (generationError) {
+      console.error("Error creating workout generation:", generationError);
+      throw new Error(`Failed to create generation: ${generationError.message}`);
+    }
+
+    const generationId = generationData.id;
+    console.log(`Created workout generation with ID: ${generationId}`);
+
+    // Step 3: Save in workout_day_recommendations
+    const dayRecommendations = weekly_schedule.map((rec) => ({
+      generation_id: generationId,
+      day: rec.day,
+      focus: rec.focus,
+      warmup_duration_minutes: rec.warmup.duration_minutes,
+      warmup_exercises: rec.warmup.exercises,
+      cooldown_duration_minutes: rec.cooldown.duration_minutes,
+      cooldown_exercises: rec.cooldown.exercises,
+    }));
+
+    const { data: savedDays, error: daysError } = await supabase
+      .from("workout_day_recommendations")
+      .insert(dayRecommendations)
+      .select();
+
+    if (daysError) {
+      console.error("Error saving workout day recommendations:", daysError);
+      throw new Error(`Failed to save day recommendations: ${daysError.message}`);
+    }
+
+    console.log(`Saved ${savedDays?.length} workout day recommendations`);
+
+    // Step 4: Collect all exercises and their muscle activations
+    const allExercises: Array<WorkoutExercise & { day: string; exercise_id: string }> = [];
+    weekly_schedule.forEach((rec) => {
+      if (rec.workout && Array.isArray(rec.workout)) {
+        rec.workout.forEach((exercise) => {
+          allExercises.push({ ...exercise, day: rec.day });
+        });
+      }
+    });
+
+    if (allExercises.length === 0) {
+      console.log("No exercises found in recommendations");
+      return {
+        success: true,
+        generationId,
+        data: { generation: generationData, days: savedDays, exercises: [], workoutExercises: [] },
+      };
+    }
+
+    // Step 5: Save unique exercises to workout_exercises
+    const uniqueExercises = Array.from(
+      new Map(
+        allExercises
+          .filter((ex) => ex.muscle_activation)
+          .map((ex) => [
+            ex.exercise_id,
+            {
+              exercise_id: ex.exercise_id,
+              muscle_activation: ex.muscle_activation,
+              category,
+            },
+          ]),
+      ).values(),
+    );
+
+    let savedWorkoutExercises = null;
+    if (uniqueExercises.length > 0) {
+      const { data: workoutExercisesData, error: workoutExercisesError } = await supabase
+        .from("workout_exercises")
+        .upsert(uniqueExercises, {
+          onConflict: "exercise_id",
+          ignoreDuplicates: false,
+        })
+        .select();
+
+      if (workoutExercisesError) {
+        console.error("Error saving workout exercises:", workoutExercisesError);
+        throw new Error(`Failed to save workout exercises: ${workoutExercisesError.message}`);
+      }
+
+      savedWorkoutExercises = workoutExercisesData;
+      console.log(`Saved/Updated ${workoutExercisesData?.length} workout exercises`);
+    }
+
+    // Step 6: Save workout_day_exercises
+    const dayExercises = allExercises.map((ex) => ({
+      generation_id: generationId,
+      day: ex.day,
+      exercise_id: ex.exercise_id,
+      sets: ex.sets,
+      reps: ex.reps,
+    }));
+
+    const { data: savedExercises, error: exercisesError } = await supabase
+      .from("workout_day_exercises")
+      .insert(dayExercises)
+      .select();
+
+    if (exercisesError) {
+      console.error("Error saving workout day exercises:", exercisesError);
+      throw new Error(`Failed to save day exercises: ${exercisesError.message}`);
+    }
+
+    console.log(`Saved ${savedExercises?.length} workout day exercises`);
+
+    return {
+      success: true,
+      generationId,
+      data: {
+        generation: generationData,
+        days: savedDays,
+        // exercises: savedExercises,
+        // workoutExercises: savedWorkoutExercises,
+      },
+    };
+  } catch (error) {
+    console.error("Error in saveWorkoutRecommendations:", error);
     throw error;
   }
 };

@@ -1,4 +1,4 @@
-import { saveUserPreferences } from "@/server/saveFunctionts";
+import { saveUserPreferences, saveWorkoutRecommendations } from "@/server/saveFunctionts";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -42,10 +42,12 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await response.json();
+    const workoutRecommendations = data.output[0].content[0].text;
 
-    // await save...(userId, category, data);
+    const workoutProgramParsed = JSON.parse(workoutRecommendations);
+    await saveWorkoutRecommendations(userId, category, workoutProgramParsed);
 
-    return NextResponse.json(data.output[0].content[0].text);
+    return NextResponse.json(workoutRecommendations);
   } catch (error) {
     console.error("Error generating recommendations:", error);
     return NextResponse.json({ error: "Failed to generate recommendations" }, { status: 500 });
@@ -96,6 +98,7 @@ function generateUserPrompt(category: string, answers: Record<string, any>, user
       - При цел 'strength' приоритизирай тежки съставни упражнения с ниски повторения (1-6) и дълги паузи за почивка
       - Адаптирай програмата с посочената информация за здравословни проблеми, ако има такава (избягвай упражнения, които биха влошили здравословното състояние на потребителя или дай алтернативни упражнения)
       - exercise_name винаги трябва да съдържа само официалното наименование на упражнението (например: "Barbell Bench Press", "Deadlift", "Lat Pulldown")
+      - exercise_id ВИНАГИ трябва да следва следния формат: име на упражнението с малки букви, разделени с долна черта", например: "barbell_bench_press", "deadlift", "lat_pulldown
       - Относно информацията за повторения, използвай формат като "8-12" за диапазон или "10" за точен брой
       - muscle_activation трябва да отразява точно кои мускули се активират (true/false)
       
@@ -142,6 +145,7 @@ function generateUserPrompt(category: string, answers: Record<string, any>, user
       - Адаптирай програмата с посочената информация за здравословни проблеми, ако има такава
       - exercise_name винаги трябва да съдържа само официалното наименование на калистеничното упражнение (например: "Push-Ups", "Pull-Ups", "Dips", "Squats", "Plank")
       - Стреми се да посочваш конкретна вариация на упражненията (например: "Diamond Push-Ups", "Archer Pull-Ups", "Bulgarian Split Squats")
+      - exercise_id ВИНАГИ трябва да следва следния формат: име на упражнението с малки букви, разделени с долна черта", например: "diamond_push_ups", "archer_pull_ups", "bulgarian_split_squats"
       - Относно информацията за повторения, използвай формат като "12-20" за диапазон или "15" за точен брой
       - muscle_activation трябва да отразява точно кои мускули се активират (true/false)
       
@@ -209,6 +213,7 @@ function generateUserPrompt(category: string, answers: Record<string, any>, user
 
       **Наименования:**
       - exercise_name винаги трябва да съдържа официалното наименование на йога позата на английски и санскрит в скоби (например: "Downward Facing Dog (Adho Mukha Svanasana)", "Warrior I (Virabhadrasana I)", "Tree Pose (Vrksasana)")
+      - exercise_id ВИНАГИ трябва да следва следния формат: име на упражнението с малки букви, разделени с долна черта", например: "downward_facing_dog", "warrior_i", "tree_pose"
       - При нужда от модификация посочвай конкретната вариация (например: "Modified Chaturanga", "Supported Headstand", "Half Pigeon Pose")
 
       **Повторения и задържане:**
@@ -276,6 +281,9 @@ function generateResponseFormat(category: string) {
                       type: "object",
                       properties: {
                         exercise_name: {
+                          type: "string",
+                        },
+                        exercise_id: {
                           type: "string",
                         },
                         sets: {
@@ -365,7 +373,7 @@ function generateResponseFormat(category: string) {
                           additionalProperties: false,
                         },
                       },
-                      required: ["exercise_name", "sets", "reps", "muscle_activation"],
+                      required: ["exercise_name", "exercise_id", "sets", "reps", "muscle_activation"],
                       additionalProperties: false,
                     },
                   },
@@ -446,6 +454,9 @@ function generateResponseFormat(category: string) {
                         exercise_name: {
                           type: "string",
                         },
+                        exercise_id: {
+                          type: "string",
+                        },
                         sets: {
                           type: "number",
                         },
@@ -533,7 +544,7 @@ function generateResponseFormat(category: string) {
                           additionalProperties: false,
                         },
                       },
-                      required: ["exercise_name", "sets", "reps", "muscle_activation"],
+                      required: ["exercise_name", "exercise_id", "sets", "reps", "muscle_activation"],
                       additionalProperties: false,
                     },
                   },
@@ -614,6 +625,9 @@ function generateResponseFormat(category: string) {
                         exercise_name: {
                           type: "string",
                         },
+                        exercise_id: {
+                          type: "string",
+                        },
                         sets: {
                           type: "number",
                         },
@@ -701,7 +715,7 @@ function generateResponseFormat(category: string) {
                           additionalProperties: false,
                         },
                       },
-                      required: ["exercise_name", "sets", "reps", "muscle_activation"],
+                      required: ["exercise_name", "exercise_id", "sets", "reps", "muscle_activation"],
                       additionalProperties: false,
                     },
                   },
