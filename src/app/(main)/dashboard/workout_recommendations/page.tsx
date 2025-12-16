@@ -105,10 +105,20 @@ export default function Page() {
         ) : (
           <div className="flex flex-col gap-6">
             {selectedCategory === "gym" && (
-              <GymCalisthenicsForm isCategoryGym={true} onSubmit={handleFormSubmit} onBack={handleGoBack} />
+              <GymCalisthenicsForm
+                isCategoryGym={true}
+                usersWeight={userStats.weight}
+                onSubmit={handleFormSubmit}
+                onBack={handleGoBack}
+              />
             )}
             {selectedCategory === "calisthenics" && (
-              <GymCalisthenicsForm isCategoryGym={false} onSubmit={handleFormSubmit} onBack={handleGoBack} />
+              <GymCalisthenicsForm
+                isCategoryGym={false}
+                usersWeight={userStats.weight}
+                onSubmit={handleFormSubmit}
+                onBack={handleGoBack}
+              />
             )}
             {selectedCategory === "yoga" && <YogaForm onSubmit={handleFormSubmit} onBack={handleGoBack} />}
           </div>

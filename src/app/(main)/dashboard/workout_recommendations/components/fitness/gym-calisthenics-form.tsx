@@ -14,10 +14,16 @@ import { Input } from "@/components/ui/input";
 interface GymCalisthenicsFormProps {
   onSubmit: (answers: Record<string, any>) => void;
   isCategoryGym: boolean;
+  usersWeight: number;
   onBack: () => void;
 }
 
-export default function GymCalisthenicsForm({ onSubmit, isCategoryGym, onBack }: GymCalisthenicsFormProps) {
+export default function GymCalisthenicsForm({
+  onSubmit,
+  isCategoryGym,
+  usersWeight,
+  onBack,
+}: GymCalisthenicsFormProps) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({
     mainGoal: "",
@@ -83,7 +89,7 @@ export default function GymCalisthenicsForm({ onSubmit, isCategoryGym, onBack }:
     },
     {
       field: "targetWeight",
-      title: "Има ли конкретно целево тегло, до което желаете да стигнете?",
+      title: `Има ли конкретно целево тегло, до което желаете да стигнете? (Последно регистрирано тегло: ${usersWeight} кг)`,
       type: "radio-horizontal",
       options: [
         { value: "yes", label: "Да" },
