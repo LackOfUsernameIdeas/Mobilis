@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { saveMeasurementsAction } from "@/server/measurements";
 
 type UserData = {
   height: number;
@@ -16,18 +17,17 @@ type UserData = {
   gender: "male" | "female";
   neck: number;
   waist: number;
-  hip?: number;
+  hip: number;
 };
 
 const simulateInitialCheck = () => new Promise<void>((resolve) => setTimeout(resolve, 1000));
-
-const simulateSubmitProcessing = () => new Promise<void>((resolve) => setTimeout(resolve, 5000));
 
 export default function HomePage() {
   const router = useRouter();
 
   const [pageLoading, setPageLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userData, setUserData] = useState<UserData | null>(null);
@@ -53,15 +53,13 @@ export default function HomePage() {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    // Clear error when user starts typing
+    if (error) setError(null);
   };
 
   const isFormValid = () => {
     const { height, weight, gender, neck, waist, hip } = formData;
-    const baseValid = height && weight && gender && neck && waist;
-
-    if (gender === "female") {
-      return baseValid && hip;
-    }
+    const baseValid = height && weight && gender && neck && waist && hip;
 
     return !!baseValid;
   };
@@ -70,21 +68,30 @@ export default function HomePage() {
     e.preventDefault();
     if (!isFormValid()) return;
 
-    const data: UserData = {
-      height: Number.parseFloat(formData.height),
-      weight: Number.parseFloat(formData.weight),
-      gender: formData.gender as "male" | "female",
-      neck: Number.parseFloat(formData.neck),
-      waist: Number.parseFloat(formData.waist),
-      hip: formData.gender === "female" && formData.hip ? Number.parseFloat(formData.hip) : undefined,
-    };
+    setSubmitLoading(true);
+    setError(null);
 
-    setUserData(data);
+    try {
+      const data: UserData = {
+        height: Number.parseFloat(formData.height),
+        weight: Number.parseFloat(formData.weight),
+        gender: formData.gender as "male" | "female",
+        neck: Number.parseFloat(formData.neck),
+        waist: Number.parseFloat(formData.waist),
+        hip: Number.parseFloat(formData.hip),
+      };
 
-    if (userData) {
-      setSubmitLoading(true);
-      await simulateSubmitProcessing();
+      // Save measurements to Supabase
+      await saveMeasurementsAction(data);
+
+      setUserData(data);
+
+      // Navigate to dashboard after successful save
       router.push("/dashboard/default");
+    } catch (err) {
+      console.error("Error saving measurements:", err);
+      setError(err instanceof Error ? err.message : "Failed to save measurements. Please try again.");
+      setSubmitLoading(false);
     }
   };
 
@@ -93,7 +100,7 @@ export default function HomePage() {
       <div className="bg-background flex min-h-screen items-center justify-center">
         <div className="text-center">
           <div className="border-primary mb-4 h-12 w-12 animate-spin rounded-full border-4 border-t-transparent" />
-          <p className="text-muted-foreground">Checking today’s data…</p>
+          <p className="text-muted-foreground">Checking today's data…</p>
         </div>
       </div>
     );
@@ -105,10 +112,14 @@ export default function HomePage() {
         <DialogContent className="max-h-[90vh] max-w-md overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl">Daily Check-in</DialogTitle>
-            <DialogDescription>Enter today’s body measurements to continue.</DialogDescription>
+            <DialogDescription>Enter today's body measurements to continue.</DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+            {error && (
+              <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">{error}</div>
+            )}
+
             <div className="space-y-2">
               <Label htmlFor="height">Height (cm)</Label>
               <Input
@@ -170,19 +181,17 @@ export default function HomePage() {
               />
             </div>
 
-            {formData.gender === "female" && (
-              <div className="space-y-2">
-                <Label htmlFor="hip">Hip (cm)</Label>
-                <Input
-                  id="hip"
-                  type="number"
-                  step="0.1"
-                  value={formData.hip}
-                  onChange={(e) => handleInputChange("hip", e.target.value)}
-                  required
-                />
-              </div>
-            )}
+            <div className="space-y-2">
+              <Label htmlFor="hip">Hip (cm)</Label>
+              <Input
+                id="hip"
+                type="number"
+                step="0.1"
+                value={formData.hip}
+                onChange={(e) => handleInputChange("hip", e.target.value)}
+                required
+              />
+            </div>
 
             <Button type="submit" className="w-full" disabled={!isFormValid() || submitLoading}>
               {submitLoading ? "Processing…" : "Continue"}
@@ -195,7 +204,7 @@ export default function HomePage() {
         <div className="bg-background/80 fixed inset-0 flex items-center justify-center">
           <div className="text-center">
             <div className="border-primary mb-4 h-12 w-12 animate-spin rounded-full border-4 border-t-transparent" />
-            <p className="text-muted-foreground">Saving today’s data…</p>
+            <p className="text-muted-foreground">Saving today's data…</p>
           </div>
         </div>
       )}

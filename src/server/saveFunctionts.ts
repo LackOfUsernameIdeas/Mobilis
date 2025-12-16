@@ -277,12 +277,43 @@ export const saveWorkoutRecommendations = async (
       data: {
         generation: generationData,
         days: savedDays,
-        // exercises: savedExercises,
-        // workoutExercises: savedWorkoutExercises,
       },
     };
   } catch (error) {
     console.error("Error in saveWorkoutRecommendations:", error);
     throw error;
   }
+};
+
+export const saveUserMeasurements = async (
+  userId: string,
+  data: {
+    height: number;
+    weight: number;
+    gender: "male" | "female";
+    neck: number;
+    waist: number;
+    hip?: number;
+  },
+) => {
+  console.log("Saving measurements for user:", userId, data);
+  const { data: result, error } = await supabase
+    .from("user_measurements")
+    .insert({
+      user_id: userId,
+      height: Math.round(data.height),
+      weight: Math.round(data.weight),
+      gender: data.gender,
+      neck: Math.round(data.neck),
+      waist: Math.round(data.waist),
+      hip: data.hip ? Math.round(data.hip) : 0, // Default to 0 if not provided (for males)
+    })
+    .select()
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return result;
 };
