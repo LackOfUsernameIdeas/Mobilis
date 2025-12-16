@@ -20,6 +20,8 @@ type UserData = {
   hip: number;
 };
 
+const STORAGE_KEY = "user_last_measurements";
+
 const simulateInitialCheck = () => new Promise<void>((resolve) => setTimeout(resolve, 1000));
 
 export default function HomePage() {
@@ -41,9 +43,29 @@ export default function HomePage() {
     hip: "",
   });
 
+  // Load saved measurements from localStorage on mount
   useEffect(() => {
     async function init() {
       await simulateInitialCheck();
+
+      // Load last saved measurements from localStorage
+      try {
+        const savedData = localStorage.getItem(STORAGE_KEY);
+        if (savedData) {
+          const parsedData = JSON.parse(savedData) as UserData;
+          setFormData({
+            height: parsedData.height.toString(),
+            weight: parsedData.weight.toString(),
+            gender: parsedData.gender,
+            neck: parsedData.neck.toString(),
+            waist: parsedData.waist.toString(),
+            hip: parsedData.hip.toString(),
+          });
+        }
+      } catch (err) {
+        console.error("Error loading saved measurements:", err);
+      }
+
       setIsModalOpen(true);
       setPageLoading(false);
     }
@@ -81,8 +103,15 @@ export default function HomePage() {
         hip: Number.parseFloat(formData.hip),
       };
 
+      // Save to localStorage before submitting
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
       // Save measurements to Supabase
-      await saveMeasurementsAction(data);
+      const result = await saveMeasurementsAction(data);
+
+      if (!result?.success) {
+        throw new Error(result?.error || "Failed to save measurements");
+      }
 
       setUserData(data);
 
@@ -128,6 +157,7 @@ export default function HomePage() {
                 step="0.1"
                 value={formData.height}
                 onChange={(e) => handleInputChange("height", e.target.value)}
+                placeholder="Пример: 175"
                 required
               />
             </div>
@@ -140,6 +170,7 @@ export default function HomePage() {
                 step="0.1"
                 value={formData.weight}
                 onChange={(e) => handleInputChange("weight", e.target.value)}
+                placeholder="Пример: 70"
                 required
               />
             </div>
@@ -165,6 +196,7 @@ export default function HomePage() {
                 step="0.1"
                 value={formData.neck}
                 onChange={(e) => handleInputChange("neck", e.target.value)}
+                placeholder="Пример: 38"
                 required
               />
             </div>
@@ -177,6 +209,7 @@ export default function HomePage() {
                 step="0.1"
                 value={formData.waist}
                 onChange={(e) => handleInputChange("waist", e.target.value)}
+                placeholder="Пример: 85"
                 required
               />
             </div>
@@ -189,6 +222,7 @@ export default function HomePage() {
                 step="0.1"
                 value={formData.hip}
                 onChange={(e) => handleInputChange("hip", e.target.value)}
+                placeholder="Пример: 95"
                 required
               />
             </div>
