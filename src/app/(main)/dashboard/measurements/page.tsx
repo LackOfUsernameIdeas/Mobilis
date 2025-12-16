@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { saveMeasurementsAndCalculateMetrics, checkTodayMeasurements } from "@/server/measurements";
+import { Loader } from "../_components/loader";
 
 type UserData = {
   height: number;
@@ -196,10 +197,7 @@ export default function HomePage() {
   if (pageLoading) {
     return (
       <div className="bg-background flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="border-primary mb-4 h-12 w-12 animate-spin rounded-full border-4 border-t-transparent" />
-          <p className="text-muted-foreground">Checking today's data…</p>
-        </div>
+        <Loader />
       </div>
     );
   }
@@ -217,6 +215,19 @@ export default function HomePage() {
             {error && (
               <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">{error}</div>
             )}
+
+            <div className="space-y-2">
+              <Label htmlFor="gender">Gender</Label>
+              <Select value={formData.gender} onValueChange={(v) => handleInputChange("gender", v)}>
+                <SelectTrigger id="gender">
+                  <SelectValue placeholder="Select gender" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="male">Male</SelectItem>
+                  <SelectItem value="female">Female</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
             <div className="space-y-2">
               <Label htmlFor="height">Height (cm)</Label>
@@ -246,19 +257,6 @@ export default function HomePage() {
                 placeholder="Пример: 70"
                 required
               />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="gender">Gender</Label>
-              <Select value={formData.gender} onValueChange={(v) => handleInputChange("gender", v)}>
-                <SelectTrigger id="gender">
-                  <SelectValue placeholder="Select gender" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="male">Male</SelectItem>
-                  <SelectItem value="female">Female</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
 
             <div className="space-y-2">
