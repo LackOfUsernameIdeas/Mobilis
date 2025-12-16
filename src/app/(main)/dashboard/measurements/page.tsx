@@ -44,7 +44,6 @@ export default function HomePage() {
   // Check if measurements exist for today on mount
   useEffect(() => {
     async function init() {
-      await simulateInitialCheck();
       try {
         // Check if today's measurements already exist
         const result = await checkTodayMeasurements();
