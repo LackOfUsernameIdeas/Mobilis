@@ -35,7 +35,6 @@ export async function checkTodayMeasurements() {
   return {
     success: true,
     hasTodayMeasurement: data.length > 0,
-    data: data,
   };
 }
 
