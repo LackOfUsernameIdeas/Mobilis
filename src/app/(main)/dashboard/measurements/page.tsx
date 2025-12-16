@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { saveMeasurementsAction, checkTodayMeasurements } from "@/server/measurements";
+import { saveMeasurementsAndCalculateMetrics, checkTodayMeasurements } from "@/server/measurements";
 
 type UserData = {
   height: number;
@@ -126,7 +126,7 @@ export default function HomePage() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
       // Save measurements to Supabase
-      const result = await saveMeasurementsAction(data);
+      const result = await saveMeasurementsAndCalculateMetrics(data);
 
       if (!result?.success) {
         throw new Error(result?.error || "Failed to save measurements");

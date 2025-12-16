@@ -1,6 +1,6 @@
 "use server";
 
-import { saveUserMeasurements } from "@/server/saveFunctionts";
+import { saveUserMeasurements, saveUserMetrics } from "@/server/saveFunctions";
 import { createClient } from "@/app/utils/supabase/server";
 
 export async function checkTodayMeasurements() {
@@ -35,10 +35,11 @@ export async function checkTodayMeasurements() {
   return {
     success: true,
     hasTodayMeasurement: data.length > 0,
+    data: data,
   };
 }
 
-export async function saveMeasurementsAction(data: {
+export async function saveMeasurementsAndCalculateMetrics(data: {
   height: number;
   weight: number;
   gender: "male" | "female";
@@ -47,7 +48,6 @@ export async function saveMeasurementsAction(data: {
   hip?: number;
 }) {
   try {
-    // Get the current user
     const supabase = await createClient();
     const {
       data: { user },
@@ -62,9 +62,79 @@ export async function saveMeasurementsAction(data: {
       };
     }
 
-    const result = await saveUserMeasurements(user.id, data);
+    // Get the base URL for API calls
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-    return { success: true, data: result };
+    // Call all three endpoints in parallel
+    const [bmiResponse, bodyFatResponse, goalResponse] = await Promise.all([
+      fetch(`${baseUrl}/api/health/bmi`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ height: data.height, weight: data.weight }),
+      }),
+      fetch(`${baseUrl}/api/health/body-fat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          height: data.height,
+          gender: data.gender,
+          weight: data.weight,
+          neck: data.neck,
+          waist: data.waist,
+          hip: data.hip,
+        }),
+      }),
+      fetch(`${baseUrl}/api/recommended-goal`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          height: data.height,
+          weight: data.weight,
+          gender: data.gender,
+          neck: data.neck,
+          waist: data.waist,
+          hip: data.hip,
+        }),
+      }),
+    ]);
+
+    // Check if all requests were successful
+    if (!bmiResponse.ok || !bodyFatResponse.ok || !goalResponse.ok) {
+      throw new Error("Failed to calculate health metrics");
+    }
+
+    // Parse the responses
+    const [bmiData, bodyFatData, goalData] = await Promise.all([
+      bmiResponse.json(),
+      bodyFatResponse.json(),
+      goalResponse.json(),
+    ]);
+
+    // Save measurements with calculated metrics
+    const measurementResult = await saveUserMeasurements(user.id, data);
+
+    // Then save metrics with reference to the measurement
+    await saveUserMetrics(
+      user.id,
+      measurementResult.id, // Link to the measurement
+      {
+        bmi: bmiData.bmi,
+        health: bmiData.health,
+        healthy_bmi_range: bmiData.healthy_bmi_range,
+        bodyFat: bodyFatData.bodyFat,
+        bodyFatMass: bodyFatData.bodyFatMass,
+        leanBodyMass: bodyFatData.leanBodyMass,
+        goal: goalData.goal,
+        goalName: goalData.goalName,
+        bmiCategory: goalData.bmiCategory,
+        bodyFatCategory: goalData.bodyFatCategory,
+        reasoning: goalData.reasoning,
+      },
+    );
+
+    return {
+      success: true,
+    };
   } catch (error) {
     console.error("Error saving measurements:", error);
     return {

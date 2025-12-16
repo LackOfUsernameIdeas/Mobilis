@@ -296,7 +296,6 @@ export const saveUserMeasurements = async (
     hip?: number;
   },
 ) => {
-  console.log("Saving measurements for user:", userId, data);
   const { data: result, error } = await supabase
     .from("user_measurements")
     .insert({
@@ -312,6 +311,57 @@ export const saveUserMeasurements = async (
     .single();
 
   if (error) {
+    throw error;
+  }
+
+  return result;
+};
+
+export const saveUserMetrics = async (
+  userId: string,
+  measurementId: string,
+  data: {
+    bmi: string;
+    health: string;
+    healthy_bmi_range: string;
+    bodyFat: number;
+    bodyFatMass: number;
+    leanBodyMass: number;
+    goal: string;
+    goalName: string;
+    bmiCategory: string;
+    bodyFatCategory: string;
+    reasoning: string;
+  },
+) => {
+  const { data: result, error } = await supabase
+    .from("user_metrics")
+    .insert({
+      user_id: userId,
+      measurement_id: measurementId,
+
+      // BMI data
+      bmi: parseFloat(data.bmi),
+      health: data.health,
+      healthy_bmi_range: data.healthy_bmi_range,
+
+      // Body fat data
+      bodyFat: data.bodyFat,
+      bodyFatMassbodyFatMass: data.bodyFatMass,
+      leanBodyMass: data.leanBodyMass,
+      bodyFatCategory: data.bodyFatCategory,
+
+      // Goal data
+      goal: data.goal,
+      goalName: data.goalName,
+      bmiCategory: data.bmiCategory,
+      reasoning: data.reasoning,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error saving user metrics:", error);
     throw error;
   }
 

@@ -1,4 +1,4 @@
-import { saveUserPreferences, saveWorkoutRecommendations } from "@/server/saveFunctionts";
+import { saveUserPreferences, saveWorkoutRecommendations } from "@/server/saveFunctions";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
