@@ -17,8 +17,8 @@ interface ResultsDisplayProps {
     weight?: number;
     bmi: string;
     bodyFat: string;
-    fatMass: string;
-    leanMass: string;
+    bodyFatMass: string;
+    leanBodyMass: string;
   };
   onReset: () => void;
 }

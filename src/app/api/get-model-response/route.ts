@@ -74,8 +74,8 @@ function generateUserPrompt(category: string, answers: Record<string, any>, user
       - Тегло: ${userStats?.weight || "не е посочено"} кг
       - BMI: ${userStats?.bmi || "не е изчислен"} (при здравословен диапазон: 18.5-25)
       - Body Fat: ${userStats?.bodyFat || "не е изчислен"}%
-      - Маса на телесните мазнини: ${userStats?.fatMass || "не е изчислена"} кг
-      - Чиста телесна маса: ${userStats?.leanMass || "не е изчислена"} кг
+      - Маса на телесните мазнини: ${userStats?.bodyFatMass || "не е изчислена"} кг
+      - Чиста телесна маса: ${userStats?.leanBodyMass || "не е изчислена"} кг
 
       **Тренировъчни предпочитания:**
       - Цел: ${answers.mainGoal || "не е посочена"}
@@ -117,8 +117,8 @@ function generateUserPrompt(category: string, answers: Record<string, any>, user
       - Тегло: ${userStats?.weight || "не е посочено"} кг
       - BMI: ${userStats?.bmi || "не е изчислен"} (при здравословен диапазон: 18.5-25)
       - Body Fat: ${userStats?.bodyFat || "не е изчислен"}%
-      - Маса на телесните мазнини: ${userStats?.fatMass || "не е изчислена"} кг
-      - Чиста телесна маса: ${userStats?.leanMass || "не е изчислена"} кг
+      - Маса на телесните мазнини: ${userStats?.bodyFatMass || "не е изчислена"} кг
+      - Чиста телесна маса: ${userStats?.leanBodyMass || "не е изчислена"} кг
 
       **Тренировъчни предпочитания:**
       - Цел: ${answers.mainGoal || "не е посочена"}

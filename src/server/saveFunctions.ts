@@ -116,7 +116,6 @@ export const saveUserPreferences = async (userId: string, category: string, answ
       throw new Error(`Failed to save preferences: ${error.message}`);
     }
 
-    console.log("User preferences saved successfully:", data);
     return { success: true, data };
   } catch (error) {
     console.error("Error in saveUserPreferences:", error);
