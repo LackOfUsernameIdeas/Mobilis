@@ -22,6 +22,15 @@ type UserData = {
 
 const STORAGE_KEY = "user_last_measurements";
 
+// Validation limits
+const LIMITS = {
+  height: { min: 100, max: 300 }, // cm
+  weight: { min: 30, max: 300 }, // kg
+  neck: { min: 20, max: 100 }, // cm
+  waist: { min: 40, max: 300 }, // cm
+  hip: { min: 50, max: 300 }, // cm
+};
+
 export default function HomePage() {
   const router = useRouter();
 
@@ -96,11 +105,38 @@ export default function HomePage() {
     if (error) setError(null);
   };
 
+  const validateValue = (field: keyof typeof LIMITS, value: number): string | null => {
+    const limits = LIMITS[field];
+    if (value < limits.min) {
+      return `${field.charAt(0).toUpperCase() + field.slice(1)} must be at least ${limits.min} cm`;
+    }
+    if (value > limits.max) {
+      return `${field.charAt(0).toUpperCase() + field.slice(1)} must be at most ${limits.max} ${field === "weight" ? "kg" : "cm"}`;
+    }
+    return null;
+  };
+
   const isFormValid = () => {
     const { height, weight, gender, neck, waist, hip } = formData;
-    const baseValid = height && weight && gender && neck && waist && hip;
 
-    return !!baseValid;
+    if (!height || !weight || !gender || !neck || !waist || !hip) {
+      return false;
+    }
+
+    // Validate all numeric fields are within limits
+    const heightNum = Number.parseFloat(height);
+    const weightNum = Number.parseFloat(weight);
+    const neckNum = Number.parseFloat(neck);
+    const waistNum = Number.parseFloat(waist);
+    const hipNum = Number.parseFloat(hip);
+
+    return (
+      validateValue("height", heightNum) === null &&
+      validateValue("weight", weightNum) === null &&
+      validateValue("neck", neckNum) === null &&
+      validateValue("waist", waistNum) === null &&
+      validateValue("hip", hipNum) === null
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -119,6 +155,19 @@ export default function HomePage() {
         waist: Number.parseFloat(formData.waist),
         hip: Number.parseFloat(formData.hip),
       };
+
+      // Final validation before submission
+      const validationErrors: string[] = [];
+      Object.keys(LIMITS).forEach((field) => {
+        const error = validateValue(field as keyof typeof LIMITS, data[field as keyof UserData] as number);
+        if (error) validationErrors.push(error);
+      });
+
+      if (validationErrors.length > 0) {
+        setError(validationErrors.join(". "));
+        setSubmitLoading(false);
+        return;
+      }
 
       console.log("Saving measurements:", data);
 
@@ -175,6 +224,8 @@ export default function HomePage() {
                 id="height"
                 type="number"
                 step="0.1"
+                min={LIMITS.height.min}
+                max={LIMITS.height.max}
                 value={formData.height}
                 onChange={(e) => handleInputChange("height", e.target.value)}
                 placeholder="Пример: 175"
@@ -188,6 +239,8 @@ export default function HomePage() {
                 id="weight"
                 type="number"
                 step="0.1"
+                min={LIMITS.weight.min}
+                max={LIMITS.weight.max}
                 value={formData.weight}
                 onChange={(e) => handleInputChange("weight", e.target.value)}
                 placeholder="Пример: 70"
@@ -214,6 +267,8 @@ export default function HomePage() {
                 id="neck"
                 type="number"
                 step="0.1"
+                min={LIMITS.neck.min}
+                max={LIMITS.neck.max}
                 value={formData.neck}
                 onChange={(e) => handleInputChange("neck", e.target.value)}
                 placeholder="Пример: 38"
@@ -227,6 +282,8 @@ export default function HomePage() {
                 id="waist"
                 type="number"
                 step="0.1"
+                min={LIMITS.waist.min}
+                max={LIMITS.waist.max}
                 value={formData.waist}
                 onChange={(e) => handleInputChange("waist", e.target.value)}
                 placeholder="Пример: 85"
@@ -240,6 +297,8 @@ export default function HomePage() {
                 id="hip"
                 type="number"
                 step="0.1"
+                min={LIMITS.hip.min}
+                max={LIMITS.hip.max}
                 value={formData.hip}
                 onChange={(e) => handleInputChange("hip", e.target.value)}
                 placeholder="Пример: 95"
