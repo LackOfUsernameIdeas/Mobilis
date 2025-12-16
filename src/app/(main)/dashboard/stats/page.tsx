@@ -8,16 +8,7 @@ import { HealthDetails } from "@/app/(main)/dashboard/stats/components/health-de
 import { HealthProgressChart } from "@/app/(main)/dashboard/stats/components/health-progress-chart";
 import { HealthStatsCards } from "@/app/(main)/dashboard/stats/components/health-stats-cards";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-
-// Example data - In production, this would come from user input or database
-const userData = {
-  height: 175, // cm
-  weight: 78.5, // kg
-  gender: "male" as const,
-  neck: 38, // cm
-  waist: 85, // cm
-  hip: undefined, // only needed for females
-};
+import { createClient } from "@/app/utils/supabase/client";
 
 export default function HomePage() {
   const [bmiData, setBmiData] = useState<any>(null);
@@ -28,47 +19,34 @@ export default function HomePage() {
   useEffect(() => {
     async function fetchHealthData() {
       try {
-        const [bmiResponse, bodyFatResponse, goalResponse] = await Promise.all([
-          fetch("/api/health/bmi", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ height: userData.height, weight: userData.weight }),
-          }),
-          fetch("/api/health/body-fat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              height: userData.height,
-              gender: userData.gender,
-              weight: userData.weight,
-              neck: userData.neck,
-              waist: userData.waist,
-              hip: userData.hip,
-            }),
-          }),
-          fetch("/api/recommended-goal", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              height: userData.height,
-              weight: userData.weight,
-              gender: userData.gender,
-              neck: userData.neck,
-              waist: userData.waist,
-              hip: userData.hip,
-            }),
-          }),
-        ]);
+        // Get the current user
+        const supabase = createClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
 
-        const [bmi, bodyFat, goal] = await Promise.all([
-          bmiResponse.json(),
-          bodyFatResponse.json(),
-          goalResponse.json(),
-        ]);
+        if (!user) {
+          console.error("User not authenticated");
+          return;
+        }
 
-        setBmiData(bmi);
-        setBodyFatData(bodyFat);
-        setGoalData(goal);
+        // Fetch from your API endpoint that queries the database
+        const response = await fetch(`/api/user-metrics?userId=${user.id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch health data");
+        }
+
+        const metrics = await response.json();
+
+        setBmiData(metrics.bmiData);
+        setBodyFatData(metrics.bodyFatData);
+        setGoalData(metrics.goalData);
       } catch (error) {
         console.error("[v0] Error fetching health data:", error);
       } finally {
