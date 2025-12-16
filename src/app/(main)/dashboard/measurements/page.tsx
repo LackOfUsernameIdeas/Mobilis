@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { saveMeasurementsAction } from "@/server/measurements";
+import { saveMeasurementsAction, checkTodayMeasurements } from "@/server/measurements";
 
 type UserData = {
   height: number;
@@ -21,8 +21,6 @@ type UserData = {
 };
 
 const STORAGE_KEY = "user_last_measurements";
-
-const simulateInitialCheck = () => new Promise<void>((resolve) => setTimeout(resolve, 1000));
 
 export default function HomePage() {
   const router = useRouter();
@@ -43,35 +41,55 @@ export default function HomePage() {
     hip: "",
   });
 
-  // Load saved measurements from localStorage on mount
+  // Check if measurements exist for today on mount
   useEffect(() => {
     async function init() {
       await simulateInitialCheck();
-
-      // Load last saved measurements from localStorage
       try {
-        const savedData = localStorage.getItem(STORAGE_KEY);
-        if (savedData) {
-          const parsedData = JSON.parse(savedData) as UserData;
-          setFormData({
-            height: parsedData.height.toString(),
-            weight: parsedData.weight.toString(),
-            gender: parsedData.gender,
-            neck: parsedData.neck.toString(),
-            waist: parsedData.waist.toString(),
-            hip: parsedData.hip.toString(),
-          });
-        }
-      } catch (err) {
-        console.error("Error loading saved measurements:", err);
-      }
+        // Check if today's measurements already exist
+        const result = await checkTodayMeasurements();
+        console.log("Check result:", result);
 
-      setIsModalOpen(true);
-      setPageLoading(false);
+        if (result.success && result.hasTodayMeasurement) {
+          // Measurements already exist for today, skip to dashboard
+          console.log("Measurements already recorded today, redirecting to dashboard");
+          router.push("/dashboard/default");
+          return;
+        }
+
+        console.log("No measurements for today, showing modal");
+
+        // No measurements for today, load last saved measurements from localStorage
+        try {
+          const savedData = localStorage.getItem(STORAGE_KEY);
+          if (savedData) {
+            console.log("Loading saved measurements from localStorage");
+            const parsedData = JSON.parse(savedData) as UserData;
+            setFormData({
+              height: parsedData.height.toString(),
+              weight: parsedData.weight.toString(),
+              gender: parsedData.gender,
+              neck: parsedData.neck.toString(),
+              waist: parsedData.waist.toString(),
+              hip: parsedData.hip.toString(),
+            });
+          }
+        } catch (err) {
+          console.error("Error loading saved measurements:", err);
+        }
+
+        setIsModalOpen(true);
+      } catch (err) {
+        console.error("Error during initialization:", err);
+        // Show modal on error to allow user to proceed
+        setIsModalOpen(true);
+      } finally {
+        setPageLoading(false);
+      }
     }
 
     init();
-  }, []);
+  }, []); // Empty dependency array - only run once on mount
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -103,6 +121,8 @@ export default function HomePage() {
         hip: Number.parseFloat(formData.hip),
       };
 
+      console.log("Saving measurements:", data);
+
       // Save to localStorage before submitting
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
@@ -113,6 +133,7 @@ export default function HomePage() {
         throw new Error(result?.error || "Failed to save measurements");
       }
 
+      console.log("Measurements saved successfully");
       setUserData(data);
 
       // Navigate to dashboard after successful save

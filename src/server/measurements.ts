@@ -3,6 +3,42 @@
 import { saveUserMeasurements } from "@/server/saveFunctionts";
 import { createClient } from "@/app/utils/supabase/server";
 
+export async function checkTodayMeasurements() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return {
+      success: false,
+      hasTodayMeasurement: false,
+    };
+  }
+
+  const today = new Date().toISOString().split("T")[0];
+
+  const { data, error } = await supabase
+    .from("user_measurements")
+    .select("id, created_at")
+    .eq("user_id", user.id)
+    .gte("created_at", today)
+    .limit(1);
+
+  if (error) {
+    console.error("Error checking measurements:", error);
+    throw error;
+  }
+
+  return {
+    success: true,
+    hasTodayMeasurement: data.length > 0,
+    data: data,
+  };
+}
+
 export async function saveMeasurementsAction(data: {
   height: number;
   weight: number;
