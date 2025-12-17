@@ -33,7 +33,6 @@ const muscleLabels: Record<string, string> = {
   forearms: "Предмишници",
   traps: "Трапецовидни мускули",
   lats: "Широк гръбен мускул",
-  rhomboids: "Ромбоидни мускули",
   lower_back: "Долна част на гърба",
   abs: "Централни коремни мускули (abs)",
   obliques: "Странични коремни мускули (obliques)",

@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
+import FrontMuscleScheme from "./muscle-scheme-front";
+import BackMuscleScheme from "./muscle-scheme-back";
 
 interface MuscleActivationDiagramProps {
   muscleActivation: Record<string, boolean>;
@@ -6,19 +8,16 @@ interface MuscleActivationDiagramProps {
 }
 
 export default function MuscleActivationDiagram({ muscleActivation, className = "" }: MuscleActivationDiagramProps) {
-  const getColor = (isActive: boolean) => (isActive ? "#8B4513" : "#E5E7EB");
-  const getStroke = (isActive: boolean) => (isActive ? "#654321" : "#9CA3AF");
-
   return (
     <div className={`flex items-start justify-center gap-8 ${className}`}>
-      {/* Front View */}
       <div className="flex flex-col items-center">
-        <h4 className="text-foreground mb-2 text-sm font-semibold">Отпред</h4>
+        <h4 className="mb-2 text-sm font-semibold">Отпред</h4>
+        <FrontMuscleScheme muscleActivation={muscleActivation} fillColor={"#8B4513"} />
       </div>
 
-      {/* Back View */}
       <div className="flex flex-col items-center">
-        <h4 className="text-foreground mb-2 text-sm font-semibold">Отзад</h4>
+        <h4 className="mb-2 text-sm font-semibold">Отзад</h4>
+        <BackMuscleScheme muscleActivation={muscleActivation} fillColor={"#8B4513"} />
       </div>
     </div>
   );

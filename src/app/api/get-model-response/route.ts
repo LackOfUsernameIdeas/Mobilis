@@ -322,9 +322,6 @@ function generateResponseFormat(category: string) {
                             lats: {
                               type: "boolean",
                             },
-                            rhomboids: {
-                              type: "boolean",
-                            },
                             lower_back: {
                               type: "boolean",
                             },
@@ -360,7 +357,6 @@ function generateResponseFormat(category: string) {
                             "forearms",
                             "traps",
                             "lats",
-                            "rhomboids",
                             "lower_back",
                             "abs",
                             "obliques",
@@ -493,9 +489,6 @@ function generateResponseFormat(category: string) {
                             lats: {
                               type: "boolean",
                             },
-                            rhomboids: {
-                              type: "boolean",
-                            },
                             lower_back: {
                               type: "boolean",
                             },
@@ -531,7 +524,6 @@ function generateResponseFormat(category: string) {
                             "forearms",
                             "traps",
                             "lats",
-                            "rhomboids",
                             "lower_back",
                             "abs",
                             "obliques",
@@ -664,9 +656,6 @@ function generateResponseFormat(category: string) {
                             lats: {
                               type: "boolean",
                             },
-                            rhomboids: {
-                              type: "boolean",
-                            },
                             lower_back: {
                               type: "boolean",
                             },
@@ -702,7 +691,6 @@ function generateResponseFormat(category: string) {
                             "forearms",
                             "traps",
                             "lats",
-                            "rhomboids",
                             "lower_back",
                             "abs",
                             "obliques",

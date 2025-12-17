@@ -61,7 +61,6 @@ interface MuscleActivation {
   forearms: boolean;
   traps: boolean;
   lats: boolean;
-  rhomboids: boolean;
   lower_back: boolean;
   abs: boolean;
   obliques: boolean;
