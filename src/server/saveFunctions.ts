@@ -346,7 +346,7 @@ export const saveUserMetrics = async (
 
       // Body fat data
       bodyFat: data.bodyFat,
-      bodyFatMassbodyFatMass: data.bodyFatMass,
+      bodyFatMass: data.bodyFatMass,
       leanBodyMass: data.leanBodyMass,
       bodyFatCategory: data.bodyFatCategory,
 
