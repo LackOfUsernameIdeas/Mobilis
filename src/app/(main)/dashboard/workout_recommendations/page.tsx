@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import CategorySelector from "./components/fitness/category-selector";
-import GymCalisthenicsForm from "./components/fitness/gym-calisthenics-form";
-import YogaForm from "./components/fitness/yoga-form";
-import ResultsDisplay from "./components/fitness/results-display";
+import CategorySelector from "./components/category-selector";
+import GymCalisthenicsForm from "./components/gym-calisthenics-form";
+import YogaForm from "./components/yoga-form";
+import ResultsDisplay from "./components/results-display";
 import { createClient } from "@/app/utils/supabase/client";
 
 type Category = "gym" | "calisthenics" | "yoga" | null;

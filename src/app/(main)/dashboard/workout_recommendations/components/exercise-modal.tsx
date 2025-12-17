@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { fetchYouTubeEmbed } from "../../helper_functions";
+import { fetchYouTubeEmbed } from "../helper_functions";
+import MuscleActivationDiagram from "./muscle-activation-diagram";
 
 interface ExerciseModalProps {
   open: boolean;
@@ -21,52 +21,6 @@ interface ExerciseModalProps {
   cachedVideoUrl?: string;
   onVideoFetched: (exerciseName: string, url: string) => void;
 }
-
-const muscleColors = {
-  quadriceps: "#8B5CF6",
-  hamstrings: "#EC4899",
-  glutes: "#F59E0B",
-  calves: "#10B981",
-  chest: "#3B82F6",
-  back: "#1E40AF",
-  lats: "#1E40AF",
-  biceps: "#06B6D4",
-  triceps: "#F97316",
-  forearms: "#EF4444",
-  shoulders: "#8B5CF6",
-  front_delts: "#8B5CF6",
-  side_delts: "#7C3AED",
-  rear_delts: "#6D28D9",
-  traps: "#059669",
-  rhomboids: "#047857",
-  abs: "#FBBF24",
-  lower_back: "#FBBF24",
-  obliques: "#FCD34D",
-  adductors: "#A855F7",
-};
-
-const muscleLabels: Record<string, string> = {
-  quadriceps: "Quads",
-  hamstrings: "Hamstrings",
-  glutes: "Glutes",
-  calves: "Calves",
-  chest: "Chest",
-  back: "Back",
-  lats: "Lats",
-  biceps: "Biceps",
-  triceps: "Triceps",
-  forearms: "Forearms",
-  shoulders: "Shoulders",
-  front_delts: "Front Delts",
-  side_delts: "Side Delts",
-  rear_delts: "Rear Delts",
-  traps: "Traps",
-  rhomboids: "Rhomboids",
-  abs: "Abs",
-  lower_back: "Lower Back",
-  obliques: "Obliques",
-  adductors: "Adductors",
-};
 
 export default function ExerciseModal({
   open,
@@ -115,15 +69,9 @@ export default function ExerciseModal({
     onOpenChange(newOpen);
   };
 
-  const activeMuscles = exercise.muscle_activation
-    ? Object.entries(exercise.muscle_activation)
-        .filter(([_, isActive]) => isActive)
-        .map(([key]) => key)
-    : [];
-
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto backdrop-blur-sm">
+      <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto backdrop-blur-sm">
         <DialogHeader>
           <DialogTitle className="text-foreground text-xl text-pretty">{exercise.exercise_name}</DialogTitle>
           <DialogDescription className="text-muted-foreground">Основна информация</DialogDescription>
@@ -160,23 +108,12 @@ export default function ExerciseModal({
             )}
           </div>
 
-          {/* Muscle Activation */}
-          {activeMuscles.length > 0 && (
+          {/* Muscle Activation Diagram */}
+          {exercise.muscle_activation && (
             <div className="space-y-3">
-              <h4 className="text-foreground text-sm font-semibold">Действащи мускули</h4>
-              <p className="text-foreground text-xs">Мускулите, които се натоварват при изпълнение на упражнението:</p>
-              <div className="flex flex-wrap gap-2">
-                {activeMuscles.map((muscle) => (
-                  <Badge
-                    key={muscle}
-                    className="text-white"
-                    style={{
-                      backgroundColor: muscleColors[muscle as keyof typeof muscleColors] || "#6B7280",
-                    }}
-                  >
-                    {muscleLabels[muscle] || muscle}
-                  </Badge>
-                ))}
+              <h4 className="text-foreground text-sm font-semibold">Активирани мускули</h4>
+              <div className="bg-muted/30 rounded-lg p-4">
+                <MuscleActivationDiagram muscleActivation={exercise.muscle_activation} />
               </div>
             </div>
           )}
