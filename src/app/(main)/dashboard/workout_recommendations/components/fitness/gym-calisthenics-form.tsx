@@ -226,18 +226,14 @@ export default function GymCalisthenicsForm({
                 >
                   <div className="space-y-2 sm:space-y-3">
                     {question.options?.map((option: any) => (
-                      <div
+                      <Label
                         key={option.value}
+                        htmlFor={option.value}
                         className="hover:bg-muted/50 flex cursor-pointer items-center space-x-2 rounded-lg p-2 transition-colors sm:space-x-3 sm:p-3"
                       >
                         <RadioGroupItem value={option.value} id={option.value} className="h-4 w-4 flex-shrink-0" />
-                        <Label
-                          htmlFor={option.value}
-                          className="text-foreground flex-1 cursor-pointer text-xs font-normal sm:text-sm"
-                        >
-                          {option.label}
-                        </Label>
-                      </div>
+                        <span className="text-foreground flex-1 text-xs font-normal sm:text-sm">{option.label}</span>
+                      </Label>
                     ))}
                   </div>
                 </RadioGroup>
@@ -250,18 +246,14 @@ export default function GymCalisthenicsForm({
                 >
                   <div className="grid grid-cols-2 gap-2 sm:gap-3">
                     {(question.options as number[])?.map((day: number) => (
-                      <div
+                      <Label
                         key={day}
+                        htmlFor={`freq-${day}`}
                         className="hover:bg-muted/50 flex cursor-pointer items-center space-x-2 rounded-lg p-2 transition-colors sm:space-x-3 sm:p-3"
                       >
                         <RadioGroupItem value={day.toString()} id={`freq-${day}`} className="h-4 w-4 flex-shrink-0" />
-                        <Label
-                          htmlFor={`freq-${day}`}
-                          className="text-foreground flex-1 cursor-pointer text-xs font-normal sm:text-sm"
-                        >
-                          {day}x/седмица
-                        </Label>
-                      </div>
+                        <span className="text-foreground flex-1 text-xs font-normal sm:text-sm">{day}x/седмица</span>
+                      </Label>
                     ))}
                   </div>
                 </RadioGroup>
@@ -274,19 +266,18 @@ export default function GymCalisthenicsForm({
                 >
                   <div className="flex flex-col gap-3 sm:flex-row sm:gap-6">
                     {question.options?.map((option: any) => (
-                      <div key={option.value} className="flex items-center space-x-2 sm:space-x-3">
+                      <Label
+                        key={option.value}
+                        htmlFor={`${question.field}-${option.value}`}
+                        className="flex cursor-pointer items-center space-x-2 sm:space-x-3"
+                      >
                         <RadioGroupItem
                           value={option.value}
                           id={`${question.field}-${option.value}`}
                           className="h-4 w-4 flex-shrink-0"
                         />
-                        <Label
-                          htmlFor={`${question.field}-${option.value}`}
-                          className="text-foreground cursor-pointer text-xs font-normal sm:text-sm"
-                        >
-                          {option.label}
-                        </Label>
-                      </div>
+                        <span className="text-foreground text-xs font-normal sm:text-sm">{option.label}</span>
+                      </Label>
                     ))}
                   </div>
                 </RadioGroup>
@@ -295,8 +286,9 @@ export default function GymCalisthenicsForm({
               {question.type === "checkbox" && (
                 <div className="space-y-2 sm:space-y-3">
                   {(question.options as string[])?.map((group: string) => (
-                    <div
+                    <Label
                       key={group}
+                      htmlFor={`muscle-${group}`}
                       className="hover:bg-muted/50 flex cursor-pointer items-center space-x-2 rounded-lg p-2 transition-colors sm:space-x-3 sm:p-3"
                     >
                       <Checkbox
@@ -305,13 +297,8 @@ export default function GymCalisthenicsForm({
                         onCheckedChange={(checked) => handleMuscleGroupChange(group, checked as boolean)}
                         className="h-4 w-4 flex-shrink-0"
                       />
-                      <Label
-                        htmlFor={`muscle-${group}`}
-                        className="text-foreground flex-1 cursor-pointer text-xs font-normal sm:text-sm"
-                      >
-                        {group}
-                      </Label>
-                    </div>
+                      <span className="text-foreground flex-1 text-xs font-normal sm:text-sm">{group}</span>
+                    </Label>
                   ))}
                 </div>
               )}

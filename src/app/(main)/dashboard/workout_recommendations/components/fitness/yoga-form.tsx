@@ -218,18 +218,14 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
                 >
                   <div className="space-y-2 sm:space-y-3">
                     {question.options?.map((option: any) => (
-                      <div
+                      <Label
                         key={option.value}
+                        htmlFor={option.value}
                         className="hover:bg-muted/50 flex cursor-pointer items-center space-x-2 rounded-lg p-2 transition-colors sm:space-x-3 sm:p-3"
                       >
                         <RadioGroupItem value={option.value} id={option.value} className="h-4 w-4 flex-shrink-0" />
-                        <Label
-                          htmlFor={option.value}
-                          className="text-foreground flex-1 cursor-pointer text-xs font-normal sm:text-sm"
-                        >
-                          {option.label}
-                        </Label>
-                      </div>
+                        <span className="text-foreground flex-1 text-xs font-normal sm:text-sm">{option.label}</span>
+                      </Label>
                     ))}
                   </div>
                 </RadioGroup>
@@ -242,8 +238,9 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
                 >
                   <div className="grid grid-cols-2 gap-2 sm:gap-3">
                     {(question.options as number[])?.map((day: number) => (
-                      <div
+                      <Label
                         key={day}
+                        htmlFor={`yoga-freq-${day}`}
                         className="hover:bg-muted/50 flex cursor-pointer items-center space-x-2 rounded-lg p-2 transition-colors sm:space-x-3 sm:p-3"
                       >
                         <RadioGroupItem
@@ -251,13 +248,8 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
                           id={`yoga-freq-${day}`}
                           className="h-4 w-4 flex-shrink-0"
                         />
-                        <Label
-                          htmlFor={`yoga-freq-${day}`}
-                          className="text-foreground flex-1 cursor-pointer text-xs font-normal sm:text-sm"
-                        >
-                          {day}x/седмица
-                        </Label>
-                      </div>
+                        <span className="text-foreground flex-1 text-xs font-normal sm:text-sm">{day}x/седмица</span>
+                      </Label>
                     ))}
                   </div>
                 </RadioGroup>
@@ -270,19 +262,18 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
                 >
                   <div className="flex flex-col gap-3 sm:flex-row sm:gap-6">
                     {question.options?.map((option: any) => (
-                      <div key={option.value} className="flex items-center space-x-2 sm:space-x-3">
+                      <Label
+                        key={option.value}
+                        htmlFor={`${question.field}-${option.value}`}
+                        className="flex cursor-pointer items-center space-x-2 sm:space-x-3"
+                      >
                         <RadioGroupItem
                           value={option.value}
                           id={`${question.field}-${option.value}`}
                           className="h-4 w-4 flex-shrink-0"
                         />
-                        <Label
-                          htmlFor={`${question.field}-${option.value}`}
-                          className="text-foreground cursor-pointer text-xs font-normal sm:text-sm"
-                        >
-                          {option.label}
-                        </Label>
-                      </div>
+                        <span className="text-foreground text-xs font-normal sm:text-sm">{option.label}</span>
+                      </Label>
                     ))}
                   </div>
                 </RadioGroup>
@@ -291,8 +282,9 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
               {question.type === "checkbox" && (
                 <div className="space-y-2 sm:space-y-3">
                   {(question.options as string[])?.map((area: string) => (
-                    <div
+                    <Label
                       key={area}
+                      htmlFor={`focus-${area}`}
                       className="hover:bg-muted/50 flex cursor-pointer items-center space-x-2 rounded-lg p-2 transition-colors sm:space-x-3 sm:p-3"
                     >
                       <Checkbox
@@ -301,13 +293,8 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
                         onCheckedChange={(checked) => handleFocusAreaChange(area, checked as boolean)}
                         className="h-4 w-4 flex-shrink-0"
                       />
-                      <Label
-                        htmlFor={`focus-${area}`}
-                        className="text-foreground flex-1 cursor-pointer text-xs font-normal sm:text-sm"
-                      >
-                        {area}
-                      </Label>
-                    </div>
+                      <span className="text-foreground flex-1 text-xs font-normal sm:text-sm">{area}</span>
+                    </Label>
                   ))}
                 </div>
               )}
