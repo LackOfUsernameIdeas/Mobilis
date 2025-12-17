@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { fetchYouTubeEmbed } from "../helper_functions";
 import MuscleActivationDiagram from "./muscle-activation-diagram";
 
@@ -21,6 +22,27 @@ interface ExerciseModalProps {
   cachedVideoUrl?: string;
   onVideoFetched: (exerciseName: string, url: string) => void;
 }
+
+const muscleLabels: Record<string, string> = {
+  chest: "Гръдни мускули",
+  front_delts: "Предни делтоиди мускули",
+  side_delts: "Странични делтоиди мускули",
+  rear_delts: "Задни делтоиди мускули",
+  biceps: "Бицепси",
+  triceps: "Трицепси",
+  forearms: "Предмишници",
+  traps: "Трапецовидни мускули",
+  lats: "Широк гръбен мускул",
+  rhomboids: "Ромбоидни мускули",
+  lower_back: "Долна част на гърба",
+  abs: "Централни коремни мускули (abs)",
+  obliques: "Странични коремни мускули (obliques)",
+  quadriceps: "Квадрицепси",
+  hamstrings: "Задни бедрени мускули",
+  glutes: "Седалищни мускули",
+  calves: "Прасци",
+  adductors: "Аддукторни мускули",
+};
 
 export default function ExerciseModal({
   open,
@@ -69,9 +91,15 @@ export default function ExerciseModal({
     onOpenChange(newOpen);
   };
 
+  const activeMuscles = exercise.muscle_activation
+    ? Object.entries(exercise.muscle_activation)
+        .filter(([_, isActive]) => isActive)
+        .map(([key]) => key)
+    : [];
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto backdrop-blur-sm">
+      <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto backdrop-blur-sm">
         <DialogHeader>
           <DialogTitle className="text-foreground text-xl text-pretty">{exercise.exercise_name}</DialogTitle>
           <DialogDescription className="text-muted-foreground">Основна информация</DialogDescription>
@@ -89,29 +117,47 @@ export default function ExerciseModal({
               </div>
               {exercise.rest && (
                 <div>
-                  <p className="text-muted-foreground mb-1 text-xs font-medium">Rest</p>
+                  <p className="text-muted-foreground mb-1 text-xs font-medium">Почивка</p>
                   <p className="text-foreground text-lg font-semibold">{exercise.rest}</p>
                 </div>
               )}
             </div>
             {exercise.tempo && (
               <div>
-                <p className="text-muted-foreground mb-1 text-xs font-medium">Tempo</p>
+                <p className="text-muted-foreground mb-1 text-xs font-medium">Темпо</p>
                 <p className="text-foreground text-sm">{exercise.tempo}</p>
               </div>
             )}
             {exercise.notes && (
               <div>
-                <p className="text-muted-foreground mb-1 text-xs font-medium">Notes</p>
+                <p className="text-muted-foreground mb-1 text-xs font-medium">Бележки</p>
                 <p className="text-foreground text-sm">{exercise.notes}</p>
               </div>
             )}
           </div>
 
-          {/* Muscle Activation Diagram */}
-          {exercise.muscle_activation && (
-            <div className="space-y-3">
-              <h4 className="text-foreground text-sm font-semibold">Активирани мускули</h4>
+          {/* Muscle Activation Section */}
+          {exercise.muscle_activation && activeMuscles.length > 0 && (
+            <div className="space-y-4">
+              {/* Muscle Labels */}
+              <div className="bg-muted/30 rounded-lg p-4">
+                <p className="text-muted-foreground mb-3 text-xs">
+                  Мускулни групи, които се натоварват при изпълнение на упражнението:
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {activeMuscles.map((muscle) => (
+                    <Badge
+                      key={muscle}
+                      variant="secondary"
+                      className="bg-[#8B4513] px-3 py-1 text-sm text-white hover:bg-[#654321]"
+                    >
+                      {muscleLabels[muscle] || muscle}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              {/* Visual Diagram */}
               <div className="bg-muted/30 rounded-lg p-4">
                 <MuscleActivationDiagram muscleActivation={exercise.muscle_activation} />
               </div>
@@ -120,16 +166,18 @@ export default function ExerciseModal({
 
           {/* Video Section */}
           <div className="space-y-3">
-            <h4 className="text-foreground text-sm font-semibold">Видео на упражнението</h4>
+            <h4 className="text-foreground text-sm font-semibold">🎥 Видео на упражнението</h4>
             {!youtubeUrl && !videoError && (
               <Button onClick={handleFetchVideo} disabled={loadingVideo} className="w-full" variant="default">
-                {loadingVideo ? "Loading video..." : "Load Exercise Video"}
+                {loadingVideo ? "Зареждане на видео..." : "Зареди видео"}
               </Button>
             )}
 
             {videoError && (
               <div className="bg-destructive/10 border-destructive/30 rounded-lg border p-4">
-                <p className="text-destructive text-sm">Failed to load video. Please try again later.</p>
+                <p className="text-destructive text-sm">
+                  Грешка при зареждане на видео. Моля, опитайте отново по-късно.
+                </p>
               </div>
             )}
 
