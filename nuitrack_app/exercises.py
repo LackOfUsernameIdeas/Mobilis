@@ -4,7 +4,7 @@ EXERCISE_JSON_1 = {
         {
             "name": "Позиция 1 - Неутрална стойка",
             "duration_seconds": 2,
-            "instructions": "Застанете изправени с крака събрани, ръце отпуснати, глава в неутрално положение (поглед напред).",
+            "instructions": "Застанете изправени със събрани крака, отпуснати ръце, глава в неутрално положение (поглед напред).",
             "required_poses": {
                 "arms_down": True,
                 "legs_together": True
@@ -56,7 +56,7 @@ EXERCISE_JSON_1 = {
         {
             "name": "Позиция 4 - Прибиране на брадичката (2-ро повторение)",
             "duration_seconds": 5,
-            "instructions": "Приберете брадичката назад и задръжте.",
+            "instructions": "Приберете брадичката назад към шията, без да накланяте главата. Задръжте.",
             "required_poses": {
                 "arms_down": True,
                 "head_retracted": True
@@ -91,7 +91,7 @@ EXERCISE_JSON_1 = {
         {
             "name": "Позиция 6 - Прибиране на брадичката (3-то повторение)",
             "duration_seconds": 5,
-            "instructions": "Приберете брадичката назад и задръжте.",
+            "instructions": "Приберете брадичката назад към шията, без да накланяте главата. Задръжте.",
             "required_poses": {
                 "arms_down": True,
                 "head_retracted": True
@@ -114,7 +114,7 @@ EXERCISE_JSON_2 = {
         {
             "name": "Позиция 1 - Неутрална стойка",
             "duration_seconds": 2,
-            "instructions": "Застанете изправени с крака събрани, ръце отпуснати, глава в неутрално положение (поглед напред).",
+            "instructions": "Застанете изправени със събрани крака, отпуснати ръце, глава в неутрално положение (поглед напред).",
             "required_poses": {
                 "arms_down": True,
                 "legs_together": True
@@ -167,7 +167,7 @@ EXERCISE_JSON_2 = {
         {
             "name": "Позиция 4 - Наклон надясно (1-во повторение)",
             "duration_seconds": 5,
-            "instructions": "Наклонете главата надясно към рамото. Задръжте.",
+            "instructions": "Наклонете главата надясно към рамото, без да вдигате раменете. Задръжте.",
             "required_poses": {
                 "arms_down": True,
                 "head_tilted_right": True
@@ -203,7 +203,7 @@ EXERCISE_JSON_2 = {
         {
             "name": "Позиция 6 - Наклон наляво (2-ро повторение)",
             "duration_seconds": 5,
-            "instructions": "Наклонете главата наляво. Задръжте.",
+            "instructions": "Наклонете главата наляво към рамото, без да вдигате раменете. Задръжте.",
             "required_poses": {
                 "arms_down": True,
                 "head_tilted_left": True
@@ -239,7 +239,7 @@ EXERCISE_JSON_2 = {
         {
             "name": "Позиция 8 - Наклон надясно (2-ро повторение)",
             "duration_seconds": 5,
-            "instructions": "Наклонете главата надясно. Задръжте.",
+            "instructions": "Наклонете главата надясно към рамото, без да вдигате раменете. Задръжте.",
             "required_poses": {
                 "arms_down": True,
                 "head_tilted_right": True
@@ -275,7 +275,7 @@ EXERCISE_JSON_2 = {
         {
             "name": "Позиция 10 - Наклон наляво (3-то повторение)",
             "duration_seconds": 5,
-            "instructions": "Наклонете главата наляво. Задръжте.",
+            "instructions": "Наклонете главата наляво към рамото, без да вдигате раменете. Задръжте.",
             "required_poses": {
                 "arms_down": True,
                 "head_tilted_left": True
@@ -311,7 +311,7 @@ EXERCISE_JSON_2 = {
         {
             "name": "Позиция 12 - Наклон надясно (3-то повторение)",
             "duration_seconds": 5,
-            "instructions": "Наклонете главата надясно. Задръжте.",
+            "instructions": "Наклонете главата надясно към рамото, без да вдигате раменете. Задръжте.",
             "required_poses": {
                 "arms_down": True,
                 "head_tilted_right": True
@@ -334,7 +334,7 @@ EXERCISE_JSON_3 = {
         {
             "name": "Позиция 1 - Неутрална стойка",
             "duration_seconds": 2,
-            "instructions": "Застанете изправени с крака събрани, ръце отпуснати отстрани и рамене отпуснати.",
+            "instructions": "Застанете изправени със събрани крака, отпуснати ръце отстрани и отпуснати рамене.",
             "required_poses": {
                 "arms_down": True,
                 "legs_together": True
@@ -349,12 +349,12 @@ EXERCISE_JSON_3 = {
             }
         },
         {
-            "name": "Позиция 2 - Стискане (1-во повторение)",
+            "name": "Позиция 2 - Стискане на лопатките (1-во повторение)",
             "duration_seconds": 5,
-            "instructions": "Стегнете мускулите между лопатките, като издърпате раменете назад и леко надолу, без да вдигате ръцете.",
+            "instructions": "Стегнете мускулите между лопатките, като издърпате раменете назад и леко надолу, без да вдигате ръцете. Задръжте.",
             "required_poses": {
                 "arms_down": True,
-                "shoulders_retracted": True  # New: Check Z-depth of shoulders closer to back (relative to torso)
+                "shoulders_retracted": True  # Check Z-depth of shoulders closer to back (relative to torso)
             },
             "target_angles": {
                 "right_elbow_angle": 150,  # Slight bend if arms pull back
@@ -368,7 +368,7 @@ EXERCISE_JSON_3 = {
         {
             "name": "Позиция 3 - Освобождаване (1-во повторение)",
             "duration_seconds": 3,
-            "instructions": "Освободете раменете и се върнете в неутрална стойка с отпуснати рамене.",
+            "instructions": "Освободете раменете и се върнете в неутрална стойка.",
             "required_poses": {
                 "arms_down": True,
                 "legs_together": True,
@@ -384,9 +384,9 @@ EXERCISE_JSON_3 = {
             }
         },
         {
-            "name": "Позиция 4 - Стискане (2-ро повторение)",
+            "name": "Позиция 4 - Стискане на лопатките (2-ро повторение)",
             "duration_seconds": 5,
-            "instructions": "Стегнете мускулите между лопатките, като издърпате раменете назад и леко надолу.",
+            "instructions": "Стегнете мускулите между лопатките, като издърпате раменете назад и леко надолу. Задръжте.",
             "required_poses": {
                 "arms_down": True,
                 "shoulders_retracted": True
@@ -419,9 +419,9 @@ EXERCISE_JSON_3 = {
             }
         },
         {
-            "name": "Позиция 6 - Стискане (3-то повторение)",
+            "name": "Позиция 6 - Стискане на лопатките (3-то повторение)",
             "duration_seconds": 5,
-            "instructions": "Стегнете мускулите между лопатките, като издърпате раменете назад и леко надолу.",
+            "instructions": "Стегнете мускулите между лопатките, като издърпате раменете назад и леко надолу. Задръжте.",
             "required_poses": {
                 "arms_down": True,
                 "shoulders_retracted": True
@@ -444,7 +444,7 @@ EXERCISE_JSON_4 = {
         {
             "name": "Позиция 1 - Неутрална стойка",
             "duration_seconds": 2,
-            "instructions": "Застанете изправени с крака събрани, ръце отпуснати отстрани, гърба изправен.",
+            "instructions": "Застанете изправени със събрани крака, отпуснати ръце отстрани и изправен гръб.",
             "required_poses": {
                 "arms_down": True,
                 "legs_together": True
@@ -461,7 +461,7 @@ EXERCISE_JSON_4 = {
         {
             "name": "Позиция 2 - W форма (1-во повторение)",
             "duration_seconds": 5,
-            "instructions": "Повдигнете ръцете до W форма: лакти свити на 90°, китки близо до раменете, гърба изправен.",
+            "instructions": "Повдигнете ръцете до W форма: свити лакти, китки близо до раменете, гърба изправен. Задръжте.",
             "required_poses": {
                 "arms_w_shape": True,
                 "shoulders_retracted": True 
@@ -478,7 +478,7 @@ EXERCISE_JSON_4 = {
         {
             "name": "Позиция 3 - Y форма (1-во повторение)",
             "duration_seconds": 5,
-            "instructions": "Изпънете ръцете нагоре до Y форма, запазвайки гърба изправен и ръцете близо до тялото.",
+            "instructions": "Изпънете ръцете нагоре до Y форма, запазвайки гърба изправен и ръцете близо до тялото. Задръжте.",
             "required_poses": {
                 "arms_y_shape": True
             },
@@ -494,7 +494,7 @@ EXERCISE_JSON_4 = {
         {
             "name": "Позиция 4 - W форма (2-ро повторение)",
             "duration_seconds": 5,
-            "instructions": "Върнете ръцете до W форма: лакти свити, китки близо до раменете.",
+            "instructions": "Върнете ръцете до W форма: свити лакти, китки близо до раменете, гърба изправен. Задръжте.",
             "required_poses": {
                 "arms_w_shape": True,
                 "shoulders_retracted": True 
@@ -511,7 +511,7 @@ EXERCISE_JSON_4 = {
         {
             "name": "Позиция 5 - Y форма (2-ро повторение)",
             "duration_seconds": 5,
-            "instructions": "Изпънете ръцете до Y форма, гърба изправен.",
+            "instructions": "Изпънете ръцете до Y форма, запазвайки гърба изправен и ръцете близо до тялото. Задръжте.",
             "required_poses": {
                 "arms_y_shape": True
             },
@@ -527,7 +527,7 @@ EXERCISE_JSON_4 = {
         {
             "name": "Позиция 6 - W форма (3-то повторение)",
             "duration_seconds": 5,
-            "instructions": "Върнете ръцете до W форма.",
+            "instructions": "Върнете ръцете до W форма: свити лакти, китки близо до раменете, гърба изправен. Задръжте.",
             "required_poses": {
                 "arms_w_shape": True,
                 "shoulders_retracted": True 
@@ -544,7 +544,7 @@ EXERCISE_JSON_4 = {
         {
             "name": "Позиция 7 - Y форма (3-то повторение)",
             "duration_seconds": 5,
-            "instructions": "Изпънете ръцете до Y форма, гърба изправен.",
+            "instructions": "Изпънете ръцете до Y форма, запазвайки гърба изправен и ръцете близо до тялото. Задръжте.",
             "required_poses": {
                 "arms_y_shape": True
             },
@@ -566,7 +566,7 @@ EXERCISE_JSON_5 = {
         {
             "name": "Позиция 1 - Неутрална стойка",
             "duration_seconds": 2,
-            "instructions": "Застанете изправени с крака на ширината на раменете, ръце отпуснати отстрани.",
+            "instructions": "Застанете изправени с крака на ширината на раменете и отпуснете ръцете отстрани.",
             "required_poses": {
                 "arms_down": True,
                 "legs_apart": True
@@ -583,7 +583,7 @@ EXERCISE_JSON_5 = {
         {
             "name": "Позиция 2 - Ръце напред (1-во повторение)",
             "duration_seconds": 1,
-            "instructions": "Застанете изправени с крака на ширината на раменете, ръце отпуснати отстрани.",
+            "instructions": "Вдигнете ръцете напред до нивото на раменете, с длани обърнати нагоре. Задръжте.",
             "required_poses": {
                 "arms_forward": True,
                 "legs_apart": True
@@ -594,9 +594,9 @@ EXERCISE_JSON_5 = {
             }
         },
         {
-            "name": "Позиция 3 - T Stretch (1-во повторение)",
+            "name": "Позиция 3 - T позиция (1-во повторение)",
             "duration_seconds": 4,
-            "instructions": "Разтворете ръцете хоризонтално настрани, образувайки форма на 'T'. Задръжте.",
+            "instructions": "Разтворете ръцете хоризонтално настрани, образувайки форма на буквата 'T'. Задръжте.",
             "required_poses": {
                 "legs_apart": True,
                 "arms_back": True
@@ -613,7 +613,7 @@ EXERCISE_JSON_5 = {
         {
             "name": "Позиция 4 - Връщане в стойка с ръце напред (1-во повторение)",
             "duration_seconds": 3,
-            "instructions": "Върнете ръцете в неутрална позиция отстрани.",
+            "instructions": "Върнете ръцете пред вас до нивото на раменете, изпънати. Задръжте.",
             "required_poses": {
                 "arms_forward": True,
                 "legs_apart": True
@@ -624,9 +624,9 @@ EXERCISE_JSON_5 = {
             }
         },
         {
-            "name": "Позиция 5 - T Stretch (2-ро повторение)",
+            "name": "Позиция 5 - T позиция (2-ро повторение)",
             "duration_seconds": 4,
-            "instructions": "Разтворете ръцете хоризонтално настрани, образувайки форма на 'T'. Задръжте.",
+            "instructions": "Разтворете ръцете хоризонтално настрани, образувайки форма на буквата 'T'. Задръжте.",
             "required_poses": {
                 "legs_apart": True,
                 "arms_back": True
@@ -639,7 +639,7 @@ EXERCISE_JSON_5 = {
         {
             "name": "Позиция 6 - Връщане в стойка с ръце напред (2-ро повторение)",
             "duration_seconds": 3,
-            "instructions": "Върнете ръцете в неутрална позиция отстрани.",
+            "instructions": "Върнете ръцете пред вас до нивото на раменете, изпънати. Задръжте.",
             "required_poses": {
                 "arms_forward": True,
                 "legs_apart": True
@@ -650,9 +650,9 @@ EXERCISE_JSON_5 = {
             }
         },
         {
-            "name": "Позиция 7 - T Stretch (3-то повторение)",
+            "name": "Позиция 7 - T позиция (3-то повторение)",
             "duration_seconds": 4,
-            "instructions": "Разтворете ръцете хоризонтално настрани, образувайки форма на 'T'. Задръжте.",
+            "instructions": "Разтворете ръцете хоризонтално настрани, образувайки форма на буквата 'T'. Задръжте.",
             "required_poses": {
                 "legs_apart": True,
                 "arms_back": True
@@ -671,7 +671,7 @@ EXERCISE_JSON_6 = {
         {
             "name": "Позиция 1 - Неутрална стойка",
             "duration_seconds": 2,
-            "instructions": "Застанете изправени с крака на ширината на раменете, ръце отпуснати, таз в неутрално положение.",
+            "instructions": "Застанете изправени с крака на ширината на раменете, отпуснати ръце, таз в неутрално положение.",
             "required_poses": {
                 "arms_down": True,
                 "legs_apart": True
@@ -796,7 +796,7 @@ EXERCISE_JSON_7 = {
         {
             "name": "Позиция 1 - Неутрална стойка",
             "duration_seconds": 2,
-            "instructions": "Застанете изправени с крака на ширината на раменете, ръце отпуснати, гръбнак в неутрално положение.",
+            "instructions": "Застанете изправени с крака на ширината на раменете, отпуснати ръце, гърба в неутрално положение.",
             "required_poses": {
                 "arms_down": True,
                 "legs_apart": True
@@ -811,7 +811,7 @@ EXERCISE_JSON_7 = {
             }
         },
         {
-            "name": "Позиция 2 - Лумбална екстензия (1-во повторение)",
+            "name": "Позиция 2 - Навеждане назад с ръце на кръста (1-во повторение)",
             "duration_seconds": 4,
             "instructions": "Леко се наведете назад, увеличавайки извивката в долната част на гърба. Задръжте.",
             "required_poses": {
@@ -830,7 +830,7 @@ EXERCISE_JSON_7 = {
         {
             "name": "Позиция 3 - Връщане в неутрална стойка (1-во повторение)",
             "duration_seconds": 3,
-            "instructions": "Върнете се в неутрална позиция с изправен гръбнак.",
+            "instructions": "Върнете се в неутрална позиция с изправен гръб.",
             "required_poses": {
                 "arms_down": True,
                 "legs_apart": True,
@@ -846,7 +846,7 @@ EXERCISE_JSON_7 = {
             }
         },
         {
-            "name": "Позиция 4 - Лумбална екстензия (2-ро повторение)",
+            "name": "Позиция 4 - Навеждане назад с ръце на кръста (2-ро повторение)",
             "duration_seconds": 4,
             "instructions": "Леко се наведете назад, увеличавайки извивката в долната част на гърба. Задръжте.",
             "required_poses": {
@@ -865,7 +865,7 @@ EXERCISE_JSON_7 = {
         {
             "name": "Позиция 5 - Връщане в неутрална стойка (2-ро повторение)",
             "duration_seconds": 3,
-            "instructions": "Върнете се в неутрална позиция с изправен гръбнак.",
+            "instructions": "Върнете се в неутрална позиция с изправен гръб.",
             "required_poses": {
                 "arms_down": True,
                 "legs_apart": True,
@@ -881,7 +881,7 @@ EXERCISE_JSON_7 = {
             }
         },
         {
-            "name": "Позиция 6 - Лумбална екстензия (3-то повторение)",
+            "name": "Позиция 6 - Навеждане назад с ръце на кръста (3-то повторение)",
             "duration_seconds": 4,
             "instructions": "Леко се наведете назад, увеличавайки извивката в долната част на гърба. Задръжте.",
             "required_poses": {
