@@ -1,358 +1,5 @@
 EXERCISE_JSON_1 = {
-    "exercise_name": "Jumping Jacks",
-    "steps": [
-        {
-            "name": "Позиция 1 - Начална стойка",
-            "duration_seconds": 1,
-            "instructions": "Застанете изправени със събрани крака и ръце отстрани.",
-            "required_poses": {
-                "arms_down": True,
-                "legs_together": True
-            },
-            "target_angles": {
-                "right_arm_angle": 20,
-                "left_arm_angle": 20
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
         },
-        {
-            "name": "Позиция 2 - Скок (1-во повторение)",
-            "duration_seconds": 1,
-            "instructions": "Скочете, разтворете краката и повдигнете ръцете над главата.",
-            "required_poses": {
-                "arms_raised": True,
-                "legs_apart": True
-            },
-            "target_angles": {
-                "right_arm_angle": 160,
-                "left_arm_angle": 160
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            },
-            "requires_jump": True
-        },
-        {
-            "name": "Позиция 3 - Връщане в правостояща позиция (1-во повторение)",
-            "duration_seconds": 1,
-            "instructions": "Скочете обратно в начална стойка със събрани крака и ръце отстрани.",
-            "required_poses": {
-                "arms_down": True,
-                "legs_together": True
-            },
-            "target_angles": {
-                "right_arm_angle": 20,
-                "left_arm_angle": 20
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 4 - Скок встрани (2-ро повторение)",
-            "duration_seconds": 1,
-            "instructions": "Скочете, разтворете краката и повдигнете ръцете над главата.",
-            "required_poses": {
-                "arms_raised": True,
-                "legs_apart": True
-            },
-            "target_angles": {
-                "right_arm_angle": 160,
-                "left_arm_angle": 160
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            },
-            "requires_jump": True
-        },
-        {
-            "name": "Позиция 5 - Връщане в правостояща позиция (2-ро повторение)",
-            "duration_seconds": 1,
-            "instructions": "Скочете обратно в начална стойка със събрани крака и ръце отстрани.",
-            "required_poses": {
-                "arms_down": True,
-                "legs_together": True
-            },
-            "target_angles": {
-                "right_arm_angle": 20,
-                "left_arm_angle": 20
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 6 - Скок встрани (3-то повторение)",
-            "duration_seconds": 1,
-            "instructions": "Скочете, разтворете краката и повдигнете ръцете над главата.",
-            "required_poses": {
-                "arms_raised": True,
-                "legs_apart": True
-            },
-            "target_angles": {
-                "right_arm_angle": 160,
-                "left_arm_angle": 160
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            },
-            "requires_jump": True
-        },
-        {
-            "name": "Позиция 7 - Връщане в правостояща позиция (3-то повторение)",
-            "duration_seconds": 1,
-            "instructions": "Скочете обратно в начална стойка със събрани крака и ръце отстрани.",
-            "required_poses": {
-                "arms_down": True,
-                "legs_together": True
-            },
-            "target_angles": {
-                "right_arm_angle": 20,
-                "left_arm_angle": 20
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        }
-    ]
-}
-
-EXERCISE_JSON_2 = {
-    "exercise_name": "Клекове",
-    "steps": [
-        {
-            "name": "Позиция 1 - Неутрална поза",
-            "duration_seconds": 2,
-            "instructions": "Застанете изправени с крака на ширината на раменете и ръце отстрани.",
-            "required_poses": {
-                "arms_down": True,
-                "legs_apart": True
-            },
-            "target_angles": {
-                "right_knee_angle": 160,
-                "left_knee_angle": 160
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 2 - Клек (1-во повторение)",
-            "duration_seconds": 2,
-            "instructions": "Спуснете тялото в клек, свийте коленете, изнесете бедрата назад и ръцете напред.",
-            "required_poses": {
-                "arms_forward": True,
-                "knees_bent": True
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 3 - Изправяне (1-во повторение)",
-            "duration_seconds": 1,
-            "instructions": "Изправете се с крака на ширината на раменете и ръце отстрани.",
-            "required_poses": {
-                "arms_down": True,
-                "legs_apart": True
-            },
-            "target_angles": {
-                "right_knee_angle": 160,
-                "left_knee_angle": 160
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 4 - Клек (2-ро повторение)",
-            "duration_seconds": 2,
-            "instructions": "Спуснете тялото в клек, свийте коленете, изнесете бедрата назад и ръцете напред.",
-            "required_poses": {
-                "arms_forward": True,
-                "knees_bent": True
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 5 - Изправяне (2-ро повторение)",
-            "duration_seconds": 1,
-            "instructions": "Изправете се с крака на ширината на раменете и ръце отстрани.",
-            "required_poses": {
-                "arms_down": True,
-                "legs_apart": True
-            },
-            "target_angles": {
-                "right_knee_angle": 160,
-                "left_knee_angle": 160
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 6 - Клек (3-то повторение)",
-            "duration_seconds": 2,
-            "instructions": "Спуснете тялото в клек, свийте коленете, изнесете бедрата назад и ръцете напред.",
-            "required_poses": {
-                "arms_forward": True,
-                "knees_bent": True
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 7 - Изправяне (3-то повторение)",
-            "duration_seconds": 1,
-            "instructions": "Изправете се с крака на ширината на раменете и ръце отстрани.",
-            "required_poses": {
-                "arms_down": True,
-                "legs_apart": True
-            },
-            "target_angles": {
-                "right_knee_angle": 160,
-                "left_knee_angle": 160
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        }
-    ]
-}
-
-EXERCISE_JSON_3 = {
-    "exercise_name": "Напади",
-    "steps": [
-        {
-            "name": "Позиция 1 - Неутрална поза",
-            "duration_seconds": 2,
-            "instructions": "Застанете изправени с крака на ширината на раменете, с ръцете отстрани.",
-            "required_poses": {
-                "arms_down": True,
-                "legs_apart": True
-            },
-            "target_angles": {
-                "right_knee_angle": 160,
-                "left_knee_angle": 160
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 2 - Напад надолу (1-во повторение)",
-            "duration_seconds": 4,
-            "instructions": "Пристъпете напред с единия крак, спуснете тялото си, докато едното коляно е свито на около 90 градуса, ръцете отстрани.",
-            "required_poses": {
-                "arms_down": True,
-                "lunge_pose": True
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 3 - Връщане в правостояща позиция (1-во повторение)",
-            "duration_seconds": 2,
-            "instructions": "Изправете се, като застанете с крака на ширината на раменете и ръце отпуснати отстрани.",
-            "required_poses": {
-                "arms_down": True,
-                "legs_apart": True
-            },
-            "target_angles": {
-                "right_knee_angle": 160,
-                "left_knee_angle": 160
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 4 - Напад надолу (2-ро повторение)",
-            "duration_seconds": 4,
-            "instructions": "Пристъпете напред с единия крак, спуснете тялото си, докато едното коляно е свито на около 90 градуса, ръцете отстрани.",
-            "required_poses": {
-                "arms_down": True,
-                "lunge_pose": True
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 5 - Връщане в правостояща позиция (2-ро повторение)",
-            "duration_seconds": 2,
-            "instructions": "Изправете се, като застанете с крака на ширината на раменете и ръце отпуснати отстрани.",
-            "required_poses": {
-                "arms_down": True,
-                "legs_apart": True
-            },
-            "target_angles": {
-                "right_knee_angle": 160,
-                "left_knee_angle": 160
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 6 - Напад надолу (3-то повторение)",
-            "duration_seconds": 4,
-            "instructions": "Пристъпете напред с единия крак, спуснете тялото си, докато едното коляно е свито на около 90 градуса, ръцете отстрани.",
-            "required_poses": {
-                "arms_down": True,
-                "lunge_pose": True
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 7 - Връщане в правостояща позиция (3-то повторение)",
-            "duration_seconds": 2,
-            "instructions": "Изправете се, като застанете с крака на ширината на раменете и ръце отпуснати отстрани.",
-            "required_poses": {
-                "arms_down": True,
-                "legs_apart": True
-            },
-            "target_angles": {
-                "right_knee_angle": 160,
-                "left_knee_angle": 160
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        }
-    ]
-}
-
-EXERCISE_JSON_4 = {
     "exercise_name": "Shoulder Blade Squeezes",
     "steps": [
         {
@@ -462,7 +109,7 @@ EXERCISE_JSON_4 = {
     ]
 }
 
-EXERCISE_JSON_5 = {
+EXERCISE_JSON_2 = {
     "exercise_name": "Wall Angels",
     "steps": [
         {
@@ -584,7 +231,7 @@ EXERCISE_JSON_5 = {
     ]
 }
 
-EXERCISE_JSON_6 = {
+EXERCISE_JSON_3 = {
     "exercise_name": "Standing Pelvic Tilts",
     "steps": [
         {
@@ -709,7 +356,7 @@ EXERCISE_JSON_6 = {
     ]
 }
 
-EXERCISE_JSON_7 = {
+EXERCISE_JSON_4 = {
     "exercise_name": "Chin Tucks",
     "steps": [
         {
@@ -819,7 +466,7 @@ EXERCISE_JSON_7 = {
     ]
 }
 
-EXERCISE_JSON_8 = {
+EXERCISE_JSON_5 = {
     "exercise_name": "Neck Side Tilts (Lateral Neck Flexion)",
     "steps": [
         {
@@ -1039,7 +686,7 @@ EXERCISE_JSON_8 = {
     ]
 }
 
-EXERCISE_JSON_9 = {
+EXERCISE_JSON_6 = {
     "exercise_name": "Standing Lumbar Extensions",
     "steps": [
         {
@@ -1149,7 +796,7 @@ EXERCISE_JSON_9 = {
     ]
 }
 
-EXERCISE_JSON_10 = {
+EXERCISE_JSON_7 = {
     "exercise_name": "Standing T Stretch",
     "steps": [
         {
@@ -1254,4 +901,4 @@ EXERCISE_JSON_10 = {
     ]
 }
 
-ALL_EXERCISES = [EXERCISE_JSON_4, EXERCISE_JSON_5, EXERCISE_JSON_6, EXERCISE_JSON_7, EXERCISE_JSON_8, EXERCISE_JSON_9, EXERCISE_JSON_10]
+ALL_EXERCISES = [EXERCISE_JSON_1, EXERCISE_JSON_2, EXERCISE_JSON_3, EXERCISE_JSON_4, EXERCISE_JSON_5, EXERCISE_JSON_6, EXERCISE_JSON_7]
