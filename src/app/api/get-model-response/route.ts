@@ -213,7 +213,7 @@ function generateUserPrompt(category: string, answers: Record<string, any>, user
 
       **Наименования:**
       - exercise_name винаги трябва да съдържа официалното наименование на йога позата на английски и санскрит в скоби (например: "Downward Facing Dog (Adho Mukha Svanasana)", "Warrior I (Virabhadrasana I)", "Tree Pose (Vrksasana)")
-      - exercise_id ВИНАГИ трябва да следва следния формат: име на упражнението в **единствено число** (например: "downward_facing_dog", а не "downward_facing_dogs"), малки букви, разделени с долна черта. Ако има по-сложна дума, съставена от две или повече думи (например "sunbird"), тя също трябва да се раздели на отделни думи с долна черта, например: "sun_bird", "downward_facing_dog", "warrior_i", "tree_pose"
+      - exercise_id ВИНАГИ трябва да следва следния формат: име на упражнението в **единствено число** (например: "downward_facing_dog", а не "downward_facing_dogs"), малки букви, разделени с долна черта. Ако има по-сложна дума, съставена от две или повече думи (например "sunbird"), тя също трябва да се раздели на отделни думи с долна черта, например: "sun_bird", "downward_facing_dog", "warrior_i", "tree_pose". НИКОГА НЕ ДОБАВЯЙ думата "pose".
       - При нужда от модификация посочвай конкретната вариация (например: "Modified Chaturanga", "Supported Headstand", "Half Pigeon Pose")
 
       **Повторения и задържане:**
