@@ -276,11 +276,11 @@ export default function SpecializedProgramsPage() {
       <Card className="border-primary/20 from-primary/5 to-primary/10 border-2 bg-gradient-to-br">
         <CardContent className="flex flex-col items-center gap-4 py-8 text-center md:flex-row md:justify-between md:text-left">
           <div className="flex-1 space-y-2">
-            <h3 className="text-xl font-semibold">Програма с камера за следене на изпълнението на упражненията</h3>
+            <h3 className="text-xl font-semibold">Приложение с камера за следене на изпълнението на упражненията</h3>
             <p className="text-muted-foreground text-sm">
-              Свалете разработената от нас програма, която включва всички упражнения и стъпки за изпълнение. Програмата
-              работи с камерата <strong>Orbbec Astra+</strong> и следи за правилното изпълнение на стъпките в реално
-              време, като сравнява движенията на потребителя с правилната техника за всяко от упражненията
+              Свалете разработеното от нас приложение, което включва всички упражнения и стъпки за изпълнение. То работи
+              с камерата <strong>Orbbec Astra+</strong> и целта му е да следи за правилното изпълнение на стъпките в
+              реално време, като сравнява движенията на потребителя с правилната техника за всяко от тях
             </p>
           </div>
           <DownloadButton fileName="mobilis_pose_correction.zip" />
