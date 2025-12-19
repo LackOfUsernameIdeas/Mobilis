@@ -1,361 +1,4 @@
 EXERCISE_JSON_1 = {
-    "exercise_name": "Shoulder Blade Squeezes",
-    "steps": [
-        {
-            "name": "Позиция 1 - Неутрална стойка",
-            "duration_seconds": 2,
-            "instructions": "Застанете изправени с крака събрани, ръце отпуснати отстрани и рамене отпуснати.",
-            "required_poses": {
-                "arms_down": True,
-                "legs_together": True
-            },
-            "target_angles": {
-                "right_elbow_angle": 160,  # Straight arms down
-                "left_elbow_angle": 160
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 2 - Стискане (1-во повторение)",
-            "duration_seconds": 5,
-            "instructions": "Стегнете мускулите между лопатките, като издърпате раменете назад и леко надолу, без да вдигате ръцете.",
-            "required_poses": {
-                "arms_down": True,
-                "shoulders_retracted": True  # New: Check Z-depth of shoulders closer to back (relative to torso)
-            },
-            "target_angles": {
-                "right_elbow_angle": 150,  # Slight bend if arms pull back
-                "left_elbow_angle": 150
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 3 - Освобождаване (1-во повторение)",
-            "duration_seconds": 3,
-            "instructions": "Освободете раменете и се върнете в неутрална стойка с отпуснати рамене.",
-            "required_poses": {
-                "arms_down": True,
-                "legs_together": True,
-                "shoulders_retracted": False
-            },
-            "target_angles": {
-                "right_elbow_angle": 160,
-                "left_elbow_angle": 160
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 4 - Стискане (2-ро повторение)",
-            "duration_seconds": 5,
-            "instructions": "Стегнете мускулите между лопатките, като издърпате раменете назад и леко надолу.",
-            "required_poses": {
-                "arms_down": True,
-                "shoulders_retracted": True
-            },
-            "target_angles": {
-                "right_elbow_angle": 150,
-                "left_elbow_angle": 150
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 5 - Освобождаване (2-ро повторение)",
-            "duration_seconds": 3,
-            "instructions": "Освободете раменете и се върнете в неутрална стойка.",
-            "required_poses": {
-                "arms_down": True,
-                "legs_together": True,
-                "shoulders_retracted": False
-            },
-            "target_angles": {
-                "right_elbow_angle": 160,
-                "left_elbow_angle": 160
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 6 - Стискане (3-то повторение)",
-            "duration_seconds": 5,
-            "instructions": "Стегнете мускулите между лопатките, като издърпате раменете назад и леко надолу.",
-            "required_poses": {
-                "arms_down": True,
-                "shoulders_retracted": True
-            },
-            "target_angles": {
-                "right_elbow_angle": 150,
-                "left_elbow_angle": 150
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        }
-    ]
-}
-
-EXERCISE_JSON_2 = {
-    "exercise_name": "Wall Angels",
-    "steps": [
-        {
-            "name": "Позиция 1 - Неутрална стойка",
-            "duration_seconds": 2,
-            "instructions": "Застанете изправени с крака събрани, ръце отпуснати отстрани, гърба изправен.",
-            "required_poses": {
-                "arms_down": True,
-                "legs_together": True
-            },
-            "target_angles": {
-                "right_elbow_angle": 160,
-                "left_elbow_angle": 160
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 2 - W форма (1-во повторение)",
-            "duration_seconds": 5,
-            "instructions": "Повдигнете ръцете до W форма: лакти свити на 90°, китки близо до раменете, гърба изправен.",
-            "required_poses": {
-                "arms_w_shape": True,
-                "shoulders_retracted": True 
-            },
-            "target_angles": {
-                "right_elbow_angle": 30,
-                "left_elbow_angle": 30
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 3 - Y форма (1-во повторение)",
-            "duration_seconds": 5,
-            "instructions": "Изпънете ръцете нагоре до Y форма, запазвайки гърба изправен и ръцете близо до тялото.",
-            "required_poses": {
-                "arms_y_shape": True
-            },
-            "target_angles": {
-                "right_elbow_angle": 150,
-                "left_elbow_angle": 150
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 4 - W форма (2-ро повторение)",
-            "duration_seconds": 5,
-            "instructions": "Върнете ръцете до W форма: лакти свити, китки близо до раменете.",
-            "required_poses": {
-                "arms_w_shape": True,
-                "shoulders_retracted": True 
-            },
-            "target_angles": {
-                "right_elbow_angle": 30,
-                "left_elbow_angle": 30
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 5 - Y форма (2-ро повторение)",
-            "duration_seconds": 5,
-            "instructions": "Изпънете ръцете до Y форма, гърба изправен.",
-            "required_poses": {
-                "arms_y_shape": True
-            },
-            "target_angles": {
-                "right_elbow_angle": 150,
-                "left_elbow_angle": 150
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 6 - W форма (3-то повторение)",
-            "duration_seconds": 5,
-            "instructions": "Върнете ръцете до W форма.",
-            "required_poses": {
-                "arms_w_shape": True,
-                "shoulders_retracted": True 
-            },
-            "target_angles": {
-                "right_elbow_angle": 30,
-                "left_elbow_angle": 30
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 7 - Y форма (3-то повторение)",
-            "duration_seconds": 5,
-            "instructions": "Изпънете ръцете до Y форма, гърба изправен.",
-            "required_poses": {
-                "arms_y_shape": True
-            },
-            "target_angles": {
-                "right_elbow_angle": 150,
-                "left_elbow_angle": 150
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        }
-    ]
-}
-
-EXERCISE_JSON_3 = {
-    "exercise_name": "Standing Pelvic Tilts",
-    "steps": [
-        {
-            "name": "Позиция 1 - Неутрална стойка",
-            "duration_seconds": 2,
-            "instructions": "Застанете изправени с крака на ширината на раменете, ръце отпуснати, таз в неутрално положение.",
-            "required_poses": {
-                "arms_down": True,
-                "legs_apart": True
-            },
-            "target_angles": {
-                "right_elbow_angle": 160,
-                "left_elbow_angle": 160
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 2 - Преден наклон на таза (1-во повторение)",
-            "duration_seconds": 5,
-            "instructions": "Стегнете корема и дайте таза назад, за да увеличите извивката в долната част на гърба. Задръжте.",
-            "required_poses": {
-                "arms_down": True,
-                "pelvis_anterior": True
-            },
-            "target_angles": {
-                "right_elbow_angle": 160,
-                "left_elbow_angle": 160
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 3 - Заден наклон на таза (1-во повторение)",
-            "duration_seconds": 5,
-            "instructions": "Стегнете корема и подайте таза напред, за да изправите долната част на гърба. Задръжте.",
-            "required_poses": {
-                "arms_down": True,
-                "pelvis_posterior": True
-            },
-            "target_angles": {
-                "right_elbow_angle": 160,
-                "left_elbow_angle": 160
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 4 - Преден наклон на таза (2-ро повторение)",
-            "duration_seconds": 5,
-            "instructions": "Стегнете корема и дайте таза назад, за да увеличите извивката в долната част на гърба. Задръжте.",
-            "required_poses": {
-                "arms_down": True,
-                "pelvis_anterior": True
-            },
-            "target_angles": {
-                "right_elbow_angle": 160,
-                "left_elbow_angle": 160
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 5 - Заден наклон на таза (2-ро повторение)",
-            "duration_seconds": 5,
-            "instructions": "Стегнете корема и подайте таза напред, за да изправите долната част на гърба. Задръжте.",
-            "required_poses": {
-                "arms_down": True,
-                "pelvis_posterior": True
-            },
-            "target_angles": {
-                "right_elbow_angle": 160,
-                "left_elbow_angle": 160
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 6 - Преден наклон на таза (3-то повторение)",
-            "duration_seconds": 5,
-            "instructions": "Стегнете корема и дайте таза назад, за да увеличите извивката в долната част на гърба. Задръжте.",
-            "required_poses": {
-                "arms_down": True,
-                "pelvis_anterior": True
-            },
-            "target_angles": {
-                "right_elbow_angle": 160,
-                "left_elbow_angle": 160
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 7 - Заден наклон на таза (3-то повторение)",
-            "duration_seconds": 5,
-            "instructions": "Стегнете корема и подайте таза напред, за да изправите долната част на гърба. Задръжте.",
-            "required_poses": {
-                "arms_down": True,
-                "pelvis_posterior": True
-            },
-            "target_angles": {
-                "right_elbow_angle": 160,
-                "left_elbow_angle": 160
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        }       
-    ]
-}
-
-EXERCISE_JSON_4 = {
     "exercise_name": "Chin Tucks",
     "steps": [
         {
@@ -465,7 +108,7 @@ EXERCISE_JSON_4 = {
     ]
 }
 
-EXERCISE_JSON_5 = {
+EXERCISE_JSON_2 = {
     "exercise_name": "Neck Side Tilts (Lateral Neck Flexion)",
     "steps": [
         {
@@ -685,7 +328,469 @@ EXERCISE_JSON_5 = {
     ]
 }
 
+EXERCISE_JSON_3 = {
+    "exercise_name": "Shoulder Blade Squeezes",
+    "steps": [
+        {
+            "name": "Позиция 1 - Неутрална стойка",
+            "duration_seconds": 2,
+            "instructions": "Застанете изправени с крака събрани, ръце отпуснати отстрани и рамене отпуснати.",
+            "required_poses": {
+                "arms_down": True,
+                "legs_together": True
+            },
+            "target_angles": {
+                "right_elbow_angle": 160,  # Straight arms down
+                "left_elbow_angle": 160
+            },
+            "tolerance": {
+                "angle_tolerance": 20,
+                "distance_tolerance": 0.2
+            }
+        },
+        {
+            "name": "Позиция 2 - Стискане (1-во повторение)",
+            "duration_seconds": 5,
+            "instructions": "Стегнете мускулите между лопатките, като издърпате раменете назад и леко надолу, без да вдигате ръцете.",
+            "required_poses": {
+                "arms_down": True,
+                "shoulders_retracted": True  # New: Check Z-depth of shoulders closer to back (relative to torso)
+            },
+            "target_angles": {
+                "right_elbow_angle": 150,  # Slight bend if arms pull back
+                "left_elbow_angle": 150
+            },
+            "tolerance": {
+                "angle_tolerance": 20,
+                "distance_tolerance": 0.2
+            }
+        },
+        {
+            "name": "Позиция 3 - Освобождаване (1-во повторение)",
+            "duration_seconds": 3,
+            "instructions": "Освободете раменете и се върнете в неутрална стойка с отпуснати рамене.",
+            "required_poses": {
+                "arms_down": True,
+                "legs_together": True,
+                "shoulders_retracted": False
+            },
+            "target_angles": {
+                "right_elbow_angle": 160,
+                "left_elbow_angle": 160
+            },
+            "tolerance": {
+                "angle_tolerance": 20,
+                "distance_tolerance": 0.2
+            }
+        },
+        {
+            "name": "Позиция 4 - Стискане (2-ро повторение)",
+            "duration_seconds": 5,
+            "instructions": "Стегнете мускулите между лопатките, като издърпате раменете назад и леко надолу.",
+            "required_poses": {
+                "arms_down": True,
+                "shoulders_retracted": True
+            },
+            "target_angles": {
+                "right_elbow_angle": 150,
+                "left_elbow_angle": 150
+            },
+            "tolerance": {
+                "angle_tolerance": 20,
+                "distance_tolerance": 0.2
+            }
+        },
+        {
+            "name": "Позиция 5 - Освобождаване (2-ро повторение)",
+            "duration_seconds": 3,
+            "instructions": "Освободете раменете и се върнете в неутрална стойка.",
+            "required_poses": {
+                "arms_down": True,
+                "legs_together": True,
+                "shoulders_retracted": False
+            },
+            "target_angles": {
+                "right_elbow_angle": 160,
+                "left_elbow_angle": 160
+            },
+            "tolerance": {
+                "angle_tolerance": 20,
+                "distance_tolerance": 0.2
+            }
+        },
+        {
+            "name": "Позиция 6 - Стискане (3-то повторение)",
+            "duration_seconds": 5,
+            "instructions": "Стегнете мускулите между лопатките, като издърпате раменете назад и леко надолу.",
+            "required_poses": {
+                "arms_down": True,
+                "shoulders_retracted": True
+            },
+            "target_angles": {
+                "right_elbow_angle": 150,
+                "left_elbow_angle": 150
+            },
+            "tolerance": {
+                "angle_tolerance": 20,
+                "distance_tolerance": 0.2
+            }
+        }
+    ]
+}
+
+EXERCISE_JSON_4 = {
+    "exercise_name": "Wall Angels",
+    "steps": [
+        {
+            "name": "Позиция 1 - Неутрална стойка",
+            "duration_seconds": 2,
+            "instructions": "Застанете изправени с крака събрани, ръце отпуснати отстрани, гърба изправен.",
+            "required_poses": {
+                "arms_down": True,
+                "legs_together": True
+            },
+            "target_angles": {
+                "right_elbow_angle": 160,
+                "left_elbow_angle": 160
+            },
+            "tolerance": {
+                "angle_tolerance": 20,
+                "distance_tolerance": 0.2
+            }
+        },
+        {
+            "name": "Позиция 2 - W форма (1-во повторение)",
+            "duration_seconds": 5,
+            "instructions": "Повдигнете ръцете до W форма: лакти свити на 90°, китки близо до раменете, гърба изправен.",
+            "required_poses": {
+                "arms_w_shape": True,
+                "shoulders_retracted": True 
+            },
+            "target_angles": {
+                "right_elbow_angle": 30,
+                "left_elbow_angle": 30
+            },
+            "tolerance": {
+                "angle_tolerance": 20,
+                "distance_tolerance": 0.2
+            }
+        },
+        {
+            "name": "Позиция 3 - Y форма (1-во повторение)",
+            "duration_seconds": 5,
+            "instructions": "Изпънете ръцете нагоре до Y форма, запазвайки гърба изправен и ръцете близо до тялото.",
+            "required_poses": {
+                "arms_y_shape": True
+            },
+            "target_angles": {
+                "right_elbow_angle": 150,
+                "left_elbow_angle": 150
+            },
+            "tolerance": {
+                "angle_tolerance": 20,
+                "distance_tolerance": 0.2
+            }
+        },
+        {
+            "name": "Позиция 4 - W форма (2-ро повторение)",
+            "duration_seconds": 5,
+            "instructions": "Върнете ръцете до W форма: лакти свити, китки близо до раменете.",
+            "required_poses": {
+                "arms_w_shape": True,
+                "shoulders_retracted": True 
+            },
+            "target_angles": {
+                "right_elbow_angle": 30,
+                "left_elbow_angle": 30
+            },
+            "tolerance": {
+                "angle_tolerance": 20,
+                "distance_tolerance": 0.2
+            }
+        },
+        {
+            "name": "Позиция 5 - Y форма (2-ро повторение)",
+            "duration_seconds": 5,
+            "instructions": "Изпънете ръцете до Y форма, гърба изправен.",
+            "required_poses": {
+                "arms_y_shape": True
+            },
+            "target_angles": {
+                "right_elbow_angle": 150,
+                "left_elbow_angle": 150
+            },
+            "tolerance": {
+                "angle_tolerance": 20,
+                "distance_tolerance": 0.2
+            }
+        },
+        {
+            "name": "Позиция 6 - W форма (3-то повторение)",
+            "duration_seconds": 5,
+            "instructions": "Върнете ръцете до W форма.",
+            "required_poses": {
+                "arms_w_shape": True,
+                "shoulders_retracted": True 
+            },
+            "target_angles": {
+                "right_elbow_angle": 30,
+                "left_elbow_angle": 30
+            },
+            "tolerance": {
+                "angle_tolerance": 20,
+                "distance_tolerance": 0.2
+            }
+        },
+        {
+            "name": "Позиция 7 - Y форма (3-то повторение)",
+            "duration_seconds": 5,
+            "instructions": "Изпънете ръцете до Y форма, гърба изправен.",
+            "required_poses": {
+                "arms_y_shape": True
+            },
+            "target_angles": {
+                "right_elbow_angle": 150,
+                "left_elbow_angle": 150
+            },
+            "tolerance": {
+                "angle_tolerance": 20,
+                "distance_tolerance": 0.2
+            }
+        }
+    ]
+}
+
+EXERCISE_JSON_5 = {
+    "exercise_name": "Standing T Stretch",
+    "steps": [
+        {
+            "name": "Позиция 1 - Неутрална стойка",
+            "duration_seconds": 2,
+            "instructions": "Застанете изправени с крака на ширината на раменете, ръце отпуснати отстрани.",
+            "required_poses": {
+                "arms_down": True,
+                "legs_apart": True
+            },
+            "target_angles": {
+                "right_elbow_angle": 160,
+                "left_elbow_angle": 160
+            },
+            "tolerance": {
+                "angle_tolerance": 20,
+                "distance_tolerance": 0.2
+            }
+        },
+        {
+            "name": "Позиция 2 - Ръце напред (1-во повторение)",
+            "duration_seconds": 1,
+            "instructions": "Застанете изправени с крака на ширината на раменете, ръце отпуснати отстрани.",
+            "required_poses": {
+                "arms_forward": True,
+                "legs_apart": True
+            },
+            "tolerance": {
+                "angle_tolerance": 20,
+                "distance_tolerance": 0.2
+            }
+        },
+        {
+            "name": "Позиция 3 - T Stretch (1-во повторение)",
+            "duration_seconds": 4,
+            "instructions": "Разтворете ръцете хоризонтално настрани, образувайки форма на 'T'. Задръжте.",
+            "required_poses": {
+                "legs_apart": True,
+                "arms_back": True
+            },
+            "target_angles": {
+                "right_elbow_angle": 140,
+                "left_elbow_angle": 140
+            },
+            "tolerance": {
+                "angle_tolerance": 20,
+                "distance_tolerance": 0.2
+            }
+        },
+        {
+            "name": "Позиция 4 - Връщане в стойка с ръце напред (1-во повторение)",
+            "duration_seconds": 3,
+            "instructions": "Върнете ръцете в неутрална позиция отстрани.",
+            "required_poses": {
+                "arms_forward": True,
+                "legs_apart": True
+            },
+            "tolerance": {
+                "angle_tolerance": 20,
+                "distance_tolerance": 0.2
+            }
+        },
+        {
+            "name": "Позиция 5 - T Stretch (2-ро повторение)",
+            "duration_seconds": 4,
+            "instructions": "Разтворете ръцете хоризонтално настрани, образувайки форма на 'T'. Задръжте.",
+            "required_poses": {
+                "legs_apart": True,
+                "arms_back": True
+            },
+            "tolerance": {
+                "angle_tolerance": 20,
+                "distance_tolerance": 0.2
+            }
+        },
+        {
+            "name": "Позиция 6 - Връщане в стойка с ръце напред (2-ро повторение)",
+            "duration_seconds": 3,
+            "instructions": "Върнете ръцете в неутрална позиция отстрани.",
+            "required_poses": {
+                "arms_forward": True,
+                "legs_apart": True
+            },
+            "tolerance": {
+                "angle_tolerance": 20,
+                "distance_tolerance": 0.2
+            }
+        },
+        {
+            "name": "Позиция 7 - T Stretch (3-то повторение)",
+            "duration_seconds": 4,
+            "instructions": "Разтворете ръцете хоризонтално настрани, образувайки форма на 'T'. Задръжте.",
+            "required_poses": {
+                "legs_apart": True,
+                "arms_back": True
+            },
+            "tolerance": {
+                "angle_tolerance": 20,
+                "distance_tolerance": 0.2
+            }
+        }
+    ]
+}
+
 EXERCISE_JSON_6 = {
+    "exercise_name": "Standing Pelvic Tilts",
+    "steps": [
+        {
+            "name": "Позиция 1 - Неутрална стойка",
+            "duration_seconds": 2,
+            "instructions": "Застанете изправени с крака на ширината на раменете, ръце отпуснати, таз в неутрално положение.",
+            "required_poses": {
+                "arms_down": True,
+                "legs_apart": True
+            },
+            "target_angles": {
+                "right_elbow_angle": 160,
+                "left_elbow_angle": 160
+            },
+            "tolerance": {
+                "angle_tolerance": 20,
+                "distance_tolerance": 0.2
+            }
+        },
+        {
+            "name": "Позиция 2 - Преден наклон на таза (1-во повторение)",
+            "duration_seconds": 5,
+            "instructions": "Стегнете корема и дайте таза назад, за да увеличите извивката в долната част на гърба. Задръжте.",
+            "required_poses": {
+                "arms_down": True,
+                "pelvis_anterior": True
+            },
+            "target_angles": {
+                "right_elbow_angle": 160,
+                "left_elbow_angle": 160
+            },
+            "tolerance": {
+                "angle_tolerance": 20,
+                "distance_tolerance": 0.2
+            }
+        },
+        {
+            "name": "Позиция 3 - Заден наклон на таза (1-во повторение)",
+            "duration_seconds": 5,
+            "instructions": "Стегнете корема и подайте таза напред, за да изправите долната част на гърба. Задръжте.",
+            "required_poses": {
+                "arms_down": True,
+                "pelvis_posterior": True
+            },
+            "target_angles": {
+                "right_elbow_angle": 160,
+                "left_elbow_angle": 160
+            },
+            "tolerance": {
+                "angle_tolerance": 20,
+                "distance_tolerance": 0.2
+            }
+        },
+        {
+            "name": "Позиция 4 - Преден наклон на таза (2-ро повторение)",
+            "duration_seconds": 5,
+            "instructions": "Стегнете корема и дайте таза назад, за да увеличите извивката в долната част на гърба. Задръжте.",
+            "required_poses": {
+                "arms_down": True,
+                "pelvis_anterior": True
+            },
+            "target_angles": {
+                "right_elbow_angle": 160,
+                "left_elbow_angle": 160
+            },
+            "tolerance": {
+                "angle_tolerance": 20,
+                "distance_tolerance": 0.2
+            }
+        },
+        {
+            "name": "Позиция 5 - Заден наклон на таза (2-ро повторение)",
+            "duration_seconds": 5,
+            "instructions": "Стегнете корема и подайте таза напред, за да изправите долната част на гърба. Задръжте.",
+            "required_poses": {
+                "arms_down": True,
+                "pelvis_posterior": True
+            },
+            "target_angles": {
+                "right_elbow_angle": 160,
+                "left_elbow_angle": 160
+            },
+            "tolerance": {
+                "angle_tolerance": 20,
+                "distance_tolerance": 0.2
+            }
+        },
+        {
+            "name": "Позиция 6 - Преден наклон на таза (3-то повторение)",
+            "duration_seconds": 5,
+            "instructions": "Стегнете корема и дайте таза назад, за да увеличите извивката в долната част на гърба. Задръжте.",
+            "required_poses": {
+                "arms_down": True,
+                "pelvis_anterior": True
+            },
+            "target_angles": {
+                "right_elbow_angle": 160,
+                "left_elbow_angle": 160
+            },
+            "tolerance": {
+                "angle_tolerance": 20,
+                "distance_tolerance": 0.2
+            }
+        },
+        {
+            "name": "Позиция 7 - Заден наклон на таза (3-то повторение)",
+            "duration_seconds": 5,
+            "instructions": "Стегнете корема и подайте таза напред, за да изправите долната част на гърба. Задръжте.",
+            "required_poses": {
+                "arms_down": True,
+                "pelvis_posterior": True
+            },
+            "target_angles": {
+                "right_elbow_angle": 160,
+                "left_elbow_angle": 160
+            },
+            "tolerance": {
+                "angle_tolerance": 20,
+                "distance_tolerance": 0.2
+            }
+        }       
+    ]
+}
+
+EXERCISE_JSON_7 = {
     "exercise_name": "Standing Lumbar Extensions",
     "steps": [
         {
@@ -787,111 +892,6 @@ EXERCISE_JSON_6 = {
                 "right_elbow_angle": 90,
                 "left_elbow_angle": 90
             },            
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        }
-    ]
-}
-
-EXERCISE_JSON_7 = {
-    "exercise_name": "Standing T Stretch",
-    "steps": [
-        {
-            "name": "Позиция 1 - Неутрална стойка",
-            "duration_seconds": 2,
-            "instructions": "Застанете изправени с крака на ширината на раменете, ръце отпуснати отстрани.",
-            "required_poses": {
-                "arms_down": True,
-                "legs_apart": True
-            },
-            "target_angles": {
-                "right_elbow_angle": 160,
-                "left_elbow_angle": 160
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 2 - Ръце напред (1-во повторение)",
-            "duration_seconds": 1,
-            "instructions": "Застанете изправени с крака на ширината на раменете, ръце отпуснати отстрани.",
-            "required_poses": {
-                "arms_forward": True,
-                "legs_apart": True
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 3 - T Stretch (1-во повторение)",
-            "duration_seconds": 4,
-            "instructions": "Разтворете ръцете хоризонтално настрани, образувайки форма на 'T'. Задръжте.",
-            "required_poses": {
-                "legs_apart": True,
-                "arms_back": True
-            },
-            "target_angles": {
-                "right_elbow_angle": 140,
-                "left_elbow_angle": 140
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 4 - Връщане в стойка с ръце напред (1-во повторение)",
-            "duration_seconds": 3,
-            "instructions": "Върнете ръцете в неутрална позиция отстрани.",
-            "required_poses": {
-                "arms_forward": True,
-                "legs_apart": True
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 5 - T Stretch (2-ро повторение)",
-            "duration_seconds": 4,
-            "instructions": "Разтворете ръцете хоризонтално настрани, образувайки форма на 'T'. Задръжте.",
-            "required_poses": {
-                "legs_apart": True,
-                "arms_back": True
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 6 - Връщане в стойка с ръце напред (2-ро повторение)",
-            "duration_seconds": 3,
-            "instructions": "Върнете ръцете в неутрална позиция отстрани.",
-            "required_poses": {
-                "arms_forward": True,
-                "legs_apart": True
-            },
-            "tolerance": {
-                "angle_tolerance": 20,
-                "distance_tolerance": 0.2
-            }
-        },
-        {
-            "name": "Позиция 7 - T Stretch (3-то повторение)",
-            "duration_seconds": 4,
-            "instructions": "Разтворете ръцете хоризонтално настрани, образувайки форма на 'T'. Задръжте.",
-            "required_poses": {
-                "legs_apart": True,
-                "arms_back": True
-            },
             "tolerance": {
                 "angle_tolerance": 20,
                 "distance_tolerance": 0.2

@@ -131,29 +131,7 @@ def update_exercise_progress():
     duration = current_step_data["duration_seconds"]
     # Изчислява оставащото време
     remaining_time = max(0, duration - elapsed_time)
-        
-    # Проверява дали има движение (скок) за стъпка 2
-    motion_detected = False
-    current_step_data = globals.EXERCISE_JSON["steps"][globals.current_step[0]]
-    is_jumping_jacks = globals.EXERCISE_JSON.get("exercise_name", "").lower() == "jumping jacks"
-    requires_jump = current_step_data.get("requires_jump", False)
-    
-    if (is_jumping_jacks or requires_jump) and globals.previous_user_skeleton:
-        # Взема Y координатите на глезените или коленете от предишния и текущия скелет
-        prev_right_y = globals.previous_user_skeleton.get('RIGHT_ANKLE', globals.previous_user_skeleton.get('RIGHT_KNEE', globals.previous_user_skeleton.get('TORSO', {}))).get('y', 0)
-        prev_left_y = globals.previous_user_skeleton.get('LEFT_ANKLE', globals.previous_user_skeleton.get('LEFT_KNEE', globals.previous_user_skeleton.get('TORSO', {}))).get('y', 0)
-        curr_right_y = globals.current_user_skeleton.get('RIGHT_ANKLE', globals.current_user_skeleton.get('RIGHT_KNEE', globals.current_user_skeleton.get('TORSO', {}))).get('y', 0)
-        curr_left_y = globals.current_user_skeleton.get('LEFT_ANKLE', globals.current_user_skeleton.get('LEFT_KNEE', globals.current_user_skeleton.get('TORSO', {}))).get('y', 0)
-        # Изчислява средната промяна по Y за откриване на скок
-        delta_y = abs((curr_right_y + curr_left_y) / 2 - (prev_right_y + prev_left_y) / 2)
-        # Счита за скок, ако промяната е над 20 мм
-        motion_detected = delta_y > 20
-        globals.logger.debug(f"Jump motion: delta_y={delta_y:.0f}mm, detected={motion_detected}, right_y={curr_right_y:.0f}, left_y={curr_left_y:.0f}")
-    else:
-        # Ако не е стъпка 2 или няма предишен скелет, приема движението за валидно
-        motion_detected = True
-        globals.logger.debug("Jump motion: Skipped (no previous skeleton)")
-    
+
     # Задава минимална точност и време за завършване на стъпката
     min_accuracy = 80.0
 
@@ -164,7 +142,7 @@ def update_exercise_progress():
     if not hasattr(globals, 'hold_duration'):
         globals.hold_duration = [0]  # Натрупана продължителност на задържане
     
-    if accuracy >= min_accuracy and all_ok and motion_detected:
+    if accuracy >= min_accuracy and all_ok:
         if globals.hold_start_time[0] == 0:
             globals.hold_start_time[0] = current_time
         globals.hold_duration[0] = current_time - globals.hold_start_time[0]
