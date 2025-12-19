@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertTriangle, Filter, User, Target, Activity, Clock } from "lucide-react";
+import { AlertTriangle, Target, Activity } from "lucide-react";
 import ExerciseDetailModal from "./components/exercise-modal";
 import DownloadButton from "./components/download-button";
 
@@ -13,6 +13,16 @@ import DownloadButton from "./components/download-button";
 const exercises = [
   {
     id: 1,
+    name: "Shoulder Blade Squeezes",
+    difficulty: "Лесно",
+    categories: ["Стойка", "Мобилност"],
+    targetArea: "Рамене",
+    benefits: ["Отстранява заоблянето на раменете", "Увеличава мобилността", "Намалява болката"],
+    youtubeId: "ouRhQE2iOI8",
+    instructions: "Правете бавни кръгови движения с раменете напред и назад, по 10 повторения във всяка посока.",
+  },
+  {
+    id: 2,
     name: "Врат - Странични наклони",
     description: "Подобрява гъвкавостта на врата и намалява напрежението",
     difficulty: "Лесно",
@@ -22,17 +32,6 @@ const exercises = [
     youtubeId: "dQw4w9WgXcQ",
     instructions:
       "Седнете изправени, полека наведете главата си към едното рамо, задръжте за 15-20 секунди, после към другото рамо.",
-  },
-  {
-    id: 2,
-    name: "Рамене - Ротации",
-    description: "Увеличава подвижността на раменете и коригира неправилна стойка",
-    difficulty: "Лесно",
-    categories: ["Стойка", "Мобилност"],
-    targetArea: "Рамене",
-    benefits: ["Коригира стойката", "Намалява болката"],
-    youtubeId: "dQw4w9WgXcQ",
-    instructions: "Правете бавни кръгови движения с раменете напред и назад, по 10 повторения във всяка посока.",
   },
   {
     id: 3,
@@ -131,7 +130,6 @@ export default function SpecializedProgramsPage() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-2xl">Специализирана програма</CardTitle>
-              <CardDescription className="mt-1">Подбрани упражнения за коригиране на стойката</CardDescription>
             </div>
             <div className="bg-primary/10 flex items-center gap-2 rounded-full px-4 py-2">
               <Activity className="text-primary h-5 w-5" />
@@ -164,19 +162,19 @@ export default function SpecializedProgramsPage() {
       {/* Exercises Grid */}
       <div className="grid grid-cols-1 gap-6 @3xl/main:grid-cols-2">
         {filteredExercises.map((exercise) => (
-          <Card key={exercise.id} className="transition-shadow hover:shadow-lg">
+          <Card key={exercise.id} className="flex h-full flex-col transition-shadow hover:shadow-lg">
             <CardHeader>
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 space-y-1">
                   <CardTitle className="text-xl">{exercise.name}</CardTitle>
-                  <CardDescription className="text-sm">{exercise.description}</CardDescription>
                 </div>
                 <Badge className={difficultyMap[exercise.difficulty as keyof typeof difficultyMap]}>
                   {exercise.difficulty}
                 </Badge>
               </div>
             </CardHeader>
-            <CardContent className="space-y-4">
+
+            <CardContent className="flex flex-1 flex-col space-y-4">
               <div className="text-muted-foreground flex items-center gap-2 text-sm">
                 <Target className="h-4 w-4" />
                 <span>{exercise.targetArea}</span>
@@ -205,7 +203,7 @@ export default function SpecializedProgramsPage() {
                 </ul>
               </div>
 
-              <Button className="mt-4 w-full" onClick={() => handleOpenModal(exercise)}>
+              <Button className="mt-auto w-full" onClick={() => handleOpenModal(exercise)}>
                 Виж упражнението
               </Button>
             </CardContent>
