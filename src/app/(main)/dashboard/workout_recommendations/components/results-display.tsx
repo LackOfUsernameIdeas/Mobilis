@@ -125,7 +125,7 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
                   <Tabs defaultValue="0" className="w-full">
                     <TabsList className="grid w-full grid-cols-3 lg:grid-cols-7">
                       {recommendations.weekly_schedule.map((day: any, index: number) => (
-                        <TabsTrigger key={index} value={index.toString()} className="text-xs">
+                        <TabsTrigger key={index} value={index.toString()} className="text-md cursor-pointer">
                           <span className="hidden sm:inline">{day.day}</span>
                           <span className="sm:hidden">D{index + 1}</span>
                         </TabsTrigger>

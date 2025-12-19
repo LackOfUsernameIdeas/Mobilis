@@ -32,7 +32,7 @@ export default function GymCalisthenicsForm({
     warmupCooldown: "",
     muscleGroups: [],
     targetWeight: "",
-    targetWeightValue: 0,
+    targetWeightValue: "",
     healthIssues: "",
     specificExercises: "",
   });
@@ -195,7 +195,7 @@ export default function GymCalisthenicsForm({
                 ←
               </button>
               <CardTitle className="text-foreground text-xl sm:text-2xl">
-                Анкета за {isCategoryGym ? "Фитнес" : "Калистеника"}
+                Въпросник за {isCategoryGym ? "Фитнес" : "Калистеника"}
               </CardTitle>
             </div>
             <span className="text-muted-foreground text-xs sm:text-sm">
@@ -213,7 +213,7 @@ export default function GymCalisthenicsForm({
           </CardDescription>
         </div>
       </CardHeader>
-      <CardContent className="pt-6 sm:pt-8">
+      <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
           <div key={currentQuestion} className="animate-fade-in">
             <fieldset className="space-y-3 sm:space-y-4">
@@ -335,13 +335,19 @@ export default function GymCalisthenicsForm({
                   </div>
                 </div>
               )}
-
               {question.field === "targetWeight" && answers.targetWeight === "yes" && (
                 <Input
-                  type="number"
+                  type="text"
+                  inputMode="decimal"
                   placeholder="Целево тегло (кг)"
                   value={answers.targetWeightValue || ""}
-                  onChange={(e) => handleChange("targetWeightValue", Number(e.target.value))}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Allow only numbers and one dot, max 3 digits before decimal, max 2 after
+                    if (value === "" || /^\d{0,3}(\.\d{0,2})?$/.test(value)) {
+                      handleChange("targetWeightValue", value);
+                    }
+                  }}
                   className="bg-input border-border text-foreground placeholder:text-muted-foreground mt-4 text-xs sm:text-sm"
                 />
               )}
@@ -354,7 +360,7 @@ export default function GymCalisthenicsForm({
                 type="button"
                 variant="outline"
                 onClick={() => setCurrentQuestion(currentQuestion - 1)}
-                className="w-full text-xs sm:flex-1 sm:text-sm"
+                className="w-full cursor-pointer text-xs sm:flex-1 sm:text-sm"
               >
                 Назад
               </Button>
@@ -364,7 +370,7 @@ export default function GymCalisthenicsForm({
                 type="button"
                 onClick={moveToNextQuestion}
                 disabled={!isCurrentQuestionAnswered()}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 w-full text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:flex-1 sm:text-sm"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 w-full cursor-pointer text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:flex-1 sm:text-sm"
               >
                 Напред
               </Button>
@@ -372,7 +378,7 @@ export default function GymCalisthenicsForm({
               <Button
                 type="submit"
                 disabled={!isCurrentQuestionAnswered()}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 w-full text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:flex-1 sm:text-sm"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 w-full cursor-pointer text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:flex-1 sm:text-sm"
               >
                 Получи моите препоръки
               </Button>

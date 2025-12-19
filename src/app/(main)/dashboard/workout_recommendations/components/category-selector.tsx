@@ -45,13 +45,16 @@ export default function CategorySelector({ onSelectCategory }: CategorySelectorP
   return (
     <div className="space-y-6 pt-30 sm:space-y-8">
       <div className="space-y-3 text-center">
-        <h2 className="text-3xl font-bold tracking-tight text-balance sm:text-4xl">Изберете вашата категория</h2>
+        <h2 className="mx-auto max-w-2xl text-3xl font-bold tracking-tight text-balance sm:text-4xl">
+          Изберете желаната категория
+        </h2>
         <p className="text-muted-foreground mx-auto max-w-2xl text-pretty">
-          Започнете своето пътуване към по-добро здраве и форма
+          Намерете тренировъчна програма, съобразена с вашето ниво, нужди и физическо състояние, която да ви помогне да
+          се чувствате по-здрави и по-силни
         </p>
       </div>
 
-      <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {categories.map((category, index) => {
           const Icon = category.icon;
           return (
@@ -74,7 +77,7 @@ export default function CategorySelector({ onSelectCategory }: CategorySelectorP
                   className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-0 transition-opacity duration-300 group-hover:opacity-100`}
                 />
 
-                <CardContent className="relative flex h-full min-h-[280px] flex-col p-6">
+                <CardContent className="relative flex h-full min-h-[280px] flex-col px-6">
                   <div className="flex-1 space-y-4">
                     {/* Icon Container */}
                     <div className="bg-muted/50 group-hover:bg-muted flex h-16 w-16 items-center justify-center rounded-2xl transition-colors duration-300">

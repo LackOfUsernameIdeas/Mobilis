@@ -14,7 +14,7 @@ interface UserPreferences {
   warmupCooldown?: string;
   muscleGroups?: string[];
   targetWeight?: string;
-  targetWeightValue?: number;
+  targetWeightValue?: string;
 
   // Yoga specific (nullable for gym/calisthenics)
   yogaStyle?: string;
@@ -98,7 +98,7 @@ export const saveUserPreferences = async (userId: string, category: string, answ
       preferences.warmupCooldown = answers.warmupCooldown || "";
       preferences.muscleGroups = Array.isArray(answers.muscleGroups) ? answers.muscleGroups : [];
       preferences.targetWeight = answers.targetWeight || "";
-      preferences.targetWeightValue = parseInt(answers.targetWeightValue) || 0;
+      preferences.targetWeightValue = answers.targetWeightValue || 0;
     }
 
     // Add yoga specific fields

@@ -188,7 +188,7 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
               >
                 ←
               </button>
-              <CardTitle className="text-foreground text-xl sm:text-2xl">Анкета за Йога</CardTitle>
+              <CardTitle className="text-foreground text-xl sm:text-2xl">Въпросник за Йога</CardTitle>
             </div>
             <span className="text-muted-foreground text-xs sm:text-sm">
               Въпрос {currentQuestion + 1} от {questions.length}
@@ -205,7 +205,7 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
           </CardDescription>
         </div>
       </CardHeader>
-      <CardContent className="pt-6 sm:pt-8">
+      <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
           <div key={currentQuestion} className="animate-fade-in">
             <fieldset className="space-y-3 sm:space-y-4">
@@ -340,7 +340,7 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
                 type="button"
                 variant="outline"
                 onClick={() => setCurrentQuestion(currentQuestion - 1)}
-                className="w-full text-xs sm:flex-1 sm:text-sm"
+                className="w-full cursor-pointer text-xs sm:flex-1 sm:text-sm"
               >
                 Назад
               </Button>
@@ -350,7 +350,7 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
                 type="button"
                 onClick={moveToNextQuestion}
                 disabled={!isCurrentQuestionAnswered()}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 w-full text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:flex-1 sm:text-sm"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 w-full cursor-pointer text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:flex-1 sm:text-sm"
               >
                 Напред
               </Button>
@@ -358,7 +358,7 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
               <Button
                 type="submit"
                 disabled={!isCurrentQuestionAnswered()}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 w-full text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:flex-1 sm:text-sm"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 w-full cursor-pointer text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:flex-1 sm:text-sm"
               >
                 Получи моите препоръки
               </Button>
