@@ -165,11 +165,12 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
                                   animate={{ opacity: 1, x: 0 }}
                                   transition={{
                                     duration: 0.3,
-                                    delay: 0.1,
+                                    delay: 0.2,
                                     ease: [0.21, 0.47, 0.32, 0.98],
                                   }}
+                                  className="border-primary/30 bg-primary/5 rounded-md border-l-3 p-3"
                                 >
-                                  <h4 className="text-foreground text-md mb-2 font-semibold transition-colors duration-300">
+                                  <h4 className="text-foreground group-hover:text-foreground text-md mb-2 font-semibold transition-colors duration-300">
                                     🔥 Загряване ({day.warmup.duration_minutes} мин)
                                   </h4>
                                   <ul className="text-foreground/80 text-md list-inside list-disc space-y-1">
@@ -178,12 +179,8 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
                                     ))}
                                   </ul>
                                 </motion.div>
-
                                 {/* Workout */}
                                 <div>
-                                  <h4 className="text-foreground text-md mb-3 font-semibold transition-colors duration-300">
-                                    💪 Тренировка
-                                  </h4>
                                   <div className="grid gap-3 md:grid-cols-2">
                                     {day.workout.map((exercise: any, i: number) => (
                                       <motion.div
@@ -214,6 +211,7 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
                                     delay: 0.2,
                                     ease: [0.21, 0.47, 0.32, 0.98],
                                   }}
+                                  className="border-primary/30 bg-primary/5 rounded-md border-l-3 p-3"
                                 >
                                   <h4 className="text-foreground group-hover:text-foreground text-md mb-2 font-semibold transition-colors duration-300">
                                     ❄️ Разтягане ({day.cooldown.duration_minutes} мин)

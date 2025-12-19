@@ -413,7 +413,7 @@ export default function GymCalisthenicsForm({
                     />
                     <Label
                       htmlFor={`${question.field}-none`}
-                      className="text-muted-foreground cursor-pointer text-xs font-normal sm:text-sm"
+                      className="text-foreground cursor-pointer text-xs font-normal sm:text-sm"
                     >
                       Няма
                     </Label>

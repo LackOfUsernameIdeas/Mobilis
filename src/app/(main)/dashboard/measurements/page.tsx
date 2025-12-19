@@ -62,7 +62,7 @@ export default function HomePage() {
         if (result.success && result.hasTodayMeasurement) {
           // Measurements already exist for today, skip to dashboard
           console.log("Measurements already recorded today, redirecting to dashboard");
-          router.push("/dashboard/default");
+          router.push("/dashboard/stats");
           return;
         }
 
@@ -186,7 +186,7 @@ export default function HomePage() {
       setUserData(data);
 
       // Navigate to dashboard after successful save
-      router.push("/dashboard/default");
+      router.push("/dashboard/stats");
     } catch (err) {
       console.error("Error saving measurements:", err);
       setError(err instanceof Error ? err.message : "Failed to save measurements. Please try again.");

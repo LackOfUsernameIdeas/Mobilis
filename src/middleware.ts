@@ -40,7 +40,7 @@ export async function middleware(req: NextRequest) {
   }
 
   if (user && (pathname === "/auth/v1/login" || pathname === "/auth/v1/register")) {
-    return NextResponse.redirect(new URL("/dashboard/default", req.url));
+    return NextResponse.redirect(new URL("/dashboard/stats", req.url));
   }
 
   return response;
