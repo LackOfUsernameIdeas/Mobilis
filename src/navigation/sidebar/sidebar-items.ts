@@ -1,22 +1,4 @@
-import {
-  ShoppingBag,
-  Forklift,
-  Mail,
-  MessageSquare,
-  Calendar,
-  Kanban,
-  ReceiptText,
-  Users,
-  Lock,
-  Fingerprint,
-  SquareArrowUpRight,
-  LayoutDashboard,
-  ChartBar,
-  Banknote,
-  Gauge,
-  GraduationCap,
-  type LucideIcon,
-} from "lucide-react";
+import { Fingerprint, LayoutDashboard, ChartBar, Banknote, Layers, Activity, type LucideIcon } from "lucide-react";
 
 export interface NavSubItem {
   title: string;
@@ -61,12 +43,12 @@ export const sidebarItems: NavGroup[] = [
       {
         title: "Тренировъчни препоръки",
         url: "/dashboard/workout_recommendations",
-        icon: ChartBar,
+        icon: Activity,
       },
       {
         title: "Програми",
         url: "/dashboard/specialized_programs",
-        icon: ChartBar,
+        icon: Layers,
         subItems: [{ title: "За стойката", url: "/dashboard/specialized_programs/pose_correction", newTab: false }],
       },
       {
