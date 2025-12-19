@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertTriangle, Filter, User, Target, Activity, Clock } from "lucide-react";
 import ExerciseDetailModal from "./components/exercise-modal";
+import DownloadButton from "./components/download-button";
 
 // Exercise data
 const exercises = [
@@ -18,7 +19,7 @@ const exercises = [
     categories: ["Стойка", "Мобилност"],
     targetArea: "Врат",
     benefits: ["Намалява напрежението", "Подобрява подвижността"],
-    youtubeId: "dQw4w9WgXcQ", // Replace with actual video ID
+    youtubeId: "dQw4w9WgXcQ",
     instructions:
       "Седнете изправени, полека наведете главата си към едното рамо, задръжте за 15-20 секунди, после към другото рамо.",
   },
@@ -211,6 +212,19 @@ export default function SpecializedProgramsPage() {
           </Card>
         ))}
       </div>
+
+      {/* Download Section */}
+      <Card className="border-primary/20 from-primary/5 to-primary/10 border-2 bg-gradient-to-br">
+        <CardContent className="flex flex-col items-center gap-4 py-8 text-center md:flex-row md:justify-between md:text-left">
+          <div className="flex-1 space-y-2">
+            <h3 className="text-xl font-semibold">Изтеглете програмата</h3>
+            <p className="text-muted-foreground text-sm">
+              Свалете обособената програма с всички упражнения и стъпки за изпълнение, за да я имате винаги под ръка
+            </p>
+          </div>
+          <DownloadButton fileName="mobilis_pose_correction.zip" />
+        </CardContent>
+      </Card>
 
       {/* Warning Alert */}
       <Alert
