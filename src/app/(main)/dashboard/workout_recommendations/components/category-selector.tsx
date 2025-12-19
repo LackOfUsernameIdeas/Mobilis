@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { Dumbbell, User, Flower2 } from "lucide-react";
 
 interface CategorySelectorProps {
   onSelectCategory: (category: "gym" | "calisthenics" | "yoga") => void;
@@ -14,9 +13,8 @@ export default function CategorySelector({ onSelectCategory }: CategorySelectorP
       id: "gym",
       title: "Фитнес",
       description: "Получете персонализирани планове за тренировки в залата",
-      icon: Dumbbell,
+      icon: "🏋️",
       gradient: "from-primary/10 to-primary/5",
-      iconColor: "text-primary",
       hoverBorder: "hover:border-primary/50",
       hoverGlow: "hover:shadow-primary/20",
     },
@@ -24,9 +22,8 @@ export default function CategorySelector({ onSelectCategory }: CategorySelectorP
       id: "calisthenics",
       title: "Калистеника",
       description: "Получете персонализирани планове за тренировки с калистеника",
-      icon: User,
+      icon: "🏃",
       gradient: "from-primary/10 to-primary/5",
-      iconColor: "text-primary",
       hoverBorder: "hover:border-primary/50",
       hoverGlow: "hover:shadow-primary/20",
     },
@@ -34,9 +31,8 @@ export default function CategorySelector({ onSelectCategory }: CategorySelectorP
       id: "yoga",
       title: "Йога",
       description: "Намерете йога практики, които отговарят на вашите цели",
-      icon: Flower2,
+      icon: "🧘",
       gradient: "from-primary/10 to-primary/5",
-      iconColor: "text-primary",
       hoverBorder: "hover:border-primary/50",
       hoverGlow: "hover:shadow-primary/20",
     },
@@ -56,7 +52,6 @@ export default function CategorySelector({ onSelectCategory }: CategorySelectorP
 
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {categories.map((category, index) => {
-          const Icon = category.icon;
           return (
             <motion.div
               key={category.id}
@@ -81,11 +76,10 @@ export default function CategorySelector({ onSelectCategory }: CategorySelectorP
                   <div className="flex-1 space-y-4">
                     {/* Icon Container */}
                     <div className="bg-muted/50 group-hover:bg-muted flex h-16 w-16 items-center justify-center rounded-2xl transition-colors duration-300">
-                      <Icon
-                        className={`h-8 w-8 ${category.iconColor} transition-transform duration-300 group-hover:scale-110`}
-                      />
+                      <span className="text-4xl transition-transform duration-300 group-hover:scale-110">
+                        {category.icon}
+                      </span>
                     </div>
-
                     {/* Content */}
                     <div className="space-y-2">
                       <h3 className="text-foreground text-xl font-semibold tracking-tight">{category.title}</h3>

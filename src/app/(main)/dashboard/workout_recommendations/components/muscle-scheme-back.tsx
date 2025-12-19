@@ -1,18 +1,17 @@
 import * as React from "react";
 
 interface SVGComponentProps {
-  muscleActivation: Record<string, boolean>;
-  fillColor: string;
+  getMuscleColor: (groupId: string) => string;
 }
 
-const SVGComponent = ({ muscleActivation, fillColor }: SVGComponentProps) => {
+const SVGComponent = ({ getMuscleColor }: SVGComponentProps) => {
   const getGroupStyle = (groupId: string) => ({
-    fill: muscleActivation[groupId] ? fillColor : "#ffffff",
+    fill: getMuscleColor(groupId),
     fillOpacity: 1,
   });
 
   return (
-    <svg id="svg1" width={68.480003} height={165.44} viewBox="0 0 68.480003 165.44" xmlns="http://www.w3.org/2000/svg">
+    <svg id="svg1" width={200} height={465} viewBox="0 0 68.480003 165.44" xmlns="http://www.w3.org/2000/svg">
       <defs id="defs1" />
       <g id="layer1">
         <path

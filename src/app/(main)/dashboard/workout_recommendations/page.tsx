@@ -89,7 +89,7 @@ export default function Page() {
 
   return (
     <div className="bg-background text-foreground flex min-h-screen justify-center p-4">
-      <div className="w-full max-w-2xl">
+      <div className="w-full">
         {!selectedCategory || submittedAnswers ? (
           <div className="flex flex-col gap-4 md:gap-6">
             {submittedAnswers && (

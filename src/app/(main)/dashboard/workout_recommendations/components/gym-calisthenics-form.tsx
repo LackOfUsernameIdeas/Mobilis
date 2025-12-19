@@ -10,6 +10,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { Scale } from "lucide-react";
 
 interface GymCalisthenicsFormProps {
   onSubmit: (answers: Record<string, any>) => void;
@@ -89,12 +90,9 @@ export default function GymCalisthenicsForm({
     },
     {
       field: "targetWeight",
-      title: `Има ли конкретно целево тегло, до което желаете да стигнете? (Последно регистрирано тегло: ${usersWeight} кг)`,
-      type: "radio-horizontal",
-      options: [
-        { value: "yes", label: "Да" },
-        { value: "no", label: "Не" },
-      ],
+      title: "Има ли конкретно целево тегло, до което желаете да стигнете?",
+      type: "target-weight",
+      currentWeight: usersWeight,
     },
     {
       field: "healthIssues",
@@ -157,6 +155,14 @@ export default function GymCalisthenicsForm({
     const currentField = questions[currentQuestion].field;
     const answer = answers[currentField];
 
+    if (currentField === "targetWeight") {
+      if (answer === "no") return true;
+      if (answer === "yes") {
+        return answers.targetWeightValue && answers.targetWeightValue.trim() !== "";
+      }
+      return false;
+    }
+
     if (typeof answer === "string") return answer.trim() !== "";
     if (typeof answer === "number") return answer > 0;
     if (Array.isArray(answer)) return answer.length > 0;
@@ -187,18 +193,14 @@ export default function GymCalisthenicsForm({
         <div className="space-y-2 sm:space-y-3">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-0">
             <div className="flex items-center gap-3">
-              <button
-                onClick={onBack}
-                className="text-muted-foreground hover:text-foreground transition-colors"
-                aria-label="Назад"
-              >
+              <button onClick={onBack} className="text-foreground cursor-pointer transition-colors" aria-label="Назад">
                 ←
               </button>
               <CardTitle className="text-foreground text-xl sm:text-2xl">
                 Въпросник за {isCategoryGym ? "Фитнес" : "Калистеника"}
               </CardTitle>
             </div>
-            <span className="text-muted-foreground text-xs sm:text-sm">
+            <span className="text-foreground text-xs sm:text-sm">
               Въпрос {currentQuestion + 1} от {questions.length}
             </span>
           </div>
@@ -208,7 +210,7 @@ export default function GymCalisthenicsForm({
               style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
             />
           </div>
-          <CardDescription className="text-xs sm:text-sm">
+          <CardDescription className="text-foreground text-xs sm:text-sm">
             Отговорете на няколко въпроса, за да получите персонализирани препоръки
           </CardDescription>
         </div>
@@ -283,6 +285,89 @@ export default function GymCalisthenicsForm({
                 </RadioGroup>
               )}
 
+              {question.type === "target-weight" && (
+                <div className="space-y-4">
+                  {/* Current Weight Display */}
+                  <div className="bg-muted/50 border-border group hover:border-primary/30 relative overflow-hidden rounded-lg border-2 p-4 transition-all duration-300">
+                    <div className="from-primary/5 to-primary/0 absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                    <div className="relative flex items-center gap-3">
+                      <div className="bg-primary/10 rounded-full p-2">
+                        <Scale className="text-primary h-5 w-5" />
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground text-xs">Текущо тегло</p>
+                        <p className="text-foreground text-lg font-semibold">{usersWeight} кг</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Radio Options */}
+                  <RadioGroup
+                    value={answers.targetWeight}
+                    onValueChange={(value) => handleChange("targetWeight", value)}
+                  >
+                    <div className="space-y-3">
+                      <Label
+                        htmlFor="target-yes"
+                        className="hover:bg-muted/50 flex cursor-pointer items-center space-x-3 rounded-lg p-3 transition-colors"
+                      >
+                        <RadioGroupItem value="yes" id="target-yes" className="h-4 w-4 flex-shrink-0" />
+                        <span className="text-foreground flex-1 text-sm font-normal">Да, имам целево тегло</span>
+                      </Label>
+
+                      <Label
+                        htmlFor="target-no"
+                        className="hover:bg-muted/50 flex cursor-pointer items-center space-x-3 rounded-lg p-3 transition-colors"
+                      >
+                        <RadioGroupItem value="no" id="target-no" className="h-4 w-4 flex-shrink-0" />
+                        <span className="text-foreground flex-1 text-sm font-normal">
+                          Не, нямам конкретно целево тегло
+                        </span>
+                      </Label>
+                    </div>
+                  </RadioGroup>
+
+                  {/* Target Weight Input */}
+                  {answers.targetWeight === "yes" && (
+                    <div className="animate-fade-in space-y-2">
+                      <Label htmlFor="target-weight-value" className="text-muted-foreground text-xs">
+                        Въведете целевото си тегло
+                      </Label>
+                      <div className="relative">
+                        <Input
+                          id="target-weight-value"
+                          type="text"
+                          inputMode="decimal"
+                          placeholder="напр. 75.5"
+                          value={answers.targetWeightValue || ""}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            // Allow only numbers and one dot, max 3 digits before decimal, max 2 after
+                            if (value === "" || /^\d{0,3}(\.\d{0,2})?$/.test(value)) {
+                              const numericValue = parseFloat(value);
+                              if (isNaN(numericValue) || numericValue <= 200) {
+                                handleChange("targetWeightValue", value);
+                              }
+                            }
+                          }}
+                          className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-12 text-sm"
+                        />
+                        <span className="text-muted-foreground absolute top-1/2 right-3 -translate-y-1/2 text-sm">
+                          кг
+                        </span>
+                      </div>
+                      {answers.targetWeightValue && (
+                        <p className="text-muted-foreground text-xs">
+                          {parseFloat(answers.targetWeightValue) > usersWeight
+                            ? `+${(parseFloat(answers.targetWeightValue) - usersWeight).toFixed(1)} кг от текущото тегло`
+                            : `${(parseFloat(answers.targetWeightValue) - usersWeight).toFixed(1)} кг от текущото тегло`}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {question.type === "checkbox" && (
                 <div className="space-y-2 sm:space-y-3">
                   {(question.options as string[])?.map((group: string) => (
@@ -335,22 +420,6 @@ export default function GymCalisthenicsForm({
                   </div>
                 </div>
               )}
-              {question.field === "targetWeight" && answers.targetWeight === "yes" && (
-                <Input
-                  type="text"
-                  inputMode="decimal"
-                  placeholder="Целево тегло (кг)"
-                  value={answers.targetWeightValue || ""}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    // Allow only numbers and one dot, max 3 digits before decimal, max 2 after
-                    if (value === "" || /^\d{0,3}(\.\d{0,2})?$/.test(value)) {
-                      handleChange("targetWeightValue", value);
-                    }
-                  }}
-                  className="bg-input border-border text-foreground placeholder:text-muted-foreground mt-4 text-xs sm:text-sm"
-                />
-              )}
             </fieldset>
           </div>
 
@@ -360,7 +429,7 @@ export default function GymCalisthenicsForm({
                 type="button"
                 variant="outline"
                 onClick={() => setCurrentQuestion(currentQuestion - 1)}
-                className="w-full cursor-pointer text-xs sm:flex-1 sm:text-sm"
+                className="dark:text-foreground w-full cursor-pointer text-xs sm:flex-1 sm:text-sm"
               >
                 Назад
               </Button>

@@ -21,27 +21,30 @@ export default function ExerciseCard({ exercise, onClick }: ExerciseCardProps) {
 
   return (
     <Card
-      className="border-border hover:border-primary cursor-pointer transition-all duration-200 hover:shadow-md"
+      className="group hover:border-primary/50 hover:shadow-primary/20 relative cursor-pointer overflow-hidden border-2 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98]"
       onClick={onClick}
     >
-      <CardContent className="p-4">
+      {/* Gradient Background */}
+      <div className="absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+      <CardContent className="relative p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 space-y-2">
-            <h4 className="text-foreground line-clamp-2 text-sm leading-tight font-semibold">
+            <h4 className="text-foreground text-md line-clamp-2 leading-tight font-semibold">
               {exercise.exercise_name}
             </h4>
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" className="text-sm">
                 {exercise.sets}x{exercise.reps}
               </Badge>
               {activeMuscleCount > 0 && (
-                <span className="text-muted-foreground text-xs">
+                <span className="text-muted-foreground text-sm">
                   {activeMuscleCount} muscle{activeMuscleCount !== 1 ? "s" : ""}
                 </span>
               )}
             </div>
           </div>
-          <div className="text-muted-foreground flex-shrink-0">
+          <div className="text-muted-foreground group-hover:text-foreground flex-shrink-0 transition-colors duration-300">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
@@ -52,6 +55,7 @@ export default function ExerciseCard({ exercise, onClick }: ExerciseCardProps) {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
+              className="transition-transform duration-300 group-hover:translate-x-0.5"
             >
               <path d="m9 18 6-6-6-6" />
             </svg>

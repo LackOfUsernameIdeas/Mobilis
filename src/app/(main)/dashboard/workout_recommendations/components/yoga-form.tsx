@@ -181,16 +181,12 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
         <div className="space-y-2 sm:space-y-3">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-0">
             <div className="flex items-center gap-3">
-              <button
-                onClick={onBack}
-                className="text-muted-foreground hover:text-foreground transition-colors"
-                aria-label="Назад"
-              >
+              <button onClick={onBack} className="text-foreground cursor-pointer transition-colors" aria-label="Назад">
                 ←
               </button>
               <CardTitle className="text-foreground text-xl sm:text-2xl">Въпросник за Йога</CardTitle>
             </div>
-            <span className="text-muted-foreground text-xs sm:text-sm">
+            <span className="text-foreground text-xs sm:text-sm">
               Въпрос {currentQuestion + 1} от {questions.length}
             </span>
           </div>
@@ -200,7 +196,7 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
               style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
             />
           </div>
-          <CardDescription className="text-xs sm:text-sm">
+          <CardDescription className="text-foreground text-xs sm:text-sm">
             Отговорете на няколко въпроса, за да получите персонализирани препоръки
           </CardDescription>
         </div>
@@ -340,7 +336,7 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
                 type="button"
                 variant="outline"
                 onClick={() => setCurrentQuestion(currentQuestion - 1)}
-                className="w-full cursor-pointer text-xs sm:flex-1 sm:text-sm"
+                className="dark:text-foreground w-full cursor-pointer text-xs sm:flex-1 sm:text-sm"
               >
                 Назад
               </Button>
