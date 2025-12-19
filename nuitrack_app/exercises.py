@@ -1,5 +1,4 @@
 EXERCISE_JSON_1 = {
-        },
     "exercise_name": "Shoulder Blade Squeezes",
     "steps": [
         {
