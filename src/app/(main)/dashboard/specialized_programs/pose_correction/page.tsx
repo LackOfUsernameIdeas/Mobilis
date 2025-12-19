@@ -9,95 +9,144 @@ import { AlertTriangle, Target, Activity } from "lucide-react";
 import ExerciseDetailModal from "./components/exercise-modal";
 import DownloadButton from "./components/download-button";
 
-// Exercise data
 const exercises = [
   {
     id: 1,
-    name: "Shoulder Blade Squeezes",
+    name: "Chin Tucks",
+    bgName: "Прибиране на брадичката",
     difficulty: "Лесно",
-    categories: ["Стойка", "Мобилност"],
-    targetArea: "Рамене",
-    benefits: ["Отстранява заоблянето на раменете", "Увеличава мобилността", "Намалява болката"],
-    youtubeId: "ouRhQE2iOI8",
-    instructions: "Правете бавни кръгови движения с раменете напред и назад, по 10 повторения във всяка посока.",
+    categories: ["Стойка", "Сила"],
+    targetArea: "Врат",
+    repetitions: 3,
+    benefits: [
+      "Коригира изнесената напред стойка на главата",
+      "Укрепва дълбоките екстензорни мускули на врата",
+      "Намалява напрежението в шията",
+    ],
+    youtubeId: "7rnlAVhAK-8",
+    steps: [
+      "Неутрална стойка - 2 секунди",
+      "Прибиране на брадичката - задържане по 5 секунди (3 повторения)",
+      "Освобождаване - 3 секунди (между повторенията)",
+    ],
   },
   {
     id: 2,
-    name: "Врат - Странични наклони",
-    description: "Подобрява гъвкавостта на врата и намалява напрежението",
+    name: "Neck Side Tilts",
+    bgName: "Странични накланяния на врата",
     difficulty: "Лесно",
-    categories: ["Стойка", "Мобилност"],
+    categories: ["Мобилност", "Гъвкавост"],
     targetArea: "Врат",
-    benefits: ["Намалява напрежението", "Подобрява подвижността"],
-    youtubeId: "dQw4w9WgXcQ",
-    instructions:
-      "Седнете изправени, полека наведете главата си към едното рамо, задръжте за 15-20 секунди, после към другото рамо.",
+    repetitions: 3,
+    benefits: [
+      "Увеличава гъвкавостта на врата",
+      "Намалява напрежението в страничните шийни мускули",
+      "Подобрява обхвата на движение",
+    ],
+    youtubeId: "Qmcvzz3PDh4",
+    steps: [
+      "Неутрална стойка - 2 секунди",
+      "Наклон наляво - задържане по 5 секунди (3 повторения)",
+      "Наклон надясно - задържане по 5 секунди (3 повторения)",
+      "Връщане в неутрална позиция - 3 секунди (между движенията)",
+    ],
   },
   {
     id: 3,
-    name: "Гръб - Торакално разтягане",
-    description: "Отваря гръдния кош и подобрява стойката в горната част на гърба",
-    difficulty: "Средно",
-    categories: ["Стойка", "Мобилност"],
-    targetArea: "Горна част на гърба",
-    benefits: ["Отваря гръдния кош", "Подобрява дишането"],
-    youtubeId: "dQw4w9WgXcQ",
-    instructions: "Легнете на ролка за пяна в областта на горната част на гърба, бавно навеждайте се назад.",
+    name: "Shoulder Blade Squeezes",
+    bgName: "Стискане на лопатките",
+    difficulty: "Лесно",
+    categories: ["Стойка", "Сила"],
+    targetArea: "Лопатки и рамене",
+    repetitions: 3,
+    benefits: [
+      "Коригира заоблянето на раменете",
+      "Укрепва мускулите между лопатките",
+      "Подобрява стойката на горната част на тялото",
+    ],
+    youtubeId: "ouRhQE2iOI8",
+    steps: [
+      "Неутрална стойка - 2 секунди",
+      "Стискане на лопатките - задържане по 5 секунди (3 повторения)",
+      "Освобождаване - 3 секунди (между повторенията)",
+    ],
   },
   {
     id: 4,
-    name: "Таз - Мобилизация",
-    description: "Повишава гъвкавостта на тазобедрените стави",
+    name: "Wall Angels",
+    bgName: "Стенни ангели",
     difficulty: "Средно",
-    categories: ["Мобилност", "Баланс"],
-    targetArea: "Таз",
-    benefits: ["Увеличава гъвкавостта", "Намалява болката в долната част на гърба"],
-    youtubeId: "dQw4w9WgXcQ",
-    instructions: "Правете кръгови движения с таза, после наклони напред и назад.",
+    categories: ["Мобилност", "Стойка"],
+    targetArea: "Рамене и гръден кош",
+    repetitions: 3,
+    benefits: [
+      "Отваря гръдния кош",
+      "Увеличава подвижността на раменете",
+      "Подобрява стойката при горната част на гърба",
+    ],
+    youtubeId: "cvx06snMQ3A",
+    steps: [
+      "Неутрална стойка - 2 секунди",
+      "W форма (лакти свити) - задържане по 5 секунди (3 повторения)",
+      "Y форма (ръце изпънати) - задържане по 5 секунди (3 повторения)",
+    ],
   },
   {
     id: 5,
-    name: "Баланс - Едноракo застаналe",
-    description: "Развива баланс и стабилност на цялото тяло",
+    name: "Standing T Stretch",
+    bgName: "Разтягане тип T поза в изправено положение",
     difficulty: "Средно",
-    categories: ["Баланс"],
-    targetArea: "Цяло тяло",
-    benefits: ["Подобрява баланса", "Предпазва от травми"],
-    youtubeId: "dQw4w9WgXcQ",
-    instructions: "Застанете на един крак, задръжте позицията 30 секунди, сменете крака.",
+    categories: ["Мобилност", "Стойка"],
+    targetArea: "Рамене и гръден кош",
+    repetitions: 3,
+    benefits: ["Отваря гръдния кош", "Подобрява стойката на раменете", "Увеличава подвижността на гръдната област"],
+    youtubeId: "ta0OUynqEfw",
+    steps: [
+      "Неутрална стойка - 2 секунди",
+      "Ръце напред - 1 секунда",
+      "T позиция (ръце настрани) - задържане по 4 секунди (3 повторения)",
+      "Връщане с ръце напред - задържане по 3 секунди (между повторенията)",
+    ],
   },
   {
     id: 6,
-    name: "Корем - Активация на кор",
-    description: "Укрепва коремната мускулатура и подобрява стойката",
+    name: "Standing Pelvic Tilts",
+    bgName: "Накланяне на таза в изправено положение",
     difficulty: "Средно",
-    categories: ["Стойка", "Баланс"],
-    targetArea: "Корем",
-    benefits: ["Укрепва корa", "Стабилизира гръбначния стълб"],
-    youtubeId: "dQw4w9WgXcQ",
-    instructions: "Изпълнете планк позиция, задръжте 30-60 секунди, повторете 3 пъти.",
+    categories: ["Мобилност", "Контрол"],
+    targetArea: "Таз и долна част на гърба",
+    repetitions: 3,
+    benefits: [
+      "Увеличава подвижността на таза",
+      "Подобрява контрола над долната част на гърба",
+      "Намалява болката в областта на кръста",
+    ],
+    youtubeId: "eT2qo-Ut4vI",
+    steps: [
+      "Неутрална стойка - 2 секунди",
+      "Преден наклон на таза - задържане по 5 секунди (3 повторения)",
+      "Заден наклон на таза - задържане по 5 секунди (3 повторения)",
+    ],
   },
   {
     id: 7,
-    name: "Врат - Дълбоки флексори",
-    description: "Укрепва дълбоките мускули на врата",
-    difficulty: "Лесно",
-    categories: ["Стойка"],
-    targetArea: "Врат",
-    benefits: ["Коригира предна стойка на главата", "Намалява главоболието"],
-    youtubeId: "dQw4w9WgXcQ",
-    instructions: "Легнете по гръб, леко прибирайте брадичката си към гърдите, задръжте 5-10 секунди.",
-  },
-  {
-    id: 8,
-    name: "Гръб - Растягане на latissimus",
-    description: "Разтяга широчайшите мускули на гърба",
-    difficulty: "Лесно",
-    categories: ["Мобилност"],
-    targetArea: "Гръб",
-    benefits: ["Подобрява подвижността на раменете", "Намалява сковаността"],
-    youtubeId: "dQw4w9WgXcQ",
-    instructions: "Хванете се за стабилна опора, седнете назад и усетете разтягането в гърба.",
+    name: "Standing Lumbar Extensions",
+    bgName: "Разтягане на кръста в изправено положение",
+    difficulty: "Средно",
+    categories: ["Сила", "Мобилност"],
+    targetArea: "Долна част на гърба",
+    repetitions: 3,
+    benefits: [
+      "Укрепва екстензорните мускули при долната част на гърба",
+      "Подобрява подвижността в областта на кръста",
+      "Намалява сковаността в долната част на гърба",
+    ],
+    youtubeId: "BeVqpwxfAdY",
+    steps: [
+      "Неутрална стойка - 2 секунди",
+      "Навеждане назад с ръце на кръста - задържане по 4 секунди (3 повторения)",
+      "Връщане в неутрална позиция - 3 секунди (между повторенията)",
+    ],
   },
 ];
 
@@ -129,7 +178,7 @@ export default function SpecializedProgramsPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-2xl">Специализирана програма</CardTitle>
+              <CardTitle className="text-2xl">Специализирана програма за коригиране на стойката</CardTitle>
             </div>
             <div className="bg-primary/10 flex items-center gap-2 rounded-full px-4 py-2">
               <Activity className="text-primary h-5 w-5" />
@@ -151,10 +200,9 @@ export default function SpecializedProgramsPage() {
             програмата е насочена към конкретни нужди и цели, а именно:
           </p>
           <ul className="ml-2 list-inside list-disc space-y-1">
-            <li>Коригиране на стойката</li>
-            <li>Повишаване на гъвкавостта и подвижността на врата, раменете, горната част на гърба и таза</li>
-            <li>Намаляване на напрежението и болката, причинени от продължително седене или неправилна стойка</li>
-            <li>Развитие на баланс и контрол, което предпазва тялото от претоварвания и травми</li>
+            <li>Повишаване на гъвкавостта и подвижността на врата, раменете, горната и долната част на гърба</li>
+            <li>Намаляване на напрежението и болката, причинени от продължително стоене с неправилна стойка</li>
+            <li>Развитие на баланс и контрол, което предпазва тялото от травми и претоварвания</li>
           </ul>
         </CardContent>
       </Card>
@@ -167,6 +215,7 @@ export default function SpecializedProgramsPage() {
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 space-y-1">
                   <CardTitle className="text-xl">{exercise.name}</CardTitle>
+                  <p className="text-muted-foreground text-sm">{exercise.bgName}</p>
                 </div>
                 <Badge className={difficultyMap[exercise.difficulty as keyof typeof difficultyMap]}>
                   {exercise.difficulty}
@@ -196,8 +245,20 @@ export default function SpecializedProgramsPage() {
                 <ul className="text-muted-foreground space-y-1 text-sm">
                   {exercise.benefits.map((benefit, idx) => (
                     <li key={idx} className="flex items-start gap-2">
-                      <span className="mt-0.5 text-green-600 dark:text-green-400">✓</span>
+                      <span className="text-green-600 dark:text-green-400">✓</span>
                       <span>{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="space-y-2">
+                <div className="text-sm font-medium">Стъпки:</div>
+                <ul className="text-muted-foreground space-y-1 text-sm">
+                  {exercise.steps.map((step, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <span className="text-primary font-medium">{idx + 1}.</span>
+                      <span>{step}</span>
                     </li>
                   ))}
                 </ul>
@@ -215,9 +276,11 @@ export default function SpecializedProgramsPage() {
       <Card className="border-primary/20 from-primary/5 to-primary/10 border-2 bg-gradient-to-br">
         <CardContent className="flex flex-col items-center gap-4 py-8 text-center md:flex-row md:justify-between md:text-left">
           <div className="flex-1 space-y-2">
-            <h3 className="text-xl font-semibold">Изтеглете програмата</h3>
+            <h3 className="text-xl font-semibold">Програма с камера за следене на изпълнението на упражненията</h3>
             <p className="text-muted-foreground text-sm">
-              Свалете обособената програма с всички упражнения и стъпки за изпълнение, за да я имате винаги под ръка
+              Свалете разработената от нас програма, която включва всички упражнения и стъпки за изпълнение. Програмата
+              работи с камерата <strong>Orbbec Astra+</strong> и следи за правилното изпълнение на стъпките в реално
+              време, като сравнява движенията на потребителя с правилната техника за всяко от упражненията
             </p>
           </div>
           <DownloadButton fileName="mobilis_pose_correction.zip" />

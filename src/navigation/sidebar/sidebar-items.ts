@@ -64,12 +64,10 @@ export const sidebarItems: NavGroup[] = [
         icon: ChartBar,
       },
       {
-        title: "Спец. програми",
+        title: "Програми",
         url: "/dashboard/specialized_programs",
         icon: ChartBar,
-        subItems: [
-          { title: "Коригиране на стойката", url: "/dashboard/specialized_programs/pose_correction", newTab: false },
-        ],
+        subItems: [{ title: "За стойката", url: "/dashboard/specialized_programs/pose_correction", newTab: false }],
       },
       {
         title: "CRM",
