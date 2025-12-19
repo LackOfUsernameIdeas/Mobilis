@@ -13,7 +13,7 @@ interface ExerciseDetailModalProps {
     categories: string[];
     targetArea: string;
     benefits: string[];
-    youtubeId?: string;
+    youtubeId: string;
     instructions?: string;
   };
 }
