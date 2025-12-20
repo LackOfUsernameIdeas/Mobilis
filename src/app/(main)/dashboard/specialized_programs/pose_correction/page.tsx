@@ -282,7 +282,7 @@ export default function SpecializedProgramsPage() {
                 </ul>
               </div>
 
-              <Button className="mt-auto w-full" onClick={() => handleOpenModal(exercise)}>
+              <Button className="mt-auto w-full cursor-pointer" onClick={() => handleOpenModal(exercise)}>
                 Виж упражнението
               </Button>
             </CardContent>

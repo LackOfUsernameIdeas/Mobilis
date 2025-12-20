@@ -31,7 +31,7 @@ export default function ExerciseDetailModal({ open, onOpenChange, exercise }: Ex
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl text-pretty">{exercise.name}</DialogTitle>
+          <DialogTitle className="text-2xl text-pretty">{exercise.name}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -39,28 +39,20 @@ export default function ExerciseDetailModal({ open, onOpenChange, exercise }: Ex
           <div className="bg-muted/50 space-y-3 rounded-lg p-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-muted-foreground mb-1 text-xs font-medium">Целева зона</p>
+                <p className="text-muted-foreground mb-1 text-sm font-medium">Целева зона</p>
                 <p className="text-lg font-semibold">{exercise.targetArea}</p>
               </div>
             </div>
             <div>
-              <p className="text-muted-foreground mb-1 text-xs font-medium">Трудност</p>
+              <p className="text-muted-foreground mb-1 text-sm font-medium">Трудност</p>
               <Badge className={difficultyMap[exercise.difficulty as Difficulty]}>{exercise.difficulty}</Badge>
             </div>
           </div>
 
-          {/* Instructions */}
-          {exercise.instructions && (
-            <div className="space-y-3">
-              <h4 className="text-sm font-semibold">Инструкции</h4>
-              <p className="text-muted-foreground text-sm leading-relaxed">{exercise.instructions}</p>
-            </div>
-          )}
-
           {/* Video Section */}
           {exercise.youtubeId && (
             <div className="space-y-3">
-              <h4 className="text-sm font-semibold">Видео демонстрация</h4>
+              <h4 className="text-md font-semibold">Видео демонстрация</h4>
               <div className="relative w-full overflow-hidden rounded-lg" style={{ paddingBottom: "56.25%" }}>
                 <iframe
                   src={`https://www.youtube.com/embed/${exercise.youtubeId}`}

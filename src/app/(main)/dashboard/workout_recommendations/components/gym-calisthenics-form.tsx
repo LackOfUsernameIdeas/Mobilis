@@ -330,7 +330,7 @@ export default function GymCalisthenicsForm({
                   {/* Target Weight Input */}
                   {answers.targetWeight === "yes" && (
                     <div className="animate-fade-in space-y-2">
-                      <Label htmlFor="target-weight-value" className="text-muted-foreground text-xs">
+                      <Label htmlFor="target-weight-value" className="text-foreground text-xs">
                         Въведете целевото си тегло
                       </Label>
                       <div className="relative">
@@ -352,9 +352,7 @@ export default function GymCalisthenicsForm({
                           }}
                           className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-12 text-sm"
                         />
-                        <span className="text-muted-foreground absolute top-1/2 right-3 -translate-y-1/2 text-sm">
-                          кг
-                        </span>
+                        <span className="text-foreground absolute top-1/2 right-3 -translate-y-1/2 text-sm">кг</span>
                       </div>
                       {answers.targetWeightValue && (
                         <p className="text-muted-foreground text-xs">

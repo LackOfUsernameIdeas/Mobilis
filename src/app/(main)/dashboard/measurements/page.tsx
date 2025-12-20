@@ -40,7 +40,6 @@ export default function HomePage() {
   const [error, setError] = useState<string | null>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [userData, setUserData] = useState<UserData | null>(null);
 
   const [formData, setFormData] = useState({
     height: "",
@@ -108,11 +107,19 @@ export default function HomePage() {
 
   const validateValue = (field: keyof typeof LIMITS, value: number): string | null => {
     const limits = LIMITS[field];
+    const fieldNames = {
+      height: "Височината",
+      weight: "Теглото",
+      neck: "Врата",
+      waist: "Талията",
+      hip: "Таза",
+    };
+
     if (value < limits.min) {
-      return `${field.charAt(0).toUpperCase() + field.slice(1)} must be at least ${limits.min} cm`;
+      return `${fieldNames[field]} трябва да бъде поне ${limits.min} ${field === "weight" ? "кг" : "см"}`;
     }
     if (value > limits.max) {
-      return `${field.charAt(0).toUpperCase() + field.slice(1)} must be at most ${limits.max} ${field === "weight" ? "kg" : "cm"}`;
+      return `${fieldNames[field]} трябва да бъде максимум ${limits.max} ${field === "weight" ? "кг" : "см"}`;
     }
     return null;
   };
@@ -182,9 +189,6 @@ export default function HomePage() {
         throw new Error(result?.error || "Failed to save measurements");
       }
 
-      console.log("Measurements saved successfully");
-      setUserData(data);
-
       // Navigate to dashboard after successful save
       router.push("/dashboard/stats");
     } catch (err) {
@@ -205,107 +209,139 @@ export default function HomePage() {
   return (
     <>
       <Dialog open={isModalOpen}>
-        <DialogContent className="max-h-[90vh] max-w-md overflow-y-auto">
+        <DialogContent className="max-h-[90vh] max-w-md overflow-y-auto" showCloseButton={false}>
           <DialogHeader>
-            <DialogTitle className="text-2xl">Daily Check-in</DialogTitle>
-            <DialogDescription>Enter today's body measurements to continue.</DialogDescription>
+            <DialogTitle className="text-2xl">Напишете вашите данни</DialogTitle>
+            <DialogDescription>Въведете текущите си телесни измервания, за да продължите</DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+          <form onSubmit={handleSubmit} className="mt-2 space-y-4">
             {error && (
               <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">{error}</div>
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="gender">Gender</Label>
+              <Label htmlFor="gender" className="text-foreground text-xs">
+                Пол
+              </Label>
               <Select value={formData.gender} onValueChange={(v) => handleInputChange("gender", v)}>
                 <SelectTrigger id="gender">
-                  <SelectValue placeholder="Select gender" />
+                  <SelectValue placeholder="Изберете пол" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="male">Male</SelectItem>
-                  <SelectItem value="female">Female</SelectItem>
+                  <SelectItem value="male">Мъж</SelectItem>
+                  <SelectItem value="female">Жена</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="height">Height (cm)</Label>
-              <Input
-                id="height"
-                type="number"
-                step="0.1"
-                min={LIMITS.height.min}
-                max={LIMITS.height.max}
-                value={formData.height}
-                onChange={(e) => handleInputChange("height", e.target.value)}
-                placeholder="Пример: 175"
-                required
-              />
+              <Label htmlFor="height" className="text-foreground text-xs">
+                Височина
+              </Label>
+              <div className="relative">
+                <Input
+                  id="height"
+                  type="number"
+                  step="0.1"
+                  min={LIMITS.height.min}
+                  max={LIMITS.height.max}
+                  value={formData.height}
+                  onChange={(e) => handleInputChange("height", e.target.value)}
+                  placeholder="напр. 175"
+                  required
+                  className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-12 text-sm [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                />
+                <span className="text-foreground absolute top-1/2 right-3 -translate-y-1/2 text-sm">см</span>
+              </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="weight">Weight (kg)</Label>
-              <Input
-                id="weight"
-                type="number"
-                step="0.1"
-                min={LIMITS.weight.min}
-                max={LIMITS.weight.max}
-                value={formData.weight}
-                onChange={(e) => handleInputChange("weight", e.target.value)}
-                placeholder="Пример: 70"
-                required
-              />
+              <Label htmlFor="weight" className="text-foreground text-xs">
+                Тегло
+              </Label>
+              <div className="relative">
+                <Input
+                  id="weight"
+                  type="number"
+                  step="0.1"
+                  min={LIMITS.weight.min}
+                  max={LIMITS.weight.max}
+                  value={formData.weight}
+                  onChange={(e) => handleInputChange("weight", e.target.value)}
+                  placeholder="напр. 70"
+                  required
+                  className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-12 text-sm [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                />
+                <span className="text-foreground absolute top-1/2 right-3 -translate-y-1/2 text-sm">кг</span>
+              </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="neck">Neck (cm)</Label>
-              <Input
-                id="neck"
-                type="number"
-                step="0.1"
-                min={LIMITS.neck.min}
-                max={LIMITS.neck.max}
-                value={formData.neck}
-                onChange={(e) => handleInputChange("neck", e.target.value)}
-                placeholder="Пример: 38"
-                required
-              />
+              <Label htmlFor="neck" className="text-foreground text-xs">
+                Обиколка на врат
+              </Label>
+              <div className="relative">
+                <Input
+                  id="neck"
+                  type="number"
+                  step="0.1"
+                  min={LIMITS.neck.min}
+                  max={LIMITS.neck.max}
+                  value={formData.neck}
+                  onChange={(e) => handleInputChange("neck", e.target.value)}
+                  placeholder="напр. 38"
+                  required
+                  className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-12 text-sm [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                />
+                <span className="text-foreground absolute top-1/2 right-3 -translate-y-1/2 text-sm">см</span>
+              </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="waist">Waist (cm)</Label>
-              <Input
-                id="waist"
-                type="number"
-                step="0.1"
-                min={LIMITS.waist.min}
-                max={LIMITS.waist.max}
-                value={formData.waist}
-                onChange={(e) => handleInputChange("waist", e.target.value)}
-                placeholder="Пример: 85"
-                required
-              />
+              <Label htmlFor="waist" className="text-foreground text-xs">
+                Обиколка на талия
+              </Label>
+              <div className="relative">
+                <Input
+                  id="waist"
+                  type="number"
+                  step="0.1"
+                  min={LIMITS.waist.min}
+                  max={LIMITS.waist.max}
+                  value={formData.waist}
+                  onChange={(e) => handleInputChange("waist", e.target.value)}
+                  placeholder="напр. 85"
+                  required
+                  className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-12 text-sm [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                />
+                <span className="text-foreground absolute top-1/2 right-3 -translate-y-1/2 text-sm">см</span>
+              </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="hip">Hip (cm)</Label>
-              <Input
-                id="hip"
-                type="number"
-                step="0.1"
-                min={LIMITS.hip.min}
-                max={LIMITS.hip.max}
-                value={formData.hip}
-                onChange={(e) => handleInputChange("hip", e.target.value)}
-                placeholder="Пример: 95"
-                required
-              />
+              <Label htmlFor="hip" className="text-foreground text-xs">
+                Обиколка на таз
+              </Label>
+              <div className="relative">
+                <Input
+                  id="hip"
+                  type="number"
+                  step="0.1"
+                  min={LIMITS.hip.min}
+                  max={LIMITS.hip.max}
+                  value={formData.hip}
+                  onChange={(e) => handleInputChange("hip", e.target.value)}
+                  placeholder="напр. 95"
+                  required
+                  className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-12 text-sm [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                />
+                <span className="text-foreground absolute top-1/2 right-3 -translate-y-1/2 text-sm">см</span>
+              </div>
             </div>
 
-            <Button type="submit" className="w-full" disabled={!isFormValid() || submitLoading}>
-              {submitLoading ? "Processing…" : "Continue"}
+            <Button type="submit" className="w-full cursor-pointer" disabled={!isFormValid() || submitLoading}>
+              {submitLoading ? "Зареждане..." : "Напред"}
             </Button>
           </form>
         </DialogContent>
@@ -315,7 +351,7 @@ export default function HomePage() {
         <div className="bg-background/80 fixed inset-0 flex items-center justify-center">
           <div className="text-center">
             <div className="border-primary mb-4 h-12 w-12 animate-spin rounded-full border-4 border-t-transparent" />
-            <p className="text-muted-foreground">Saving today's data…</p>
+            <p className="text-muted-foreground">Запазване на днешните данни...</p>
           </div>
         </div>
       )}
