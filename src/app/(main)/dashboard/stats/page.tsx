@@ -9,6 +9,7 @@ import { HealthProgressChart } from "@/app/(main)/dashboard/stats/components/hea
 import { HealthStatsCards } from "@/app/(main)/dashboard/stats/components/health-stats-cards";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { createClient } from "@/app/utils/supabase/client";
+import { Loader } from "../_components/loader";
 
 export default function HomePage() {
   const [bmiData, setBmiData] = useState<any>(null);
@@ -59,11 +60,8 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="bg-background flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="border-primary mb-4 h-12 w-12 animate-spin rounded-full border-4 border-t-transparent"></div>
-          <p className="text-muted-foreground">Loading health data...</p>
-        </div>
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader />
       </div>
     );
   }

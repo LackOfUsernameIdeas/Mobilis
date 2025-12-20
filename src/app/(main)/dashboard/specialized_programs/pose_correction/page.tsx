@@ -8,6 +8,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertTriangle, Target, Activity } from "lucide-react";
 import ExerciseDetailModal from "./components/exercise-modal";
 import DownloadButton from "./components/download-button";
+import { Loader } from "../../_components/loader";
 
 const exercises = [
   {
@@ -162,6 +163,7 @@ export default function SpecializedProgramsPage() {
   const [selectedCategory, setSelectedCategory] = useState("Всички");
   const [selectedExercise, setSelectedExercise] = useState<(typeof exercises)[0] | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const filteredExercises =
     selectedCategory === "Всички" ? exercises : exercises.filter((ex) => ex.categories.includes(selectedCategory));
@@ -170,6 +172,22 @@ export default function SpecializedProgramsPage() {
     setSelectedExercise(exercise);
     setModalOpen(true);
   };
+
+  React.useEffect(() => {
+    // Simulate loading or fetch data if needed
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-background @container/main flex min-h-screen flex-col gap-6 p-6 md:gap-8 md:p-10 lg:p-12">

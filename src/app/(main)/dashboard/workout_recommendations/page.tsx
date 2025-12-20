@@ -5,6 +5,7 @@ import CategorySelector from "./components/category-selector";
 import GymCalisthenicsForm from "./components/gym-calisthenics-form";
 import YogaForm from "./components/yoga-form";
 import ResultsDisplay from "./components/results-display";
+import { Loader } from "../_components/loader";
 import { createClient } from "@/app/utils/supabase/client";
 
 type Category = "gym" | "calisthenics" | "yoga" | null;
@@ -14,6 +15,7 @@ export default function Page() {
   const [selectedCategory, setSelectedCategory] = useState<Category>(null);
   const [submittedAnswers, setSubmittedAnswers] = useState<FormAnswers | null>(null);
   const [userStats, setUserStats] = useState<any>(null);
+  const [pageLoading, setPageLoading] = useState(true);
 
   useEffect(() => {
     async function fetchHealthData() {
@@ -26,6 +28,7 @@ export default function Page() {
 
         if (!user) {
           console.error("User not authenticated");
+          setPageLoading(false);
           return;
         }
 
@@ -62,6 +65,8 @@ export default function Page() {
         });
       } catch (error) {
         console.error("[v0] Error fetching health data:", error);
+      } finally {
+        setPageLoading(false);
       }
     }
 
@@ -87,6 +92,14 @@ export default function Page() {
     setSubmittedAnswers(null);
   };
 
+  if (pageLoading) {
+    return (
+      <div className="bg-background flex min-h-screen items-center justify-center">
+        <Loader />
+      </div>
+    );
+  }
+
   return (
     <div className="bg-background text-foreground flex min-h-screen justify-center p-4">
       <div className="w-full">
@@ -107,7 +120,7 @@ export default function Page() {
             {selectedCategory === "gym" && (
               <GymCalisthenicsForm
                 isCategoryGym={true}
-                usersWeight={userStats.weight}
+                usersWeight={userStats?.weight}
                 onSubmit={handleFormSubmit}
                 onBack={handleGoBack}
               />
@@ -115,7 +128,7 @@ export default function Page() {
             {selectedCategory === "calisthenics" && (
               <GymCalisthenicsForm
                 isCategoryGym={false}
-                usersWeight={userStats.weight}
+                usersWeight={userStats?.weight}
                 onSubmit={handleFormSubmit}
                 onBack={handleGoBack}
               />
