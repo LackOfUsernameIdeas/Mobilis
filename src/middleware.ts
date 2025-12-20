@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextRequest, NextResponse } from "next/server";
+import { checkTodayMeasurements } from "./server/measurements";
 
 export async function middleware(req: NextRequest) {
   let response = NextResponse.next({
@@ -48,26 +49,16 @@ export async function middleware(req: NextRequest) {
   // Check if user has completed today's measurements
   if (user && pathname.startsWith("/dashboard") && pathname !== "/dashboard/measurements") {
     try {
-      const today = new Date().toISOString().split("T")[0];
+      const result = await checkTodayMeasurements();
 
-      const { data: measurements, error } = await supabase
-        .from("user_measurements")
-        .select("id")
-        .eq("user_id", user.id)
-        .gte("created_at", `${today}T00:00:00`)
-        .lte("created_at", `${today}T23:59:59`)
-        .limit(1);
-
-      if (error) {
-        console.error("Error checking measurements:", error);
-      }
-
-      // If no measurements for today, redirect to measurements page
-      if (!measurements || measurements.length === 0) {
+      // If check failed or no measurements for today, redirect to measurements page
+      if (!result.success || !result.hasTodayMeasurement) {
         return NextResponse.redirect(new URL("/dashboard/measurements", req.url));
       }
     } catch (error) {
       console.error("Error in middleware measurement check:", error);
+      // Optionally redirect to measurements page on error
+      return NextResponse.redirect(new URL("/dashboard/measurements", req.url));
     }
   }
 
