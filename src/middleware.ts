@@ -35,12 +35,40 @@ export async function middleware(req: NextRequest) {
   } = await supabase.auth.getUser();
   const { pathname } = req.nextUrl;
 
+  // Redirect to login if not authenticated and trying to access dashboard
   if (!user && pathname.startsWith("/dashboard")) {
     return NextResponse.redirect(new URL("/auth/v1/login", req.url));
   }
 
+  // Redirect to dashboard if authenticated and on auth pages
   if (user && (pathname === "/auth/v1/login" || pathname === "/auth/v1/register")) {
-    return NextResponse.redirect(new URL("/dashboard/stats", req.url));
+    return NextResponse.redirect(new URL("/dashboard/measurements", req.url));
+  }
+
+  // Check if user has completed today's measurements
+  if (user && pathname.startsWith("/dashboard") && pathname !== "/dashboard/measurements") {
+    try {
+      const today = new Date().toISOString().split("T")[0];
+
+      const { data: measurements, error } = await supabase
+        .from("user_measurements")
+        .select("id")
+        .eq("user_id", user.id)
+        .gte("created_at", `${today}T00:00:00`)
+        .lte("created_at", `${today}T23:59:59`)
+        .limit(1);
+
+      if (error) {
+        console.error("Error checking measurements:", error);
+      }
+
+      // If no measurements for today, redirect to measurements page
+      if (!measurements || measurements.length === 0) {
+        return NextResponse.redirect(new URL("/dashboard/measurements", req.url));
+      }
+    } catch (error) {
+      console.error("Error in middleware measurement check:", error);
+    }
   }
 
   return response;

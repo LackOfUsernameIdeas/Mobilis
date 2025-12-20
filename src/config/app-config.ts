@@ -8,7 +8,5 @@ export const APP_CONFIG = {
   copyright: `© ${currentYear}, Mobilis.`,
   meta: {
     title: "Mobilis",
-    description:
-      "Mobilis is an application that aims to help people recover or better themselves while doing exercises.",
   },
 };
