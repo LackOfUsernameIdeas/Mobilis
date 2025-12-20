@@ -38,13 +38,13 @@ export function AccountSwitcher({
       });
     } else {
       toast.success("Logged out successfully");
-      router.push("/auth/v1/login");
+      router.push("/auth/login");
     }
   };
 
   if (!user) {
     return (
-      <a href="/auth/v1/login" className="text-muted-foreground hover:text-primary text-sm font-medium">
+      <a href="/auth/login" className="text-muted-foreground hover:text-primary text-sm font-medium">
         Login
       </a>
     );

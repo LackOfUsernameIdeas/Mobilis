@@ -33,7 +33,7 @@ export function NavUser({
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton asChild>
-            <a href="/auth/v1/login" className="text-muted-foreground hover:text-primary text-sm font-medium">
+            <a href="/auth/login" className="text-muted-foreground hover:text-primary text-sm font-medium">
               Login
             </a>
           </SidebarMenuButton>

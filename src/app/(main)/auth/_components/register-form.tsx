@@ -50,7 +50,7 @@ export function RegisterForm() {
       email: data.email,
       password: data.password,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/v1/login`,
+        emailRedirectTo: `${window.location.origin}/auth/login`,
       },
     });
 
@@ -61,7 +61,7 @@ export function RegisterForm() {
     } else {
       toast.success("Registration successful! Check your email for confirmation.");
       // Optionally redirect to login or a confirmation page
-      router.push("/auth/v1/login");
+      router.push("/auth/login");
     }
   };
 

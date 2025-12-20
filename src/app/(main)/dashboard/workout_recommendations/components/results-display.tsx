@@ -102,7 +102,7 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
   return (
     <div className="space-y-4 sm:space-y-6">
       {loading ? (
-        <div className="flex min-h-[70vh] items-center justify-center">
+        <div className="flex min-h-[80vh] items-center justify-center">
           <Loader />
         </div>
       ) : (

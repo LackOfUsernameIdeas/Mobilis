@@ -94,7 +94,7 @@ export default function Page() {
 
   if (pageLoading) {
     return (
-      <div className="bg-background flex min-h-screen items-center justify-center">
+      <div className="bg-background flex min-h-[80vh] items-center justify-center">
         <Loader />
       </div>
     );

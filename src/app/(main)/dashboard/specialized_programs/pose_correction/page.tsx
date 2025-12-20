@@ -183,7 +183,7 @@ export default function SpecializedProgramsPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-[80vh] items-center justify-center">
         <Loader />
       </div>
     );
