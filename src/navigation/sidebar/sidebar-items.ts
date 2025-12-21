@@ -36,7 +36,7 @@ export const sidebarItems: NavGroup[] = [
         icon: LayoutDashboard,
       },
       {
-        title: "Статистики",
+        title: "Телесен профил",
         url: "/dashboard/stats",
         icon: ChartBar,
       },
