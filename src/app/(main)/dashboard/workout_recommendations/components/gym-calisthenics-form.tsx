@@ -49,7 +49,10 @@ export default function GymCalisthenicsForm({
         { value: "cut", label: "Cut (Загуба на мазнини)" },
         { value: "lean_bulk", label: "Lean Bulk (Покачване на мускулна маса)" },
         { value: "dirty_bulk", label: "Dirty Bulk (Интензивно покачване на маса - мускулна и мастна)" },
-        { value: "recomposition", label: "Recomposition (Едновременно изгаряне на мазнини и набиране на мускули)" },
+        {
+          value: "recomposition",
+          label: "Recomposition (Едновременно изгаряне на мазнини и покачване на мускулна маса)",
+        },
         { value: "maintenance", label: "Maintenance (Поддържане на текущата форма)" },
         { value: "aesthetic", label: "Aesthetic (Естетика и пропорции)" },
         { value: "strength", label: "Strength (Максимална сила)" },
