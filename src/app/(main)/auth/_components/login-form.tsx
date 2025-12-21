@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/app/utils/supabase/client";
+import { checkTodayMeasurements } from "@/server/measurements";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -21,6 +23,8 @@ const FormSchema = z.object({
 export function LoginForm() {
   const router = useRouter();
   const supabase = createClient();
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -31,18 +35,38 @@ export function LoginForm() {
   });
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email: data.email,
-      password: data.password,
-    });
+    setIsLoading(true);
 
-    if (error) {
-      toast.error("Login failed", {
-        description: error.message,
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
       });
-    } else {
-      toast.success("Logged in successfully!");
-      router.push("/dashboard/measurements");
+
+      if (error) {
+        toast.error("Login failed", {
+          description: error.message,
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // Check if measurements exist for today BEFORE navigating
+      const measurementCheck = await checkTodayMeasurements();
+
+      if (measurementCheck.success && measurementCheck.hasTodayMeasurement) {
+        // Has measurements, go directly to stats
+        toast.success("Logged in successfully!");
+        router.push("/dashboard/stats");
+      } else {
+        // No measurements, go to measurements page
+        toast.success("Logged in successfully!");
+        router.push("/dashboard/measurements");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      toast.error("An unexpected error occurred");
+      setIsLoading(false);
     }
   };
 
@@ -100,8 +124,8 @@ export function LoginForm() {
             </FormItem>
           )}
         />
-        <Button className="w-full" type="submit">
-          Login
+        <Button className="w-full" type="submit" disabled={isLoading}>
+          {isLoading ? "Logging in..." : "Login"}
         </Button>
       </form>
     </Form>
