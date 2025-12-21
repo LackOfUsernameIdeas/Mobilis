@@ -50,16 +50,13 @@ export default function HomePage() {
     hip: "",
   });
 
-  // Check if measurements exist for today on mount
   useEffect(() => {
     async function init() {
       try {
-        // Check if today's measurements already exist
         const result = await checkTodayMeasurements();
         console.log("Check result:", result);
 
         if (result.success && result.hasTodayMeasurement) {
-          // Measurements already exist for today, skip to dashboard
           console.log("Measurements already recorded today, redirecting to dashboard");
           router.push("/dashboard/stats");
           return;
@@ -67,7 +64,6 @@ export default function HomePage() {
 
         console.log("No measurements for today, showing modal");
 
-        // No measurements for today, load last saved measurements from localStorage
         try {
           const savedData = localStorage.getItem(STORAGE_KEY);
           if (savedData) {
@@ -89,7 +85,6 @@ export default function HomePage() {
         setIsModalOpen(true);
       } catch (err) {
         console.error("Error during initialization:", err);
-        // Show modal on error to allow user to proceed
         setIsModalOpen(true);
       } finally {
         setPageLoading(false);
@@ -97,11 +92,10 @@ export default function HomePage() {
     }
 
     init();
-  }, []); // Empty dependency array - only run once on mount
+  }, []);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
     if (error) setError(null);
   };
 
@@ -131,7 +125,6 @@ export default function HomePage() {
       return false;
     }
 
-    // Validate all numeric fields are within limits
     const heightNum = Number.parseFloat(height);
     const weightNum = Number.parseFloat(weight);
     const neckNum = Number.parseFloat(neck);
@@ -164,7 +157,6 @@ export default function HomePage() {
         hip: Number.parseFloat(formData.hip),
       };
 
-      // Final validation before submission
       const validationErrors: string[] = [];
       Object.keys(LIMITS).forEach((field) => {
         const error = validateValue(field as keyof typeof LIMITS, data[field as keyof UserData] as number);
@@ -179,17 +171,14 @@ export default function HomePage() {
 
       console.log("Saving measurements:", data);
 
-      // Save to localStorage before submitting
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
-      // Save measurements to Supabase
       const result = await saveMeasurementsAndCalculateMetrics(data);
 
       if (!result?.success) {
         throw new Error(result?.error || "Failed to save measurements");
       }
 
-      // Navigate to dashboard after successful save
       router.push("/dashboard/stats");
     } catch (err) {
       console.error("Error saving measurements:", err);
