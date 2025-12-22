@@ -289,6 +289,8 @@ export const saveUserMeasurements = async (
     height: number;
     weight: number;
     gender: "male" | "female";
+    age: number;
+    activityLevel: string;
     neck: number;
     waist: number;
     hip?: number;
@@ -300,6 +302,8 @@ export const saveUserMeasurements = async (
       user_id: userId,
       height: Math.round(data.height),
       weight: Math.round(data.weight),
+      age: data.age,
+      activity_level: data.activityLevel,
       gender: data.gender,
       neck: Math.round(data.neck),
       waist: Math.round(data.waist),
@@ -330,6 +334,12 @@ export const saveUserMetrics = async (
     bmiCategory: string;
     bodyFatCategory: string;
     reasoning: string;
+    bmr: number;
+    tdee: number;
+    calories: number;
+    protein: number;
+    fats: number;
+    carbs: number;
   },
 ) => {
   const { data: result, error } = await supabase
@@ -354,6 +364,14 @@ export const saveUserMetrics = async (
       goalName: data.goalName,
       bmiCategory: data.bmiCategory,
       reasoning: data.reasoning,
+
+      // Nutrients data
+      bmr: data.bmr,
+      tdee: data.tdee,
+      calories: data.calories,
+      protein: data.protein,
+      fats: data.fats,
+      carbs: data.carbs,
     })
     .select()
     .single();

@@ -43,6 +43,8 @@ export async function saveMeasurementsAndCalculateMetrics(data: {
   height: number;
   weight: number;
   gender: "male" | "female";
+  age: number;
+  activityLevel: string;
   neck: number;
   waist: number;
   hip?: number;
@@ -110,6 +112,26 @@ export async function saveMeasurementsAndCalculateMetrics(data: {
       goalResponse.json(),
     ]);
 
+    // Now calculate nutrients with the goal data
+    const nutrientsResponse = await fetch(`${baseUrl}/api/calculate-nutrients`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        height: data.height,
+        weight: data.weight,
+        gender: data.gender,
+        age: data.age,
+        activityLevel: data.activityLevel,
+        goal: goalData.goal,
+      }),
+    });
+
+    if (!nutrientsResponse.ok) {
+      throw new Error("Failed to calculate nutrients");
+    }
+
+    const nutrientsData = await nutrientsResponse.json();
+
     // Save measurements with calculated metrics
     const measurementResult = await saveUserMeasurements(user.id, data);
 
@@ -129,6 +151,12 @@ export async function saveMeasurementsAndCalculateMetrics(data: {
         bmiCategory: goalData.bmiCategory,
         bodyFatCategory: goalData.bodyFatCategory,
         reasoning: goalData.reasoning,
+        bmr: nutrientsData.bmr,
+        tdee: nutrientsData.tdee,
+        calories: nutrientsData.goal.calories,
+        protein: nutrientsData.goal.macros.protein,
+        fats: nutrientsData.goal.macros.fats,
+        carbs: nutrientsData.goal.macros.carbs,
       },
     );
 

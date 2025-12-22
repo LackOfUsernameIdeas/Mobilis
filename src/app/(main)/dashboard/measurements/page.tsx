@@ -16,6 +16,8 @@ type UserData = {
   height: number;
   weight: number;
   gender: "male" | "female";
+  age: number;
+  activityLevel: "sedentary" | "light" | "moderate" | "active" | "very_active";
   neck: number;
   waist: number;
   hip: number;
@@ -27,10 +29,40 @@ const STORAGE_KEY = "user_last_measurements";
 const LIMITS = {
   height: { min: 100, max: 300 }, // cm
   weight: { min: 30, max: 300 }, // kg
+  age: { min: 10, max: 100 }, // years
   neck: { min: 20, max: 100 }, // cm
   waist: { min: 40, max: 300 }, // cm
   hip: { min: 50, max: 300 }, // cm
 };
+
+// Activity level definitions
+const ACTIVITY_LEVELS = [
+  {
+    value: "sedentary",
+    label: "Заседнал",
+    description: "Малко или никаква физическа активност (офис работа, без тренировки)",
+  },
+  {
+    value: "light",
+    label: "Лека активност",
+    description: "Леки упражнения 1-3 дни в седмицата",
+  },
+  {
+    value: "moderate",
+    label: "Умерена активност",
+    description: "Умерени упражнения 3-5 дни в седмицата",
+  },
+  {
+    value: "active",
+    label: "Активен",
+    description: "Интензивни упражнения 6-7 дни в седмицата",
+  },
+  {
+    value: "very_active",
+    label: "Много активен",
+    description: "Много интензивни упражнения, физическа работа или 2 тренировки на ден",
+  },
+];
 
 export default function HomePage() {
   const router = useRouter();
@@ -45,6 +77,8 @@ export default function HomePage() {
     height: "",
     weight: "",
     gender: "",
+    age: "",
+    activityLevel: "",
     neck: "",
     waist: "",
     hip: "",
@@ -73,6 +107,8 @@ export default function HomePage() {
               height: parsedData.height.toString(),
               weight: parsedData.weight.toString(),
               gender: parsedData.gender,
+              age: parsedData.age.toString(),
+              activityLevel: parsedData.activityLevel,
               neck: parsedData.neck.toString(),
               waist: parsedData.waist.toString(),
               hip: parsedData.hip.toString(),
@@ -104,29 +140,31 @@ export default function HomePage() {
     const fieldNames = {
       height: "Височината",
       weight: "Теглото",
+      age: "Възрастта",
       neck: "Врата",
       waist: "Талията",
       hip: "Таза",
     };
 
     if (value < limits.min) {
-      return `${fieldNames[field]} трябва да бъде поне ${limits.min} ${field === "weight" ? "кг" : "см"}`;
+      return `${fieldNames[field]} трябва да бъде поне ${limits.min} ${field === "weight" ? "кг" : field === "age" ? "години" : "см"}`;
     }
     if (value > limits.max) {
-      return `${fieldNames[field]} трябва да бъде максимум ${limits.max} ${field === "weight" ? "кг" : "см"}`;
+      return `${fieldNames[field]} трябва да бъде максимум ${limits.max} ${field === "weight" ? "кг" : field === "age" ? "години" : "см"}`;
     }
     return null;
   };
 
   const isFormValid = () => {
-    const { height, weight, gender, neck, waist, hip } = formData;
+    const { height, weight, gender, age, activityLevel, neck, waist, hip } = formData;
 
-    if (!height || !weight || !gender || !neck || !waist || !hip) {
+    if (!height || !weight || !gender || !age || !activityLevel || !neck || !waist || !hip) {
       return false;
     }
 
     const heightNum = Number.parseFloat(height);
     const weightNum = Number.parseFloat(weight);
+    const ageNum = Number.parseFloat(age);
     const neckNum = Number.parseFloat(neck);
     const waistNum = Number.parseFloat(waist);
     const hipNum = Number.parseFloat(hip);
@@ -134,6 +172,7 @@ export default function HomePage() {
     return (
       validateValue("height", heightNum) === null &&
       validateValue("weight", weightNum) === null &&
+      validateValue("age", ageNum) === null &&
       validateValue("neck", neckNum) === null &&
       validateValue("waist", waistNum) === null &&
       validateValue("hip", hipNum) === null
@@ -152,14 +191,16 @@ export default function HomePage() {
         height: Number.parseFloat(formData.height),
         weight: Number.parseFloat(formData.weight),
         gender: formData.gender as "male" | "female",
+        age: Number.parseFloat(formData.age),
+        activityLevel: formData.activityLevel as "sedentary" | "light" | "moderate" | "active" | "very_active",
         neck: Number.parseFloat(formData.neck),
         waist: Number.parseFloat(formData.waist),
         hip: Number.parseFloat(formData.hip),
       };
 
       const validationErrors: string[] = [];
-      Object.keys(LIMITS).forEach((field) => {
-        const error = validateValue(field as keyof typeof LIMITS, data[field as keyof UserData] as number);
+      (["height", "weight", "age", "neck", "waist", "hip"] as const).forEach((field) => {
+        const error = validateValue(field, data[field] as number);
         if (error) validationErrors.push(error);
       });
 
@@ -220,6 +261,48 @@ export default function HomePage() {
                 <SelectContent>
                   <SelectItem value="male">Мъж</SelectItem>
                   <SelectItem value="female">Жена</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="age" className="text-foreground text-xs">
+                Възраст
+              </Label>
+              <div className="relative">
+                <Input
+                  id="age"
+                  type="number"
+                  step="1"
+                  min={LIMITS.age.min}
+                  max={LIMITS.age.max}
+                  value={formData.age}
+                  onChange={(e) => handleInputChange("age", e.target.value)}
+                  placeholder="напр. 25"
+                  required
+                  className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-16 text-sm [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                />
+                <span className="text-foreground absolute top-1/2 right-3 -translate-y-1/2 text-sm">години</span>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="activityLevel" className="text-foreground text-xs">
+                Ниво на активност
+              </Label>
+              <Select value={formData.activityLevel} onValueChange={(v) => handleInputChange("activityLevel", v)}>
+                <SelectTrigger id="activityLevel">
+                  <SelectValue placeholder="Изберете ниво на активност" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ACTIVITY_LEVELS.map((level) => (
+                    <SelectItem key={level.value} value={level.value}>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{level.label}</span>
+                        <span className="text-muted-foreground text-xs">{level.description}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

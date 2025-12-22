@@ -5,6 +5,7 @@ import { calculateBMI, calculateBodyFat } from "./health";
  */
 export type FitnessGoal =
   | "cut"
+  | "aggressive_cut"
   | "lean_bulk"
   | "dirty_bulk"
   | "recomposition"
@@ -104,7 +105,22 @@ function recommendGoal(bmi: number, bodyFat: number, gender: "male" | "female"):
     };
   }
 
-  if (bmiCat === "obese_3" || bmiCat === "obese_2" || bmiCat === "obese_1") {
+  // Агресивно сваляне за критично затлъстяване
+  if (bmiCat === "obese_3" || bmiCat === "obese_2") {
+    return {
+      goal: "aggressive_cut",
+      goalName: "Агресивно изгаряне (Aggressive Cut)",
+      bmi,
+      bmiCategory: bmiCat,
+      bodyFatPercentage: bodyFat,
+      bodyFatCategory: bfCat,
+      reasoning:
+        "Сериозно затлъстяване с високо здравословен риск. Препоръчва се агресивно сваляне на тегло с по-голям калориен дефицит за бързо намаляване на телесните мазнини.",
+    };
+  }
+
+  // Обикновено сваляне за обесе клас 1
+  if (bmiCat === "obese_1") {
     return {
       goal: "cut",
       goalName: "Изгаряне на мазнини (Cut)",
@@ -112,7 +128,7 @@ function recommendGoal(bmi: number, bodyFat: number, gender: "male" | "female"):
       bmiCategory: bmiCat,
       bodyFatPercentage: bodyFat,
       bodyFatCategory: bfCat,
-      reasoning: "Наднормено тегло или затлъстяване. Препоръчва се сваляне на тегло и намаляване на телесните мазнини.",
+      reasoning: "Затлъстяване клас I. Препоръчва се сваляне на тегло и намаляване на телесните мазнини.",
     };
   }
 
@@ -205,16 +221,20 @@ function recommendGoal(bmi: number, bodyFat: number, gender: "male" | "female"):
             "Наднормено тегло с умерено ниво на телесни мазнини. Препоръчва се покачване на мускулна маса и леко намаляване на телесните мазнини.",
         };
       }
-      return {
-        goal: "cut",
-        goalName: "Изгаряне на мазнини (Cut)",
-        bmi,
-        bmiCategory: bmiCat,
-        bodyFatPercentage: bodyFat,
-        bodyFatCategory: bfCat,
-        reasoning:
-          "Наднормено тегло с високо ниво на телесни мазнини. Препоръчва се сваляне на тегло и намаляване на телесните мазнини.",
-      };
+      // Overweight with obese body fat category
+      if (bfCat === "obese") {
+        return {
+          goal: "cut",
+          goalName: "Изгаряне на мазнини (Cut)",
+          bmi,
+          bmiCategory: bmiCat,
+          bodyFatPercentage: bodyFat,
+          bodyFatCategory: bfCat,
+          reasoning:
+            "Наднормено тегло с високо ниво на телесни мазнини. Препоръчва се сваляне на тегло и намаляване на телесните мазнини.",
+        };
+      }
+      break;
   }
 
   // Default

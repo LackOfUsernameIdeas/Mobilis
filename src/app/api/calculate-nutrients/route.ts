@@ -44,10 +44,7 @@ export async function POST(req: NextRequest) {
     // Изчисляване на калории за конкретната цел
     const calorieRecommendation = calculateCalorieRecommendation(weight, height, age, gender, activityLevel, goal);
 
-    return NextResponse.json({
-      success: true,
-      data: calorieRecommendation,
-    });
+    return NextResponse.json(calorieRecommendation);
   } catch (error) {
     console.error("Error in calculate-calories:", error);
     return NextResponse.json(
