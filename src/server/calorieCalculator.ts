@@ -1,27 +1,47 @@
 // Нива на физическа активност
 export type ActivityLevel = "sedentary" | "light" | "moderate" | "active" | "very_active";
 
-interface MacroRange {
-  min: number;
-  max: number;
+// Macro split тип (процентно разпределение)
+export interface MacroSplit {
+  protein: number; // Процент от калориите
+  fats: number; // Процент от калориите
+  carbs: number; // Процент от калориите
+}
+
+// Изчислени макронутриенти в грамове
+export interface Macros {
+  protein: number; // грамове
+  fats: number; // грамове
+  carbs: number; // грамове
 }
 
 export interface CalorieRecommendation {
-  bmr: number; // Базален метаболизъм (Basal Metabolic Rate)
-  tdee: number; // Общ дневен разход на енергия (Total Daily Energy Expenditure)
-  protein: { min: number; max: number }; // Протеин в грамове
-  carbs: { min: number; max: number }; // Въглехидрати в грамове
-  fats: { min: number; max: number }; // Мазнини в грамове
+  bmr: number; // Базален метаболизъм
+  tdee: number; // Общ дневен разход на енергия
+  maintenance: {
+    calories: number;
+    moderateCarb: Macros; // 30P/35F/35C
+    lowerCarb: Macros; // 40P/40F/20C
+    higherCarb: Macros; // 30P/20F/50C
+  };
+  cutting: {
+    calories: number; // TDEE - 500
+    moderateCarb: Macros;
+    lowerCarb: Macros;
+    higherCarb: Macros;
+  };
+  bulking: {
+    calories: number; // TDEE + 300
+    moderateCarb: Macros;
+    lowerCarb: Macros;
+    higherCarb: Macros;
+  };
 }
 
 /**
  * Изчислява BMR използвайки Mifflin-St Jeor формулата
  */
 function calculateBMR(weight: number, height: number, age: number, gender: "male" | "female"): number {
-  // Mifflin-St Jeor формула
-  // За мъже: BMR = (10 × тегло kg) + (6.25 × височина cm) - (5 × възраст години) + 5
-  // За жени: BMR = (10 × тегло kg) + (6.25 × височина cm) - (5 × възраст години) - 161
-
   const baseBMR = 10 * weight + 6.25 * height - 5 * age;
   return gender === "male" ? baseBMR + 5 : baseBMR - 161;
 }
@@ -31,76 +51,55 @@ function calculateBMR(weight: number, height: number, age: number, gender: "male
  */
 function calculateTDEE(bmr: number, activityLevel: ActivityLevel): number {
   const activityMultipliers = {
-    sedentary: 1.2, // Малко или никаква физическа активност
-    light: 1.375, // Лека тренировка 1-3 дни/седмица
-    moderate: 1.55, // Умерена тренировка 3-5 дни/седмица
-    active: 1.725, // Интензивна тренировка 6-7 дни/седмица
-    very_active: 1.9, // Много интензивна тренировка 2 пъти на ден
+    sedentary: 1.2,
+    light: 1.375,
+    moderate: 1.55,
+    active: 1.725,
+    very_active: 1.9,
   };
 
   return bmr * activityMultipliers[activityLevel];
 }
 
 /**
- * Изчислява макронутриенти според AMDR (Acceptable Macronutrient Distribution Ranges)
- * стандартите на Institute of Medicine.
+ * Изчислява макронутриентите в грамове на база калории и процентно разпределение
  *
- * AMDR стандарти (приложими за всички нива на активност):
- * - Протеин: 10-35% от калориите
- * - Мазнини: 20-35% от калориите
- * - Въглехидрати: 45-65% от калориите
- *
- * DRI минимум за протеин: 0.8 g/kg телесно тегло
+ * @param calories - Целеви калории за деня
+ * @param split - Процентно разпределение (P/F/C)
+ * @returns Макронутриенти в грамове
  */
-function calculateMacros(
-  tdee: number,
-  weight: number,
-): {
-  protein: MacroRange;
-  carbs: MacroRange;
-  fats: MacroRange;
+function calculateMacrosFromSplit(calories: number, split: MacroSplit): Macros {
+  // Протеин: (калории × процент) ÷ 4 cal/g
+  const protein = Math.round((calories * split.protein) / 4);
+
+  // Мазнини: (калории × процент) ÷ 9 cal/g
+  const fats = Math.round((calories * split.fats) / 9);
+
+  // Въглехидрати: (калории × процент) ÷ 4 cal/g
+  const carbs = Math.round((calories * split.carbs) / 4);
+
+  return { protein, fats, carbs };
+}
+
+/**
+ * Изчислява макронутриентите за всички три варианта
+ */
+function calculateAllMacroVariants(calories: number): {
+  moderateCarb: Macros;
+  lowerCarb: Macros;
+  higherCarb: Macros;
 } {
-  // AMDR стандартни диапазони (фиксирани за всички)
-  const AMDR = {
-    protein: { min: 0.1, max: 0.35 }, // 10-35%
-    fats: { min: 0.2, max: 0.35 }, // 20-35%
-    carbs: { min: 0.45, max: 0.65 }, // 45-65%
+  const splits = {
+    moderateCarb: { protein: 0.3, fats: 0.35, carbs: 0.35 }, // 30P/35F/35C
+    lowerCarb: { protein: 0.4, fats: 0.4, carbs: 0.2 }, // 40P/40F/20C
+    higherCarb: { protein: 0.3, fats: 0.2, carbs: 0.5 }, // 30P/20F/50C
   };
 
-  // Изчисляваме протеин
-  const proteinCaloriesMin = tdee * AMDR.protein.min;
-  const proteinCaloriesMax = tdee * AMDR.protein.max;
-
-  const proteinMin = Math.round(proteinCaloriesMin / 4); // 4 cal/gram
-  const proteinMax = Math.round(proteinCaloriesMax / 4);
-
-  // Проверка спрямо DRI минимум (0.8 g/kg)
-  const driMinimum = Math.round(weight * 0.8);
-
-  const protein = {
-    min: Math.max(proteinMin, driMinimum), // Минимум DRI или AMDR, което е по-голямо
-    max: proteinMax,
+  return {
+    moderateCarb: calculateMacrosFromSplit(calories, splits.moderateCarb),
+    lowerCarb: calculateMacrosFromSplit(calories, splits.lowerCarb),
+    higherCarb: calculateMacrosFromSplit(calories, splits.higherCarb),
   };
-
-  // Изчисляваме мазнини
-  const fatsCaloriesMin = tdee * AMDR.fats.min;
-  const fatsCaloriesMax = tdee * AMDR.fats.max;
-
-  const fats = {
-    min: Math.round(fatsCaloriesMin / 9), // 9 cal/gram
-    max: Math.round(fatsCaloriesMax / 9),
-  };
-
-  // Изчисляваме въглехидрати
-  const carbsCaloriesMin = tdee * AMDR.carbs.min;
-  const carbsCaloriesMax = tdee * AMDR.carbs.max;
-
-  const carbs = {
-    min: Math.round(carbsCaloriesMin / 4), // 4 cal/gram
-    max: Math.round(carbsCaloriesMax / 4),
-  };
-
-  return { protein, carbs, fats };
 }
 
 /**
@@ -115,13 +114,26 @@ export function calculateCalorieRecommendation(
 ): CalorieRecommendation {
   const bmr = calculateBMR(weight, height, age, gender);
   const tdee = calculateTDEE(bmr, activityLevel);
-  const macros = calculateMacros(tdee, weight);
+
+  // Калорийни цели
+  const maintenanceCalories = Math.round(tdee);
+  const cuttingCalories = Math.round(tdee - 500); // -500 cal дефицит
+  const bulkingCalories = Math.round(tdee + 300); // +300 cal суфицит
 
   return {
     bmr: Math.round(bmr),
     tdee: Math.round(tdee),
-    protein: macros.protein,
-    carbs: macros.carbs,
-    fats: macros.fats,
+    maintenance: {
+      calories: maintenanceCalories,
+      ...calculateAllMacroVariants(maintenanceCalories),
+    },
+    cutting: {
+      calories: cuttingCalories,
+      ...calculateAllMacroVariants(cuttingCalories),
+    },
+    bulking: {
+      calories: bulkingCalories,
+      ...calculateAllMacroVariants(bulkingCalories),
+    },
   };
 }
