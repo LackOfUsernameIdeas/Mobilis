@@ -46,7 +46,7 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
       options: [
         { value: "flexibility_balance", label: "Гъвкавост и баланс" },
         { value: "stress_relief", label: "Намаляване на стреса и релаксация" },
-        { value: "strength_endurance", label: "Сила и издръжливост чрез йога" },
+        { value: "strength_endurance", label: "Сила и издръжливост" },
         { value: "mindfulness", label: "Осъзнатост и медитация" },
         { value: "posture", label: "Подобряване на стойката" },
         { value: "energy_boost", label: "Повишаване на енергията" },
