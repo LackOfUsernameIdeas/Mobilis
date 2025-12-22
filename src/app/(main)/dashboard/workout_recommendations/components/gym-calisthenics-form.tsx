@@ -197,11 +197,15 @@ export default function GymCalisthenicsForm({
         <div className="space-y-2 sm:space-y-3">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-0">
             <div className="flex items-center gap-3">
-              <button onClick={onBack} className="text-foreground cursor-pointer transition-colors" aria-label="Назад">
+              <button
+                onClick={onBack}
+                className="text-foreground cursor-pointer text-xl transition-colors sm:text-2xl"
+                aria-label="Назад"
+              >
                 ←
               </button>
               <CardTitle className="text-foreground text-xl sm:text-2xl">
-                Въпросник за {isCategoryGym ? "Фитнес" : "Калистеника"}
+                Въпросник за {isCategoryGym ? "фитнес" : "калистенични"} препоръки
               </CardTitle>
             </div>
             <span className="text-foreground text-xs sm:text-sm">
