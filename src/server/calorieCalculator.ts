@@ -23,8 +23,8 @@ export interface CalorieRecommendation {
   tdee: number; // Общ дневен разход на енергия
   maintenance: {
     calories: number;
-    balanced: Macros; // 30P/25F/45C
-    lowFat: Macros; // 30P/15F/55C
+    balanced: Macros; // 30P/30F/40C
+    lowFat: Macros; // 30P/20F/50C
     lowCarb: Macros; // 40P/40F/20C
     highProtein: Macros; // 40P/25F/35C
   };
@@ -97,8 +97,8 @@ function calculateAllMacroVariants(calories: number): {
   highProtein: Macros;
 } {
   const splits = {
-    balanced: { protein: 0.3, fats: 0.25, carbs: 0.45 }, // 30P/25F/45C
-    lowFat: { protein: 0.3, fats: 0.15, carbs: 0.55 }, // 30P/15F/55C
+    balanced: { protein: 0.3, fats: 0.3, carbs: 0.4 }, // 30P/30F/40C
+    lowFat: { protein: 0.3, fats: 0.2, carbs: 0.5 }, // 30P/20F/50C
     lowCarb: { protein: 0.4, fats: 0.4, carbs: 0.2 }, // 40P/40F/20C
     highProtein: { protein: 0.4, fats: 0.25, carbs: 0.35 }, // 40P/25F/35C
   };
