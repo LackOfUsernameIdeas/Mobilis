@@ -39,28 +39,31 @@ const LIMITS = {
 const ACTIVITY_LEVELS = [
   {
     value: "sedentary",
-    label: "Заседнал",
-    description: "Малко или никаква физическа активност (офис работа, без тренировки)",
+    label: "Заседнал начин на живот",
+    description:
+      "Малко или никаква физическа активност. Предимно седяща работа, при която свободното време минава основно на закрито",
   },
   {
     value: "light",
-    label: "Лека активност",
-    description: "Леки упражнения 1-3 дни в седмицата",
+    label: "Лека физическа активност",
+    description:
+      "Леки упражнения 1-3 пъти седмично или работа, свързана с движение и/или стоене прав през по-голямата част от деня",
   },
   {
     value: "moderate",
-    label: "Умерена активност",
-    description: "Умерени упражнения 3-5 дни в седмицата",
+    label: "Умерена физическа активност",
+    description:
+      "Редовни тренировки със средна интензивност 3-5 пъти седмично, например бягане, колоездене или плуване",
   },
   {
     value: "active",
-    label: "Активен",
-    description: "Интензивни упражнения 6-7 дни в седмицата",
+    label: "Висока физическа активност",
+    description: "Интензивни тренировки или спорт с умерена до висока натовареност 6-7 пъти седмично",
   },
   {
     value: "very_active",
-    label: "Много активен",
-    description: "Много интензивни упражнения, физическа работа или 2 тренировки на ден",
+    label: "Много висока физическа активност",
+    description: "Много интензивни тренировки, по две тренировки дневно или работа, изискваща тежък физически труд",
   },
 ];
 
@@ -291,9 +294,12 @@ export default function HomePage() {
                 Ниво на активност
               </Label>
               <Select value={formData.activityLevel} onValueChange={(v) => handleInputChange("activityLevel", v)}>
-                <SelectTrigger id="activityLevel">
-                  <SelectValue placeholder="Изберете ниво на активност" />
+                <SelectTrigger id="activityLevel" className="px-3 py-1">
+                  <SelectValue placeholder="Изберете ниво на активност">
+                    {ACTIVITY_LEVELS.find((l) => l.value === formData.activityLevel)?.label}
+                  </SelectValue>
                 </SelectTrigger>
+
                 <SelectContent>
                   {ACTIVITY_LEVELS.map((level) => (
                     <SelectItem key={level.value} value={level.value}>
@@ -320,7 +326,7 @@ export default function HomePage() {
                   max={LIMITS.height.max}
                   value={formData.height}
                   onChange={(e) => handleInputChange("height", e.target.value)}
-                  placeholder="напр. 175"
+                  placeholder="напр. 185"
                   required
                   className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-12 text-sm [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 />
@@ -341,7 +347,7 @@ export default function HomePage() {
                   max={LIMITS.weight.max}
                   value={formData.weight}
                   onChange={(e) => handleInputChange("weight", e.target.value)}
-                  placeholder="напр. 70"
+                  placeholder="напр. 95"
                   required
                   className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-12 text-sm [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 />
@@ -383,7 +389,7 @@ export default function HomePage() {
                   max={LIMITS.waist.max}
                   value={formData.waist}
                   onChange={(e) => handleInputChange("waist", e.target.value)}
-                  placeholder="напр. 85"
+                  placeholder="напр. 92"
                   required
                   className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-12 text-sm [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 />
@@ -404,7 +410,7 @@ export default function HomePage() {
                   max={LIMITS.hip.max}
                   value={formData.hip}
                   onChange={(e) => handleInputChange("hip", e.target.value)}
-                  placeholder="напр. 95"
+                  placeholder="напр. 102"
                   required
                   className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-12 text-sm [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 />
