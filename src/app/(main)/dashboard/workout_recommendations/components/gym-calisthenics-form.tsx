@@ -47,6 +47,7 @@ export default function GymCalisthenicsForm({
       type: "radio",
       options: [
         { value: "cut", label: "Cut (Загуба на мазнини)" },
+        { value: "aggressive_cut", label: "Aggressive Cut (Екстремна загуба на мазнини)" },
         { value: "lean_bulk", label: "Lean Bulk (Покачване на мускулна маса)" },
         { value: "dirty_bulk", label: "Dirty Bulk (Интензивно покачване на маса - мускулна и мастна)" },
         {
