@@ -8,6 +8,9 @@ export interface MacroSplit {
   carbs: number; // Процент от калориите
 }
 
+// Macro distribution types
+export type MacroDistribution = "balanced" | "lowFat" | "lowCarb" | "highProtein";
+
 // Изчислени макронутриенти в грамове
 export interface Macros {
   protein: number; // грамове
@@ -20,21 +23,24 @@ export interface CalorieRecommendation {
   tdee: number; // Общ дневен разход на енергия
   maintenance: {
     calories: number;
-    moderateCarb: Macros; // 30P/35F/35C
-    lowerCarb: Macros; // 40P/40F/20C
-    higherCarb: Macros; // 30P/20F/50C
+    balanced: Macros; // 30P/25F/45C
+    lowFat: Macros; // 30P/15F/55C
+    lowCarb: Macros; // 40P/40F/20C
+    highProtein: Macros; // 40P/25F/35C
   };
   cutting: {
     calories: number; // TDEE - 500
-    moderateCarb: Macros;
-    lowerCarb: Macros;
-    higherCarb: Macros;
+    balanced: Macros;
+    lowFat: Macros;
+    lowCarb: Macros;
+    highProtein: Macros;
   };
   bulking: {
     calories: number; // TDEE + 300
-    moderateCarb: Macros;
-    lowerCarb: Macros;
-    higherCarb: Macros;
+    balanced: Macros;
+    lowFat: Macros;
+    lowCarb: Macros;
+    highProtein: Macros;
   };
 }
 
@@ -82,23 +88,26 @@ function calculateMacrosFromSplit(calories: number, split: MacroSplit): Macros {
 }
 
 /**
- * Изчислява макронутриентите за всички три варианта
+ * Изчислява макронутриентите за всички четири варианта
  */
 function calculateAllMacroVariants(calories: number): {
-  moderateCarb: Macros;
-  lowerCarb: Macros;
-  higherCarb: Macros;
+  balanced: Macros;
+  lowFat: Macros;
+  lowCarb: Macros;
+  highProtein: Macros;
 } {
   const splits = {
-    moderateCarb: { protein: 0.3, fats: 0.35, carbs: 0.35 }, // 30P/35F/35C
-    lowerCarb: { protein: 0.4, fats: 0.4, carbs: 0.2 }, // 40P/40F/20C
-    higherCarb: { protein: 0.3, fats: 0.2, carbs: 0.5 }, // 30P/20F/50C
+    balanced: { protein: 0.3, fats: 0.25, carbs: 0.45 }, // 30P/25F/45C
+    lowFat: { protein: 0.3, fats: 0.15, carbs: 0.55 }, // 30P/15F/55C
+    lowCarb: { protein: 0.4, fats: 0.4, carbs: 0.2 }, // 40P/40F/20C
+    highProtein: { protein: 0.4, fats: 0.25, carbs: 0.35 }, // 40P/25F/35C
   };
 
   return {
-    moderateCarb: calculateMacrosFromSplit(calories, splits.moderateCarb),
-    lowerCarb: calculateMacrosFromSplit(calories, splits.lowerCarb),
-    higherCarb: calculateMacrosFromSplit(calories, splits.higherCarb),
+    balanced: calculateMacrosFromSplit(calories, splits.balanced),
+    lowFat: calculateMacrosFromSplit(calories, splits.lowFat),
+    lowCarb: calculateMacrosFromSplit(calories, splits.lowCarb),
+    highProtein: calculateMacrosFromSplit(calories, splits.highProtein),
   };
 }
 
