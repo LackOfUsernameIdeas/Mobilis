@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
   // Валидация за жени - хип е задължителен
   if (gender === "female" && !hip) {
     return NextResponse.json(
-      { error: "Необходим е размер на ханша (hip) при определяне на телесните мазнини за жени" },
+      { error: "Необходим е размер на таза (hip) при определяне на телесните мазнини за жени" },
       { status: 400 },
     );
   }

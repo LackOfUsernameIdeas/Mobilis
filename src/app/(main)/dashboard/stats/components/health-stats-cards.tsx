@@ -214,7 +214,7 @@ export function HealthStatsCards({ bmiData, bodyFatData, goalData }: HealthStats
                           <p className="text-muted-foreground text-sm leading-relaxed font-medium">За жени:</p>
                           <p className="text-muted-foreground text-sm leading-relaxed">
                             <div className="max-w-full overflow-x-auto">
-                              <BlockMath math="\mathit{BF\%} = 163.205 \cdot \log_{10}(\mathit{талия} + \mathit{ханш} - \mathit{врат}) - 97.684 \cdot \log_{10}(\mathit{височина}) - 78.387" />
+                              <BlockMath math="\mathit{BF\%} = 163.205 \cdot \log_{10}(\mathit{талия} + \mathit{таз} - \mathit{врат}) - 97.684 \cdot \log_{10}(\mathit{височина}) - 78.387" />
                             </div>
                           </p>
                         </div>

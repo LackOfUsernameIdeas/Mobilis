@@ -14,7 +14,7 @@ export function MeasurementsCard({ neck, waist, hip }: MeasurementsCardProps) {
   const measurements = [
     { label: "Врат", value: neck, color: "bg-purple-500" },
     { label: "Талия", value: waist, color: "bg-blue-500" },
-    { label: "Ханш", value: hip, color: "bg-green-500" },
+    { label: "Таз", value: hip, color: "bg-green-500" },
   ];
 
   return (

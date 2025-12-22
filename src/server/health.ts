@@ -58,9 +58,9 @@ export function calculateBodyFat(
     bf = 86.01 * Math.log10(waist - neck) - 70.041 * Math.log10(height) + 36.76;
   } else if (gender === "female") {
     if (hip === undefined) {
-      throw new Error("Необходим е обем на ханша за изчисляване на телесни мазнини при жени");
+      throw new Error("Необходим е обем на таза за изчисляване на телесни мазнини при жени");
     }
-    // Формула за жени: BF% = 163.205 × log10(талия + ханш - врат) - 97.684 × log10(височина) - 78.387
+    // Формула за жени: BF% = 163.205 × log10(талия + таз - врат) - 97.684 × log10(височина) - 78.387
     bf = 163.205 * Math.log10(waist + hip - neck) - 97.684 * Math.log10(height) - 78.387;
   } else {
     throw new Error("Невалиден пол");
