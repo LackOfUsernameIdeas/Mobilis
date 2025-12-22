@@ -18,30 +18,22 @@ export interface Macros {
   carbs: number; // грамове
 }
 
+export interface CalorieGoalWithMacros {
+  calories: number;
+  macros: Macros;
+}
+
 export interface CalorieRecommendation {
   bmr: number; // Базален метаболизъм
   tdee: number; // Общ дневен разход на енергия
-  maintenance: {
-    calories: number;
-    balanced: Macros; // 30P/30F/40C
-    lowFat: Macros; // 30P/20F/50C
-    lowCarb: Macros; // 40P/40F/20C
-    highProtein: Macros; // 40P/25F/35C
-  };
-  cutting: {
-    calories: number; // TDEE - 500
-    balanced: Macros;
-    lowFat: Macros;
-    lowCarb: Macros;
-    highProtein: Macros;
-  };
-  bulking: {
-    calories: number; // TDEE + 300
-    balanced: Macros;
-    lowFat: Macros;
-    lowCarb: Macros;
-    highProtein: Macros;
-  };
+  cut: CalorieGoalWithMacros;
+  aggressive_cut: CalorieGoalWithMacros;
+  lean_bulk: CalorieGoalWithMacros;
+  dirty_bulk: CalorieGoalWithMacros;
+  recomposition: CalorieGoalWithMacros;
+  maintenance: CalorieGoalWithMacros;
+  aesthetic: CalorieGoalWithMacros;
+  strength: CalorieGoalWithMacros;
 }
 
 /**
@@ -88,27 +80,21 @@ function calculateMacrosFromSplit(calories: number, split: MacroSplit): Macros {
 }
 
 /**
- * Изчислява макронутриентите за всички четири варианта
+ * Изчислява макронутриентите за конкретна цел
  */
-function calculateAllMacroVariants(calories: number): {
-  balanced: Macros;
-  lowFat: Macros;
-  lowCarb: Macros;
-  highProtein: Macros;
-} {
-  const splits = {
-    balanced: { protein: 0.3, fats: 0.3, carbs: 0.4 }, // 30P/30F/40C
-    lowFat: { protein: 0.3, fats: 0.2, carbs: 0.5 }, // 30P/20F/50C
-    lowCarb: { protein: 0.4, fats: 0.4, carbs: 0.2 }, // 40P/40F/20C
-    highProtein: { protein: 0.4, fats: 0.25, carbs: 0.35 }, // 40P/25F/35C
+function calculateMacrosForGoal(calories: number, goal: string): Macros {
+  const goalSpecificSplits: Record<string, { protein: number; fats: number; carbs: number }> = {
+    cut: { protein: 0.4, fats: 0.25, carbs: 0.35 }, // 40P/25F/35C
+    aggressive_cut: { protein: 0.45, fats: 0.2, carbs: 0.35 }, // 45P/20F/35C
+    lean_bulk: { protein: 0.3, fats: 0.25, carbs: 0.45 }, // 30P/25F/45C
+    dirty_bulk: { protein: 0.25, fats: 0.3, carbs: 0.45 }, // 25P/30F/45C
+    recomposition: { protein: 0.4, fats: 0.3, carbs: 0.3 }, // 40P/30F/30C
+    maintenance: { protein: 0.3, fats: 0.3, carbs: 0.4 }, // 30P/30F/40C
+    strength: { protein: 0.3, fats: 0.25, carbs: 0.45 }, // 30P/25F/45C
+    aesthetic: { protein: 0.4, fats: 0.25, carbs: 0.35 }, // 40P/25F/35C
   };
 
-  return {
-    balanced: calculateMacrosFromSplit(calories, splits.balanced),
-    lowFat: calculateMacrosFromSplit(calories, splits.lowFat),
-    lowCarb: calculateMacrosFromSplit(calories, splits.lowCarb),
-    highProtein: calculateMacrosFromSplit(calories, splits.highProtein),
-  };
+  return calculateMacrosFromSplit(calories, goalSpecificSplits[goal]);
 }
 
 /**
@@ -126,23 +112,48 @@ export function calculateCalorieRecommendation(
 
   // Калорийни цели
   const maintenanceCalories = Math.round(tdee);
-  const cuttingCalories = Math.round(tdee - 500); // -500 cal дефицит
-  const bulkingCalories = Math.round(tdee + 300); // +300 cal суфицит
+  const cuttingCalories = Math.round(tdee - 500); // -500 cal дефицит (0.5 кг/седмица)
+  const aggressiveCuttingCalories = Math.round(tdee - 750); // -750 cal дефицит (0.75 кг/седмица)
+  const leanBulkCalories = Math.round(tdee + 300); // +300 cal суфицит (бавно качване)
+  const dirtyBulkCalories = Math.round(tdee + 500); // +500 cal суфицит (бързо качване)
+  const recompCalories = Math.round(tdee - 200); // -200 cal леко под поддръжка
+  const strengthCalories = Math.round(tdee + 200); // +200 cal леко над поддръжка
+  const aestheticCalories = Math.round(tdee - 300); // -300 cal умерен дефицит
 
   return {
     bmr: Math.round(bmr),
     tdee: Math.round(tdee),
+    cut: {
+      calories: cuttingCalories,
+      macros: calculateMacrosForGoal(cuttingCalories, "cut"),
+    },
+    aggressive_cut: {
+      calories: aggressiveCuttingCalories,
+      macros: calculateMacrosForGoal(aggressiveCuttingCalories, "aggressive_cut"),
+    },
+    lean_bulk: {
+      calories: leanBulkCalories,
+      macros: calculateMacrosForGoal(leanBulkCalories, "lean_bulk"),
+    },
+    dirty_bulk: {
+      calories: dirtyBulkCalories,
+      macros: calculateMacrosForGoal(dirtyBulkCalories, "dirty_bulk"),
+    },
+    recomposition: {
+      calories: recompCalories,
+      macros: calculateMacrosForGoal(recompCalories, "recomposition"),
+    },
     maintenance: {
       calories: maintenanceCalories,
-      ...calculateAllMacroVariants(maintenanceCalories),
+      macros: calculateMacrosForGoal(maintenanceCalories, "maintenance"),
     },
-    cutting: {
-      calories: cuttingCalories,
-      ...calculateAllMacroVariants(cuttingCalories),
+    strength: {
+      calories: strengthCalories,
+      macros: calculateMacrosForGoal(strengthCalories, "strength"),
     },
-    bulking: {
-      calories: bulkingCalories,
-      ...calculateAllMacroVariants(bulkingCalories),
+    aesthetic: {
+      calories: aestheticCalories,
+      macros: calculateMacrosForGoal(aestheticCalories, "aesthetic"),
     },
   };
 }
