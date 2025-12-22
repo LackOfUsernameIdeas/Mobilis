@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { calculateCalorieRecommendation, type ActivityLevel } from "@/server/calorieCalculator";
+import { calculateCalorieRecommendation } from "@/server/calorieCalculator";
 
 export async function POST(req: NextRequest) {
   try {
-    const { height, weight, age, gender, activityLevel, goal } = await req.json();
+    const { height, weight, age, gender, activityLevel } = await req.json();
 
     // Валидация на задължителни полета
     if (!height || !weight || !age || !gender) {
@@ -20,36 +20,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Невалидна възраст. Трябва да бъде между 15 и 100 години" }, { status: 400 });
     }
 
-    // Валидация на ниво на активност
-    const validActivityLevels: ActivityLevel[] = ["sedentary", "light", "moderate", "active", "very_active"];
-    const activity: ActivityLevel = activityLevel || "moderate";
-
-    if (!validActivityLevels.includes(activity)) {
-      return NextResponse.json(
-        {
-          error: "Невалидно ниво на активност",
-          validLevels: validActivityLevels,
-        },
-        { status: 400 },
-      );
-    }
-
-    // Валидация на цел (опционална)
-    const validGoals = ["cut", "lean_bulk", "dirty_bulk", "recomposition", "maintenance", "aesthetic", "strength"];
-    const fitnessGoal = goal || "maintenance";
-
-    if (!validGoals.includes(fitnessGoal)) {
-      return NextResponse.json(
-        {
-          error: "Невалидна цел",
-          validGoals,
-        },
-        { status: 400 },
-      );
-    }
-
     // Изчисляване на калории
-    const calorieRecommendation = calculateCalorieRecommendation(weight, height, age, gender, activity, fitnessGoal);
+    const calorieRecommendation = calculateCalorieRecommendation(weight, height, age, gender, activityLevel);
 
     return NextResponse.json({
       success: true,
