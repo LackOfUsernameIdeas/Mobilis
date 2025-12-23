@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -11,23 +11,58 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Scale, Utensils } from "lucide-react";
+import { fetchNutrientRecommendations } from "../helper_functions";
 
 interface NutritionFormProps {
   onSubmit: (answers: Record<string, any>) => void;
-  usersWeight: number;
+  usersStats: any;
 }
 
-export default function NutritionForm({ onSubmit, usersWeight }: NutritionFormProps) {
+export default function NutritionForm({ onSubmit, usersStats }: NutritionFormProps) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({
-    mainGoal: "",
+    mainGoal: usersStats.goal,
     trainingTime: "",
     targetWeight: "",
     targetWeightValue: "",
     healthIssues: "",
     cuisinePreference: [],
-    macroPreference: "",
+    calories: "",
+    protein: "",
+    carbs: "",
+    fats: "",
   });
+
+  useEffect(() => {
+    const fetchNutrientsForGoal = async () => {
+      if (answers.mainGoal && usersStats) {
+        try {
+          const recommendations = await fetchNutrientRecommendations({
+            height: usersStats.height,
+            weight: usersStats.weight,
+            age: usersStats.age,
+            gender: usersStats.gender,
+            activityLevel: usersStats.activityLevel,
+            goal: answers.mainGoal,
+          });
+
+          if (recommendations) {
+            setAnswers((prev) => ({
+              ...prev,
+              calories: recommendations.calories.toString(),
+              protein: recommendations.protein.toString(),
+              carbs: recommendations.carbs.toString(),
+              fats: recommendations.fats.toString(),
+            }));
+          }
+        } catch (error) {
+          console.error("Error fetching recommendations for goal:", error);
+        }
+      }
+    };
+
+    fetchNutrientsForGoal();
+  }, [answers.mainGoal]);
 
   const cuisineOptions = ["Българска", "Испанска", "Италианска", "Френска", "Нямам предпочитания"];
 
@@ -90,7 +125,7 @@ export default function NutritionForm({ onSubmit, usersWeight }: NutritionFormPr
       field: "targetWeight",
       title: "Има ли конкретно целево тегло, до което желаете да стигнете?",
       type: "target-weight",
-      currentWeight: usersWeight,
+      currentWeight: usersStats.weight,
     },
     {
       field: "healthIssues",
@@ -100,16 +135,17 @@ export default function NutritionForm({ onSubmit, usersWeight }: NutritionFormPr
         "напр. алергия към ядки, лактозна непоносимост, стомашни проблеми, високо кръвно налягане, религиозни ограничения",
     },
     {
+      field: "nutrients",
+      title: "Какви стойности на дневни нутриенти желаете?",
+      type: "nutrients",
+      description:
+        "Стойностите по-долу са препоръчителни и са изчислени според избраната от вас цел. Можете по ваша преценка да ги промените.",
+    },
+    {
       field: "cuisinePreference",
       title: "Ястия от каква кухня предпочитате?",
       type: "checkbox",
       options: cuisineOptions,
-    },
-    {
-      field: "macroPreference",
-      title: "Какъв тип хранителен режим предпочитате?",
-      type: "macro-preference",
-      // This will show recommended macros based on the selected goal
     },
   ];
 
@@ -166,6 +202,10 @@ export default function NutritionForm({ onSubmit, usersWeight }: NutritionFormPr
       return false;
     }
 
+    if (currentField === "nutrients") {
+      return !!answers.calories && !!answers.protein && !!answers.carbs && !!answers.fats;
+    }
+
     if (typeof answer === "string") return answer.trim() !== "";
     if (Array.isArray(answer)) return answer.length > 0;
     return false;
@@ -194,10 +234,7 @@ export default function NutritionForm({ onSubmit, usersWeight }: NutritionFormPr
       <CardHeader className="border-border bg-card/50 border-b">
         <div className="space-y-2 sm:space-y-3">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-0">
-            <div className="flex items-center gap-3">
-              <Utensils className="text-primary h-6 w-6" />
-              <CardTitle className="text-foreground text-xl sm:text-2xl">Въпросник за хранителни препоръки</CardTitle>
-            </div>
+            <CardTitle className="text-foreground text-xl sm:text-2xl">Въпросник за хранителни препоръки</CardTitle>
             <span className="text-foreground text-xs sm:text-sm">
               Въпрос {currentQuestion + 1} от {questions.length}
             </span>
@@ -225,21 +262,37 @@ export default function NutritionForm({ onSubmit, usersWeight }: NutritionFormPr
                   onValueChange={(value) => handleChange(question.field, value)}
                 >
                   <div className="space-y-2 sm:space-y-3">
-                    {question.options?.map((option: any) => (
-                      <Label
-                        key={option.value}
-                        htmlFor={option.value}
-                        className="hover:bg-muted/50 flex cursor-pointer flex-col items-start space-y-1 rounded-lg p-3 transition-colors"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <RadioGroupItem value={option.value} id={option.value} className="h-4 w-4 flex-shrink-0" />
-                          <span className="text-foreground flex-1 text-sm font-medium">{option.label}</span>
-                        </div>
-                        {option.description && (
-                          <span className="text-muted-foreground ml-7 text-xs">{option.description}</span>
-                        )}
-                      </Label>
-                    ))}
+                    {question.options?.map((option: any) => {
+                      const isRecommended = question.field === "mainGoal" && option.value === usersStats.goal;
+                      return (
+                        <Label
+                          key={option.value}
+                          htmlFor={option.value}
+                          className={`hover:bg-muted/50 flex cursor-pointer flex-col items-start space-y-1 rounded-lg p-3 transition-colors ${
+                            isRecommended ? "border-primary bg-primary/5 hover:bg-primary/10 border-2" : ""
+                          }`}
+                        >
+                          <div className="flex w-full items-start justify-between space-x-3">
+                            <div className="flex flex-1 items-center space-x-3">
+                              <RadioGroupItem
+                                value={option.value}
+                                id={option.value}
+                                className="h-4 w-4 flex-shrink-0"
+                              />
+                              <span className="text-foreground flex-1 text-sm font-medium">{option.label}</span>
+                            </div>
+                            {isRecommended && (
+                              <span className="bg-primary text-primary-foreground flex-shrink-0 rounded-full px-2 py-0.5 text-xs font-medium">
+                                Препоръчителна цел
+                              </span>
+                            )}
+                          </div>
+                          {option.description && (
+                            <span className="text-muted-foreground ml-7 text-xs">{option.description}</span>
+                          )}
+                        </Label>
+                      );
+                    })}
                   </div>
                 </RadioGroup>
               )}
@@ -269,7 +322,7 @@ export default function NutritionForm({ onSubmit, usersWeight }: NutritionFormPr
                       </div>
                       <div>
                         <p className="text-muted-foreground text-xs">Текущо тегло</p>
-                        <p className="text-foreground text-lg font-semibold">{usersWeight} кг</p>
+                        <p className="text-foreground text-lg font-semibold">{usersStats.weight} кг</p>
                       </div>
                     </div>
                   </div>
@@ -326,9 +379,9 @@ export default function NutritionForm({ onSubmit, usersWeight }: NutritionFormPr
                       </div>
                       {answers.targetWeightValue && (
                         <p className="text-muted-foreground text-xs">
-                          {parseFloat(answers.targetWeightValue) > usersWeight
-                            ? `+${(parseFloat(answers.targetWeightValue) - usersWeight).toFixed(1)} кг от текущото тегло`
-                            : `${(parseFloat(answers.targetWeightValue) - usersWeight).toFixed(1)} кг от текущото тегло`}
+                          {parseFloat(answers.targetWeightValue) > usersStats.weight
+                            ? `+${(parseFloat(answers.targetWeightValue) - usersStats.weight).toFixed(1)} кг от текущото тегло`
+                            : `${(parseFloat(answers.targetWeightValue) - usersStats.weight).toFixed(1)} кг от текущото тегло`}
                         </p>
                       )}
                     </div>
@@ -389,72 +442,115 @@ export default function NutritionForm({ onSubmit, usersWeight }: NutritionFormPr
                 </div>
               )}
 
-              {question.type === "macro-preference" && (
+              {question.type === "nutrients" && (
                 <div className="space-y-4">
-                  <div className="bg-primary/5 border-primary/20 rounded-lg border p-4">
-                    <p className="text-foreground mb-2 text-sm font-medium">
-                      Препоръчителни дневни стойности според вашата цел:{" "}
-                      {answers.mainGoal
-                        ? (questions[0].options as Array<{ value: string; label: string; description: string }>)?.find(
-                            (o) => o.value === answers.mainGoal,
-                          )?.label
-                        : "Не е избрана"}
-                    </p>
-                    <p className="text-muted-foreground text-xs">
-                      По-долу можете да изберете препоръчително съотношение на макронутриенти или да коригирате по ваша
-                      преценка.
-                    </p>
-                  </div>
+                  <p className="text-muted-foreground text-xs sm:text-sm">{question.description}</p>
 
-                  <RadioGroup
-                    value={answers.macroPreference}
-                    onValueChange={(value) => handleChange("macroPreference", value)}
-                  >
-                    <div className="space-y-3">
-                      <Label
-                        htmlFor="macro-balanced"
-                        className="hover:bg-muted/50 flex cursor-pointer flex-col space-y-1 rounded-lg p-3 transition-colors"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <RadioGroupItem value="balanced" id="macro-balanced" className="h-4 w-4 flex-shrink-0" />
-                          <span className="text-foreground flex-1 text-sm font-medium">Балансиран режим</span>
-                        </div>
-                        <span className="text-muted-foreground ml-7 text-xs">
-                          Протеини: 30% | Въглехидрати: 40% | Мазнини: 30%
-                        </span>
+                  <div className="space-y-3 sm:space-y-4">
+                    <div>
+                      <Label htmlFor="calories" className="text-foreground mb-2 block text-xs sm:text-sm">
+                        Калории
                       </Label>
-
-                      <Label
-                        htmlFor="macro-high-protein"
-                        className="hover:bg-muted/50 flex cursor-pointer flex-col space-y-1 rounded-lg p-3 transition-colors"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <RadioGroupItem
-                            value="high_protein"
-                            id="macro-high-protein"
-                            className="h-4 w-4 flex-shrink-0"
-                          />
-                          <span className="text-foreground flex-1 text-sm font-medium">Високо протеинов режим</span>
-                        </div>
-                        <span className="text-muted-foreground ml-7 text-xs">
-                          Протеини: 40% | Въглехидрати: 35% | Мазнини: 25%
-                        </span>
-                      </Label>
-
-                      <Label
-                        htmlFor="macro-low-carb"
-                        className="hover:bg-muted/50 flex cursor-pointer flex-col space-y-1 rounded-lg p-3 transition-colors"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <RadioGroupItem value="low_carb" id="macro-low-carb" className="h-4 w-4 flex-shrink-0" />
-                          <span className="text-foreground flex-1 text-sm font-medium">Нисковъглехидратен режим</span>
-                        </div>
-                        <span className="text-muted-foreground ml-7 text-xs">
-                          Протеини: 35% | Въглехидрати: 25% | Мазнини: 40%
-                        </span>
-                      </Label>
+                      <div className="relative">
+                        <Input
+                          id="calories"
+                          type="text"
+                          inputMode="decimal"
+                          placeholder="напр. 2000"
+                          value={answers.calories}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (value === "" || /^\d{0,5}(\.\d{0,2})?$/.test(value)) {
+                              const numericValue = parseFloat(value);
+                              if (isNaN(numericValue) || numericValue <= 10000) {
+                                handleChange("calories", value);
+                              }
+                            }
+                          }}
+                          className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-16 text-sm"
+                        />
+                        <span className="text-foreground absolute top-1/2 right-3 -translate-y-1/2 text-sm">kcal</span>
+                      </div>
                     </div>
-                  </RadioGroup>
+
+                    <div>
+                      <Label htmlFor="protein" className="text-foreground mb-2 block text-xs sm:text-sm">
+                        Протеини
+                      </Label>
+                      <div className="relative">
+                        <Input
+                          id="protein"
+                          type="text"
+                          inputMode="decimal"
+                          placeholder="напр. 150"
+                          value={answers.protein}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (value === "" || /^\d{0,4}(\.\d{0,2})?$/.test(value)) {
+                              const numericValue = parseFloat(value);
+                              if (isNaN(numericValue) || numericValue <= 600) {
+                                handleChange("protein", value);
+                              }
+                            }
+                          }}
+                          className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-12 text-sm"
+                        />
+                        <span className="text-foreground absolute top-1/2 right-3 -translate-y-1/2 text-sm">g</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="carbs" className="text-foreground mb-2 block text-xs sm:text-sm">
+                        Въглехидрати
+                      </Label>
+                      <div className="relative">
+                        <Input
+                          id="carbs"
+                          type="text"
+                          inputMode="decimal"
+                          placeholder="напр. 200"
+                          value={answers.carbs}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (value === "" || /^\d{0,4}(\.\d{0,2})?$/.test(value)) {
+                              const numericValue = parseFloat(value);
+                              if (isNaN(numericValue) || numericValue <= 1000) {
+                                handleChange("carbs", value);
+                              }
+                            }
+                          }}
+                          className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-12 text-sm"
+                        />
+                        <span className="text-foreground absolute top-1/2 right-3 -translate-y-1/2 text-sm">g</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="fats" className="text-foreground mb-2 block text-xs sm:text-sm">
+                        Мазнини
+                      </Label>
+                      <div className="relative">
+                        <Input
+                          id="fats"
+                          type="text"
+                          inputMode="decimal"
+                          placeholder="напр. 65"
+                          value={answers.fats}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (value === "" || /^\d{0,4}(\.\d{0,2})?$/.test(value)) {
+                              const numericValue = parseFloat(value);
+                              if (isNaN(numericValue) || numericValue <= 400) {
+                                handleChange("fats", value);
+                              }
+                            }
+                          }}
+                          className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-12 text-sm"
+                        />
+                        <span className="text-foreground absolute top-1/2 right-3 -translate-y-1/2 text-sm">g</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
             </fieldset>

@@ -58,6 +58,7 @@ export default function Page() {
           gender: measurements.gender,
           height: measurements.height,
           weight: measurements.weight,
+          goal: metrics.goalData.goal,
           bmi: metrics.bmiData.bmi,
           bodyFat: metrics.bodyFatData.bodyFat,
           bodyFatMass: metrics.bodyFatData.bodyFatMass,
@@ -121,6 +122,7 @@ export default function Page() {
               <GymCalisthenicsForm
                 isCategoryGym={true}
                 usersWeight={userStats?.weight}
+                usersGoal={userStats?.goal}
                 onSubmit={handleFormSubmit}
                 onBack={handleGoBack}
               />
@@ -129,6 +131,7 @@ export default function Page() {
               <GymCalisthenicsForm
                 isCategoryGym={false}
                 usersWeight={userStats?.weight}
+                usersGoal={userStats?.goal}
                 onSubmit={handleFormSubmit}
                 onBack={handleGoBack}
               />

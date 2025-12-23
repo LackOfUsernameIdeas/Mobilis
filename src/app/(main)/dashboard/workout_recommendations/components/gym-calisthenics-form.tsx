@@ -16,6 +16,7 @@ interface GymCalisthenicsFormProps {
   onSubmit: (answers: Record<string, any>) => void;
   isCategoryGym: boolean;
   usersWeight: number;
+  usersGoal: string;
   onBack: () => void;
 }
 
@@ -23,11 +24,12 @@ export default function GymCalisthenicsForm({
   onSubmit,
   isCategoryGym,
   usersWeight,
+  usersGoal,
   onBack,
 }: GymCalisthenicsFormProps) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({
-    mainGoal: "",
+    mainGoal: usersGoal,
     experience: "",
     frequency: 0,
     warmupCooldown: "",
@@ -94,11 +96,31 @@ export default function GymCalisthenicsForm({
       title: "Какво е вашето ниво на опит в тренировките?",
       type: "radio",
       options: [
-        { value: "beginner", label: "Начинаещ - Тренирате от кратко време" },
-        { value: "basic", label: "Базово ниво - Изпълнявате основни упражнения правилно" },
-        { value: "intermediate", label: "Средно ниво - Познавате силните и слабите си страни" },
-        { value: "advanced", label: "Напреднал - Работите с по-сложни програми" },
-        { value: "expert", label: "Експерт - Имате дългогодишна практика" },
+        {
+          value: "beginner",
+          label: "Начинаещ",
+          description: "Тренирате от кратко време",
+        },
+        {
+          value: "basic",
+          label: "Базово ниво",
+          description: "Изпълнявате основни упражнения правилно",
+        },
+        {
+          value: "intermediate",
+          label: "Средно ниво",
+          description: "Познавате силните и слабите си страни",
+        },
+        {
+          value: "advanced",
+          label: "Напреднал",
+          description: "Работите с по-сложни програми",
+        },
+        {
+          value: "expert",
+          label: "Експерт",
+          description: "Имате дългогодишна практика",
+        },
       ],
     },
     {
@@ -265,25 +287,37 @@ export default function GymCalisthenicsForm({
                   onValueChange={(value) => handleChange(question.field, value)}
                 >
                   <div className="space-y-2 sm:space-y-3">
-                    {question.options?.map((option: any) => (
-                      <Label
-                        key={option.value}
-                        htmlFor={option.value}
-                        className="hover:bg-muted/50 flex cursor-pointer flex-col items-start space-y-1 rounded-lg p-3 transition-colors"
-                      >
-                        <div className="flex items-start space-x-3">
-                          <RadioGroupItem
-                            value={option.value}
-                            id={option.value}
-                            className="mt-0.5 h-4 w-4 flex-shrink-0"
-                          />
-                          <span className="text-foreground flex-1 text-sm font-medium">{option.label}</span>
-                        </div>
-                        {option.description && (
-                          <span className="text-muted-foreground ml-7 text-xs">{option.description}</span>
-                        )}
-                      </Label>
-                    ))}
+                    {question.options?.map((option: any) => {
+                      const isRecommended = question.field === "mainGoal" && option.value === usersGoal;
+                      return (
+                        <Label
+                          key={option.value}
+                          htmlFor={option.value}
+                          className={`hover:bg-muted/50 flex cursor-pointer flex-col items-start space-y-1 rounded-lg p-3 transition-colors ${
+                            isRecommended ? "border-primary bg-primary/5 hover:bg-primary/10 border-2" : ""
+                          }`}
+                        >
+                          <div className="flex w-full items-start justify-between space-x-3">
+                            <div className="flex flex-1 items-start space-x-3">
+                              <RadioGroupItem
+                                value={option.value}
+                                id={option.value}
+                                className="mt-0.5 h-4 w-4 flex-shrink-0"
+                              />
+                              <span className="text-foreground flex-1 text-sm font-medium">{option.label}</span>
+                            </div>
+                            {isRecommended && (
+                              <span className="bg-primary text-primary-foreground flex-shrink-0 rounded-full px-2 py-0.5 text-xs font-medium">
+                                Препоръчителна цел
+                              </span>
+                            )}
+                          </div>
+                          {option.description && (
+                            <span className="text-muted-foreground ml-7 text-xs">{option.description}</span>
+                          )}
+                        </Label>
+                      );
+                    })}
                   </div>
                 </RadioGroup>
               )}

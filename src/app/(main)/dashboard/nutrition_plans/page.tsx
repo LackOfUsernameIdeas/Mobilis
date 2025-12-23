@@ -54,6 +54,8 @@ export default function Page() {
           gender: measurements.gender,
           height: measurements.height,
           weight: measurements.weight,
+          age: measurements.age,
+          goal: metrics.goalData.goal,
           activityLevel: measurements.activity_level,
           bmi: metrics.bmiData.bmi,
           bodyFat: metrics.bodyFatData.bodyFat,
@@ -71,7 +73,8 @@ export default function Page() {
   }, []);
 
   const handleFormSubmit = (answers: FormAnswers) => {
-    setSubmittedAnswers(answers);
+    // setSubmittedAnswers(answers);
+    console.log("ANSWERS: ", answers);
   };
 
   const handleReset = () => {
@@ -92,7 +95,7 @@ export default function Page() {
         {submittedAnswers ? (
           <ResultsDisplay category="gym" answers={submittedAnswers} userStats={userStats} onReset={handleReset} />
         ) : (
-          <NutritionForm usersWeight={userStats.weight} onSubmit={handleFormSubmit} />
+          <NutritionForm usersStats={userStats} onSubmit={handleFormSubmit} />
         )}
       </div>
     </div>
