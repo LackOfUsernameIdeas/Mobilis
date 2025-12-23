@@ -10,35 +10,26 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { Scale } from "lucide-react";
+import { Scale, Utensils } from "lucide-react";
 
-interface GymCalisthenicsFormProps {
+interface NutritionFormProps {
   onSubmit: (answers: Record<string, any>) => void;
-  isCategoryGym: boolean;
   usersWeight: number;
-  onBack: () => void;
 }
 
-export default function GymCalisthenicsForm({
-  onSubmit,
-  isCategoryGym,
-  usersWeight,
-  onBack,
-}: GymCalisthenicsFormProps) {
+export default function NutritionForm({ onSubmit, usersWeight }: NutritionFormProps) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({
     mainGoal: "",
-    experience: "",
-    frequency: 0,
-    warmupCooldown: "",
-    muscleGroups: [],
+    trainingTime: "",
     targetWeight: "",
     targetWeightValue: "",
     healthIssues: "",
-    specificExercises: "",
+    cuisinePreference: [],
+    macroPreference: "",
   });
 
-  const muscleGroupOptions = ["Гърди", "Гръб", "Рамене", "Ръце", "Корем", "Крака", "Нямам предпочитания"];
+  const cuisineOptions = ["Българска", "Испанска", "Италианска", "Френска", "Нямам предпочитания"];
 
   const questions = [
     {
@@ -49,78 +40,51 @@ export default function GymCalisthenicsForm({
         {
           value: "cut",
           label: "Cut (Загуба на мазнини)",
-          description: "Тренировки, насочени към изгаряне на телесните мазнини",
+          description: "Хранене, насочено към понижаване на телесните мазнини",
         },
         {
           value: "aggressive_cut",
-          label: "Aggressive Cut (Екстремна загуба на мазнини)",
-          description: "Интензивни тренировки за бързо изгаряне на телесните мазнини",
+          label: "Aggressive Cut (Интензивна загуба на мазнини)",
+          description: "Хранене за бързо понижаване на телесните мазнини",
         },
         {
           value: "lean_bulk",
           label: "Lean Bulk (Покачване на мускулна маса)",
-          description: "Тренировки, насочени към постепенно и контролирано покачване на мускулна маса",
+          description: "Хранене, насочено към постепенно и контролирано покачване на мускулна маса",
         },
         {
           value: "dirty_bulk",
           label: "Dirty Bulk (Интензивно покачване на маса)",
-          description: "Интензивни тренировки за бързо набавяне на маса - мускулна и мастна",
+          description: "Хранене с висок калориен прием за бързо набавяне на маса",
         },
         {
           value: "recomposition",
-          label: "Recomposition (Телесна рекомпозиция)",
+          label: "Recomposition",
           description:
-            "Тренировки, насочени към едновременното изгаряне на телесните мазнини и покачване на мускулна маса",
+            "Хранене, насочено към едновременното понижаване на телесните мазнини и постепенното покачване на мускулна маса",
         },
         {
           value: "maintenance",
-          label: "Maintenance (Поддържане на текущата форма)",
-          description: "Тренировки за запазване на текущото тегло и форма",
+          label: "Maintenance (Поддържане)",
+          description: "Хранене за запазване на текущото тегло и форма",
         },
         {
           value: "aesthetic",
           label: "Aesthetic (Естетика и пропорции)",
-          description: "Тренировки, насочени към постигане на естетичен външен вид и балансирани пропорции",
+          description: "Хранене, насочено към постигане на естетичен външен вид и балансирани пропорции",
         },
         {
           value: "strength",
           label: "Strength (Максимална сила)",
-          description: "Тренировки с фокус върху максимална сила и силови показатели",
+          description: "Хранене с фокус върху максимална сила и силови показатели",
         },
       ],
     },
     {
-      field: "experience",
-      title: "Какво е вашето ниво на опит в тренировките?",
-      type: "radio",
-      options: [
-        { value: "beginner", label: "Начинаещ - Тренирате от кратко време" },
-        { value: "basic", label: "Базово ниво - Изпълнявате основни упражнения правилно" },
-        { value: "intermediate", label: "Средно ниво - Познавате силните и слабите си страни" },
-        { value: "advanced", label: "Напреднал - Работите с по-сложни програми" },
-        { value: "expert", label: "Експерт - Имате дългогодишна практика" },
-      ],
-    },
-    {
-      field: "frequency",
-      title: "Колко често бихте имали възможност да тренирате?",
-      type: "radio-grid",
-      options: [2, 3, 4, 5, 6, 7],
-    },
-    {
-      field: "warmupCooldown",
-      title: "Желаете ли програмата да включва препоръки за загряване преди тренировка и разтягане след нея?",
-      type: "radio-horizontal",
-      options: [
-        { value: "yes", label: "Да" },
-        { value: "no", label: "Не" },
-      ],
-    },
-    {
-      field: "muscleGroups",
-      title: "Има ли конкретна мускулна група, върху която желаете да се фокусирате предимно?",
-      type: "checkbox",
-      options: muscleGroupOptions,
+      field: "trainingTime",
+      title: "Кога горе-долу намирате време да тренирате?",
+      type: "time-picker",
+      placeholder: "Изберете час",
     },
     {
       field: "targetWeight",
@@ -130,21 +94,27 @@ export default function GymCalisthenicsForm({
     },
     {
       field: "healthIssues",
-      title: "Съществуват ли някакви здравословни проблеми, контузии или ограничения?",
+      title: "Съществуват ли здравословни проблеми, алергии или други особености, свързани с храненето ви?",
       type: "textarea",
-      placeholder: "напр. болки в кръста, проблеми със ставите, сърдечни заболявания",
+      placeholder:
+        "напр. алергия към ядки, лактозна непоносимост, стомашни проблеми, високо кръвно налягане, религиозни ограничения",
     },
     {
-      field: "specificExercises",
-      title: "Има ли конкретни упражнения, които желаете да бъдат включени в програмата?",
-      type: "textarea",
-      placeholder: "напр. Bench Press, Deadlift, Squats, Pull-ups",
+      field: "cuisinePreference",
+      title: "Ястия от каква кухня предпочитате?",
+      type: "checkbox",
+      options: cuisineOptions,
+    },
+    {
+      field: "macroPreference",
+      title: "Какъв тип хранителен режим предпочитате?",
+      type: "macro-preference",
+      // This will show recommended macros based on the selected goal
     },
   ];
 
   const handleChange = (field: string, value: any) => {
     setAnswers((prev) => {
-      // If changing targetWeight to "no", clear the targetWeightValue
       if (field === "targetWeight" && value === "no") {
         return {
           ...prev,
@@ -159,28 +129,27 @@ export default function GymCalisthenicsForm({
     });
   };
 
-  const handleMuscleGroupChange = (group: string, checked: boolean) => {
+  const handleCuisineChange = (cuisine: string, checked: boolean) => {
     setAnswers((prev) => {
-      // If "Нямам предпочитания" is being checked, clear all others
-      if (group === "Нямам предпочитания" && checked) {
+      if (cuisine === "Нямам предпочитания" && checked) {
         return {
           ...prev,
-          muscleGroups: ["Нямам предпочитания"],
+          cuisinePreference: ["Нямам предпочитания"],
         };
       }
 
-      // If any other group is being checked, remove "Нямам предпочитания"
-      if (checked && prev.muscleGroups.includes("Нямам предпочитания")) {
+      if (checked && prev.cuisinePreference.includes("Нямам предпочитания")) {
         return {
           ...prev,
-          muscleGroups: [group],
+          cuisinePreference: [cuisine],
         };
       }
 
-      // Normal checkbox behavior
       return {
         ...prev,
-        muscleGroups: checked ? [...prev.muscleGroups, group] : prev.muscleGroups.filter((g: string) => g !== group),
+        cuisinePreference: checked
+          ? [...prev.cuisinePreference, cuisine]
+          : prev.cuisinePreference.filter((c: string) => c !== cuisine),
       };
     });
   };
@@ -198,7 +167,6 @@ export default function GymCalisthenicsForm({
     }
 
     if (typeof answer === "string") return answer.trim() !== "";
-    if (typeof answer === "number") return answer > 0;
     if (Array.isArray(answer)) return answer.length > 0;
     return false;
   };
@@ -227,16 +195,8 @@ export default function GymCalisthenicsForm({
         <div className="space-y-2 sm:space-y-3">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-0">
             <div className="flex items-center gap-3">
-              <button
-                onClick={onBack}
-                className="text-foreground cursor-pointer text-xl transition-colors sm:text-2xl"
-                aria-label="Назад"
-              >
-                ←
-              </button>
-              <CardTitle className="text-foreground text-xl sm:text-2xl">
-                Въпросник за {isCategoryGym ? "фитнес" : "калистенични"} препоръки
-              </CardTitle>
+              <Utensils className="text-primary h-6 w-6" />
+              <CardTitle className="text-foreground text-xl sm:text-2xl">Въпросник за хранителни препоръки</CardTitle>
             </div>
             <span className="text-foreground text-xs sm:text-sm">
               Въпрос {currentQuestion + 1} от {questions.length}
@@ -249,7 +209,7 @@ export default function GymCalisthenicsForm({
             />
           </div>
           <CardDescription className="text-foreground text-xs sm:text-sm">
-            Отговорете на няколко въпроса, за да получите персонализирани препоръки
+            Отговорете на няколко въпроса, за да получите персонализирани хранителни препоръки
           </CardDescription>
         </div>
       </CardHeader>
@@ -271,12 +231,8 @@ export default function GymCalisthenicsForm({
                         htmlFor={option.value}
                         className="hover:bg-muted/50 flex cursor-pointer flex-col items-start space-y-1 rounded-lg p-3 transition-colors"
                       >
-                        <div className="flex items-start space-x-3">
-                          <RadioGroupItem
-                            value={option.value}
-                            id={option.value}
-                            className="mt-0.5 h-4 w-4 flex-shrink-0"
-                          />
+                        <div className="flex items-center space-x-3">
+                          <RadioGroupItem value={option.value} id={option.value} className="h-4 w-4 flex-shrink-0" />
                           <span className="text-foreground flex-1 text-sm font-medium">{option.label}</span>
                         </div>
                         {option.description && (
@@ -288,53 +244,23 @@ export default function GymCalisthenicsForm({
                 </RadioGroup>
               )}
 
-              {question.type === "radio-grid" && (
-                <RadioGroup
-                  value={answers[question.field]?.toString()}
-                  onValueChange={(value) => handleChange(question.field, Number(value))}
-                >
-                  <div className="grid grid-cols-2 gap-2 sm:gap-3">
-                    {(question.options as number[])?.map((day: number) => (
-                      <Label
-                        key={day}
-                        htmlFor={`freq-${day}`}
-                        className="hover:bg-muted/50 flex cursor-pointer items-center space-x-2 rounded-lg p-2 transition-colors sm:space-x-3 sm:p-3"
-                      >
-                        <RadioGroupItem value={day.toString()} id={`freq-${day}`} className="h-4 w-4 flex-shrink-0" />
-                        <span className="text-foreground flex-1 text-xs font-normal sm:text-sm">{day}x/седмица</span>
-                      </Label>
-                    ))}
-                  </div>
-                </RadioGroup>
-              )}
-
-              {question.type === "radio-horizontal" && (
-                <RadioGroup
-                  value={answers[question.field]?.toString()}
-                  onValueChange={(value) => handleChange(question.field, value)}
-                >
-                  <div className="flex flex-col gap-3 sm:flex-row sm:gap-6">
-                    {question.options?.map((option: any) => (
-                      <Label
-                        key={option.value}
-                        htmlFor={`${question.field}-${option.value}`}
-                        className="flex cursor-pointer items-center space-x-2 sm:space-x-3"
-                      >
-                        <RadioGroupItem
-                          value={option.value}
-                          id={`${question.field}-${option.value}`}
-                          className="h-4 w-4 flex-shrink-0"
-                        />
-                        <span className="text-foreground text-xs font-normal sm:text-sm">{option.label}</span>
-                      </Label>
-                    ))}
-                  </div>
-                </RadioGroup>
+              {question.type === "time-picker" && (
+                <div className="space-y-2">
+                  <Input
+                    id={question.field}
+                    type="time"
+                    value={answers[question.field]}
+                    onChange={(e) => handleChange(question.field, e.target.value)}
+                    className="bg-input border-border text-foreground text-sm"
+                  />
+                  <p className="text-muted-foreground text-xs">
+                    Това ще помогне за по-добро планиране на храненията около тренировката
+                  </p>
+                </div>
               )}
 
               {question.type === "target-weight" && (
                 <div className="space-y-4">
-                  {/* Current Weight Display */}
                   <div className="bg-muted/50 border-border group hover:border-primary/30 relative overflow-hidden rounded-lg border-2 p-4 transition-all duration-300">
                     <div className="from-primary/5 to-primary/0 absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                     <div className="relative flex items-center gap-3">
@@ -348,7 +274,6 @@ export default function GymCalisthenicsForm({
                     </div>
                   </div>
 
-                  {/* Radio Options */}
                   <RadioGroup
                     value={answers.targetWeight}
                     onValueChange={(value) => handleChange("targetWeight", value)}
@@ -374,7 +299,6 @@ export default function GymCalisthenicsForm({
                     </div>
                   </RadioGroup>
 
-                  {/* Target Weight Input */}
                   {answers.targetWeight === "yes" && (
                     <div className="animate-fade-in space-y-2">
                       <Label htmlFor="target-weight-value" className="text-foreground text-xs">
@@ -389,7 +313,6 @@ export default function GymCalisthenicsForm({
                           value={answers.targetWeightValue || ""}
                           onChange={(e) => {
                             const value = e.target.value;
-                            // Allow only numbers and one dot, max 3 digits before decimal, max 2 after
                             if (value === "" || /^\d{0,3}(\.\d{0,2})?$/.test(value)) {
                               const numericValue = parseFloat(value);
                               if (isNaN(numericValue) || numericValue <= 200) {
@@ -415,19 +338,19 @@ export default function GymCalisthenicsForm({
 
               {question.type === "checkbox" && (
                 <div className="space-y-2 sm:space-y-3">
-                  {(question.options as string[])?.map((group: string) => (
+                  {(question.options as string[])?.map((cuisine: string) => (
                     <Label
-                      key={group}
-                      htmlFor={`muscle-${group}`}
+                      key={cuisine}
+                      htmlFor={`cuisine-${cuisine}`}
                       className="hover:bg-muted/50 flex cursor-pointer items-center space-x-2 rounded-lg p-2 transition-colors sm:space-x-3 sm:p-3"
                     >
                       <Checkbox
-                        id={`muscle-${group}`}
-                        checked={answers.muscleGroups.includes(group)}
-                        onCheckedChange={(checked) => handleMuscleGroupChange(group, checked as boolean)}
+                        id={`cuisine-${cuisine}`}
+                        checked={answers.cuisinePreference.includes(cuisine)}
+                        onCheckedChange={(checked) => handleCuisineChange(cuisine, checked as boolean)}
                         className="h-4 w-4 flex-shrink-0"
                       />
-                      <span className="text-foreground flex-1 text-xs font-normal sm:text-sm">{group}</span>
+                      <span className="text-foreground flex-1 text-xs font-normal sm:text-sm">{cuisine}</span>
                     </Label>
                   ))}
                 </div>
@@ -463,6 +386,75 @@ export default function GymCalisthenicsForm({
                       Няма
                     </Label>
                   </div>
+                </div>
+              )}
+
+              {question.type === "macro-preference" && (
+                <div className="space-y-4">
+                  <div className="bg-primary/5 border-primary/20 rounded-lg border p-4">
+                    <p className="text-foreground mb-2 text-sm font-medium">
+                      Препоръчителни дневни стойности според вашата цел:{" "}
+                      {answers.mainGoal
+                        ? (questions[0].options as Array<{ value: string; label: string; description: string }>)?.find(
+                            (o) => o.value === answers.mainGoal,
+                          )?.label
+                        : "Не е избрана"}
+                    </p>
+                    <p className="text-muted-foreground text-xs">
+                      По-долу можете да изберете препоръчително съотношение на макронутриенти или да коригирате по ваша
+                      преценка.
+                    </p>
+                  </div>
+
+                  <RadioGroup
+                    value={answers.macroPreference}
+                    onValueChange={(value) => handleChange("macroPreference", value)}
+                  >
+                    <div className="space-y-3">
+                      <Label
+                        htmlFor="macro-balanced"
+                        className="hover:bg-muted/50 flex cursor-pointer flex-col space-y-1 rounded-lg p-3 transition-colors"
+                      >
+                        <div className="flex items-center space-x-3">
+                          <RadioGroupItem value="balanced" id="macro-balanced" className="h-4 w-4 flex-shrink-0" />
+                          <span className="text-foreground flex-1 text-sm font-medium">Балансиран режим</span>
+                        </div>
+                        <span className="text-muted-foreground ml-7 text-xs">
+                          Протеини: 30% | Въглехидрати: 40% | Мазнини: 30%
+                        </span>
+                      </Label>
+
+                      <Label
+                        htmlFor="macro-high-protein"
+                        className="hover:bg-muted/50 flex cursor-pointer flex-col space-y-1 rounded-lg p-3 transition-colors"
+                      >
+                        <div className="flex items-center space-x-3">
+                          <RadioGroupItem
+                            value="high_protein"
+                            id="macro-high-protein"
+                            className="h-4 w-4 flex-shrink-0"
+                          />
+                          <span className="text-foreground flex-1 text-sm font-medium">Високо протеинов режим</span>
+                        </div>
+                        <span className="text-muted-foreground ml-7 text-xs">
+                          Протеини: 40% | Въглехидрати: 35% | Мазнини: 25%
+                        </span>
+                      </Label>
+
+                      <Label
+                        htmlFor="macro-low-carb"
+                        className="hover:bg-muted/50 flex cursor-pointer flex-col space-y-1 rounded-lg p-3 transition-colors"
+                      >
+                        <div className="flex items-center space-x-3">
+                          <RadioGroupItem value="low_carb" id="macro-low-carb" className="h-4 w-4 flex-shrink-0" />
+                          <span className="text-foreground flex-1 text-sm font-medium">Нисковъглехидратен режим</span>
+                        </div>
+                        <span className="text-muted-foreground ml-7 text-xs">
+                          Протеини: 35% | Въглехидрати: 25% | Мазнини: 40%
+                        </span>
+                      </Label>
+                    </div>
+                  </RadioGroup>
                 </div>
               )}
             </fieldset>

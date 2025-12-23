@@ -1,4 +1,4 @@
-import { Fingerprint, LayoutDashboard, ChartBar, Banknote, Layers, Activity, type LucideIcon } from "lucide-react";
+import { Utensils, ChartBar, Banknote, Layers, Activity, type LucideIcon } from "lucide-react";
 
 export interface NavSubItem {
   title: string;
@@ -39,6 +39,11 @@ export const sidebarItems: NavGroup[] = [
         title: "Тренировъчни препоръки",
         url: "/dashboard/workout_recommendations",
         icon: Activity,
+      },
+      {
+        title: "Хранителни режими",
+        url: "/dashboard/nutrition_plans",
+        icon: Utensils,
       },
       {
         title: "Програми",

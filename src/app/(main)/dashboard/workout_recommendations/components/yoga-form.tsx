@@ -44,12 +44,36 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
       title: "Каква е вашата основна цел?",
       type: "radio",
       options: [
-        { value: "flexibility_balance", label: "Гъвкавост и баланс" },
-        { value: "stress_relief", label: "Намаляване на стреса и релаксация" },
-        { value: "strength_endurance", label: "Сила и издръжливост" },
-        { value: "mindfulness", label: "Осъзнатост и медитация" },
-        { value: "posture", label: "Подобряване на стойката" },
-        { value: "energy_boost", label: "Повишаване на енергията" },
+        {
+          value: "flexibility_balance",
+          label: "Гъвкавост и баланс",
+          description: "Практики, насочени към подобряване на гъвкавостта и баланса на тялото",
+        },
+        {
+          value: "stress_relief",
+          label: "Намаляване на стреса и релаксация",
+          description: "Упражнения за успокояване на ума и намаляване на стреса",
+        },
+        {
+          value: "strength_endurance",
+          label: "Сила и издръжливост",
+          description: "Динамични практики за изграждане на физическа сила и издръжливост",
+        },
+        {
+          value: "mindfulness",
+          label: "Осъзнатост и медитация",
+          description: "Фокус върху дишането, медитацията и вътрешната осъзнатост",
+        },
+        {
+          value: "posture",
+          label: "Подобряване на стойката",
+          description: "Работа върху коригиране и подобряване на телесната стойка",
+        },
+        {
+          value: "energy_boost",
+          label: "Повишаване на енергията",
+          description: "Енергизиращи практики за повишаване на жизнеността и тонуса",
+        },
       ],
     },
     {
@@ -221,10 +245,19 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
                       <Label
                         key={option.value}
                         htmlFor={option.value}
-                        className="hover:bg-muted/50 flex cursor-pointer items-center space-x-2 rounded-lg p-2 transition-colors sm:space-x-3 sm:p-3"
+                        className="hover:bg-muted/50 flex cursor-pointer flex-col items-start space-y-1 rounded-lg p-3 transition-colors"
                       >
-                        <RadioGroupItem value={option.value} id={option.value} className="h-4 w-4 flex-shrink-0" />
-                        <span className="text-foreground flex-1 text-xs font-normal sm:text-sm">{option.label}</span>
+                        <div className="flex items-start space-x-3">
+                          <RadioGroupItem
+                            value={option.value}
+                            id={option.value}
+                            className="mt-0.5 h-4 w-4 flex-shrink-0"
+                          />
+                          <span className="text-foreground flex-1 text-sm font-medium">{option.label}</span>
+                        </div>
+                        {option.description && (
+                          <span className="text-muted-foreground ml-7 text-xs">{option.description}</span>
+                        )}
                       </Label>
                     ))}
                   </div>
