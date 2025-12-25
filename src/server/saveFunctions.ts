@@ -78,7 +78,7 @@ interface WorkoutRecommendationsResponse {
 
 export const saveUserPreferences = async (userId: string, category: string, answers: Record<string, any>) => {
   try {
-    if (category !== "gym" && category !== "calisthenics" && category !== "yoga") {
+    if (category !== "gym" && category !== "calisthenics" && category !== "yoga" && category !== "nutrition") {
       console.log(`Category ${category} does not require preference saving`);
       return { success: true, message: "Category does not require saving" };
     }

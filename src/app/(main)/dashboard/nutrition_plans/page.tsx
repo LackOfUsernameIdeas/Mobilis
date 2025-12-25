@@ -16,7 +16,6 @@ export default function Page() {
   useEffect(() => {
     async function fetchHealthData() {
       try {
-        // Get the current user
         const supabase = createClient();
         const {
           data: { user },
@@ -28,7 +27,6 @@ export default function Page() {
           return;
         }
 
-        // Fetch from your API endpoint that queries the database
         const [responseMetrics, responseMeasurements] = await Promise.all([
           fetch(`/api/user-metrics?userId=${user.id}`, {
             method: "GET",
@@ -63,7 +61,7 @@ export default function Page() {
           leanBodyMass: metrics.bodyFatData.leanBodyMass,
         });
       } catch (error) {
-        console.error("[v0] Error fetching health data:", error);
+        console.error("Error fetching health data:", error);
       } finally {
         setPageLoading(false);
       }
@@ -73,8 +71,7 @@ export default function Page() {
   }, []);
 
   const handleFormSubmit = (answers: FormAnswers) => {
-    // setSubmittedAnswers(answers);
-    console.log("ANSWERS: ", answers);
+    setSubmittedAnswers(answers);
   };
 
   const handleReset = () => {
@@ -93,7 +90,7 @@ export default function Page() {
     <div className="bg-background text-foreground flex min-h-screen justify-center p-4">
       <div className="w-full">
         {submittedAnswers ? (
-          <ResultsDisplay category="gym" answers={submittedAnswers} userStats={userStats} onReset={handleReset} />
+          <ResultsDisplay category="nutrition" answers={submittedAnswers} userStats={userStats} onReset={handleReset} />
         ) : (
           <NutritionForm usersStats={userStats} onSubmit={handleFormSubmit} />
         )}

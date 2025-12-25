@@ -54,7 +54,7 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
           return;
         }
 
-        const response = await fetch("/api/get-model-response", {
+        const response = await fetch("/api/get-model-response/workout-recommendations", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

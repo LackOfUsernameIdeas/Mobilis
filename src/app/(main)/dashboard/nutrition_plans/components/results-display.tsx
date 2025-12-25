@@ -4,19 +4,21 @@ import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ExerciseCard from "./exercise-card";
-import ExerciseModal from "./exercise-modal";
+import { Badge } from "@/components/ui/badge";
+import MealModal from "./meal-modal";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/app/utils/supabase/client";
 import { Loader } from "../../_components/loader";
+import { Clock, Utensils, Flame, Activity } from "lucide-react";
 
 interface ResultsDisplayProps {
-  category: "gym" | "calisthenics" | "yoga";
+  category: "nutrition";
   answers: Record<string, any>;
   userStats?: {
     gender?: "male" | "female";
     height?: number;
     weight?: number;
+    age?: number;
     bmi: string;
     bodyFat: string;
     bodyFatMass: string;
@@ -29,11 +31,8 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
   const [recommendations, setRecommendations] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const hasFetched = useRef(false);
-  const [selectedExercise, setSelectedExercise] = useState<any>(null);
+  const [selectedMeal, setSelectedMeal] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // Video URL cache - stores fetched URLs for this recommendation set
-  const [videoCache, setVideoCache] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (hasFetched.current) return;
@@ -43,7 +42,6 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
       setLoading(true);
 
       try {
-        // Get the current user
         const supabase = createClient();
         const {
           data: { user },
@@ -54,7 +52,7 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
           return;
         }
 
-        const response = await fetch("/api/get-model-response", {
+        const response = await fetch("/api/get-model-response/nutrition-plans", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -72,10 +70,10 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
         }
 
         const responseJson = await response.json();
-        const workoutProgram = JSON.parse(responseJson);
-        console.log("workoutProgram: ", workoutProgram);
+        const nutritionPlan = JSON.parse(responseJson);
+        console.log("nutritionPlan: ", nutritionPlan);
 
-        setRecommendations(workoutProgram);
+        setRecommendations(nutritionPlan);
       } catch (err) {
         console.error(err);
       } finally {
@@ -86,17 +84,22 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
     fetchRecommendations();
   }, []);
 
-  const handleExerciseClick = (exercise: any) => {
-    setSelectedExercise(exercise);
+  const handleMealClick = (meal: any) => {
+    setSelectedMeal(meal);
     setIsModalOpen(true);
   };
 
-  // Function to update the video cache
-  const handleVideoFetched = (exerciseName: string, url: string) => {
-    setVideoCache((prev) => ({
-      ...prev,
-      [exerciseName]: url,
-    }));
+  const getMealIcon = (mealId: string) => {
+    if (mealId.includes("pre_workout") || mealId.includes("post_workout")) {
+      return <Activity className="h-4 w-4" />;
+    }
+    return <Utensils className="h-4 w-4" />;
+  };
+
+  const getMealBadgeVariant = (mealId: string) => {
+    if (mealId.includes("pre_workout")) return "default";
+    if (mealId.includes("post_workout")) return "secondary";
+    return "outline";
   };
 
   return (
@@ -105,7 +108,7 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
         <div className="flex min-h-[80vh] items-center justify-center">
           <Loader />
         </div>
-      ) : (
+      ) : recommendations ? (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -113,205 +116,158 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
             duration: 0.4,
             ease: [0.21, 0.47, 0.32, 0.98],
           }}
+          className="space-y-6"
         >
-          <Card className="border-border bg-card group relative overflow-hidden border-2 transition-all duration-300">
-            <div className="absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-            <CardContent className="relative space-y-4 sm:space-y-6">
-              {recommendations ? (
-                <div className="space-y-6">
-                  {/* Weekly Schedule */}
-                  {recommendations.weekly_schedule && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{
-                        duration: 0.3,
-                        delay: 0.2,
-                        ease: [0.21, 0.47, 0.32, 0.98],
-                      }}
-                      className="space-y-4"
-                    >
-                      <h1 className="text-foreground text-3xl font-semibold">Седмична програма</h1>
-                      <Tabs defaultValue="0" className="w-full">
-                        <TabsList className="grid w-full grid-cols-3 lg:grid-cols-7">
-                          {recommendations.weekly_schedule.map((day: any, index: number) => (
-                            <TabsTrigger
-                              key={index}
-                              value={index.toString()}
-                              className="text-md cursor-pointer transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98]"
-                            >
-                              <span className="hidden sm:inline">{day.day}</span>
-                              <span className="sm:hidden">D{index + 1}</span>
-                            </TabsTrigger>
-                          ))}
-                        </TabsList>
-
-                        {recommendations.weekly_schedule.map((day: any, index: number) => (
-                          <TabsContent key={index} value={index.toString()} className="mt-4">
-                            <motion.div
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{
-                                duration: 0.3,
-                                ease: [0.21, 0.47, 0.32, 0.98],
-                              }}
-                            >
-                              <Card className="border-border group relative overflow-hidden border-2 transition-all duration-300">
-                                <div className="absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-
-                                <CardHeader className="relative">
-                                  <CardTitle className="text-foreground text-2xl">
-                                    {day.day} - {day.focus}
-                                  </CardTitle>
-                                </CardHeader>
-                                <CardContent className="relative space-y-4">
-                                  {/* Warmup */}
-                                  <motion.div
-                                    initial={{ opacity: 0, x: -10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{
-                                      duration: 0.3,
-                                      delay: 0.2,
-                                      ease: [0.21, 0.47, 0.32, 0.98],
-                                    }}
-                                    className="border-primary/30 bg-primary/5 rounded-md border-l-3 p-3"
-                                  >
-                                    <h4 className="text-foreground group-hover:text-foreground text-md mb-2 font-semibold transition-colors duration-300">
-                                      🔥 Загряване ({day.warmup.duration_minutes} мин)
-                                    </h4>
-                                    <ul className="text-foreground/80 text-md list-inside list-disc space-y-1">
-                                      {day.warmup.exercises.map((ex: string, i: number) => (
-                                        <li key={i}>{ex}</li>
-                                      ))}
-                                    </ul>
-                                  </motion.div>
-                                  {/* Workout */}
-                                  <div>
-                                    <div className="grid gap-3 md:grid-cols-2">
-                                      {day.workout.map((exercise: any, i: number) => (
-                                        <motion.div
-                                          key={i}
-                                          initial={{ opacity: 0, y: 10 }}
-                                          animate={{ opacity: 1, y: 0 }}
-                                          transition={{
-                                            duration: 0.3,
-                                            delay: 0.15 + i * 0.05,
-                                            ease: [0.21, 0.47, 0.32, 0.98],
-                                          }}
-                                        >
-                                          <ExerciseCard
-                                            exercise={exercise}
-                                            onClick={() => handleExerciseClick(exercise)}
-                                          />
-                                        </motion.div>
-                                      ))}
-                                    </div>
-                                  </div>
-
-                                  {/* Cooldown */}
-                                  <motion.div
-                                    initial={{ opacity: 0, x: -10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{
-                                      duration: 0.3,
-                                      delay: 0.2,
-                                      ease: [0.21, 0.47, 0.32, 0.98],
-                                    }}
-                                    className="border-primary/30 bg-primary/5 rounded-md border-l-3 p-3"
-                                  >
-                                    <h4 className="text-foreground group-hover:text-foreground text-md mb-2 font-semibold transition-colors duration-300">
-                                      ❄️ Разтягане ({day.cooldown.duration_minutes} мин)
-                                    </h4>
-                                    <ul className="text-foreground/80 text-md list-inside list-disc space-y-1">
-                                      {day.cooldown.exercises.map((ex: string, i: number) => (
-                                        <li key={i}>{ex}</li>
-                                      ))}
-                                    </ul>
-                                  </motion.div>
-                                </CardContent>
-                              </Card>
-                            </motion.div>
-                          </TabsContent>
-                        ))}
-                      </Tabs>
-                    </motion.div>
-                  )}
-
-                  {/* Safety Considerations */}
-                  {recommendations.safety_considerations && recommendations.safety_considerations.length > 0 && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{
-                        duration: 0.3,
-                        delay: 0.3,
-                        ease: [0.21, 0.47, 0.32, 0.98],
-                      }}
-                      className="bg-destructive/10 group border-destructive/50 relative overflow-hidden rounded-lg border-2 p-4 transition-all duration-300"
-                    >
-                      <h3 className="text-foreground relative mb-2 font-semibold">
-                        ⚠️ Важни съображения за безопасност
-                      </h3>
-                      <ul className="text-foreground/90 text-md relative list-inside list-disc space-y-1">
-                        {recommendations.safety_considerations.map((item: string, i: number) => (
-                          <li key={i}>{item}</li>
-                        ))}
-                      </ul>
-                    </motion.div>
-                  )}
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: 0.3,
-                      delay: 0.1,
-                      ease: [0.21, 0.47, 0.32, 0.98],
-                    }}
-                    className="flex gap-2"
-                  >
-                    <Button
-                      onClick={onReset}
-                      className="text-md hover:shadow-primary/20 w-full cursor-pointer hover:shadow-lg"
-                    >
-                      Генерирайте отново
-                    </Button>
-                  </motion.div>
+          {/* Header Card */}
+          <Card className="border-border bg-card border-2">
+            <CardHeader>
+              <CardTitle className="text-foreground flex items-center gap-2 text-2xl">
+                <Flame className="h-6 w-6 text-orange-500" />
+                Вашият персонализиран хранителен план
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="text-muted-foreground text-xs">Калории</p>
+                  <p className="text-foreground text-lg font-semibold">{answers.calories} kcal</p>
                 </div>
-              ) : (
-                <>
-                  <div className="text-foreground text-center">Нещо се обърка. Моля, опитайте отново.</div>{" "}
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: 0.3,
-                      delay: 0.1,
-                      ease: [0.21, 0.47, 0.32, 0.98],
-                    }}
-                    className="flex gap-2"
-                  >
-                    <Button
-                      onClick={onReset}
-                      className="text-md hover:shadow-primary/20 w-full cursor-pointer hover:shadow-lg"
-                    >
-                      Генерирайте отново
-                    </Button>
-                  </motion.div>
-                </>
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="text-muted-foreground text-xs">Протеини</p>
+                  <p className="text-foreground text-lg font-semibold">{answers.protein}g</p>
+                </div>
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="text-muted-foreground text-xs">Въглехидрати</p>
+                  <p className="text-foreground text-lg font-semibold">{answers.carbs}g</p>
+                </div>
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="text-muted-foreground text-xs">Мазнини</p>
+                  <p className="text-foreground text-lg font-semibold">{answers.fats}g</p>
+                </div>
+              </div>
+
+              {recommendations.nutrition_tips && recommendations.nutrition_tips.length > 0 && (
+                <div className="bg-muted/30 rounded-lg p-4">
+                  <h3 className="text-foreground mb-2 font-semibold">Хранителни съвети:</h3>
+                  <ul className="text-muted-foreground space-y-1 text-sm">
+                    {recommendations.nutrition_tips.map((tip: string, idx: number) => (
+                      <li key={idx} className="flex gap-2">
+                        <span>•</span>
+                        <span>{tip}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               )}
             </CardContent>
           </Card>
+
+          {/* Weekly Plan Tabs */}
+          <Card className="border-border bg-card border-2">
+            <CardContent className="p-4 sm:p-6">
+              <Tabs defaultValue="day-0" className="w-full">
+                <TabsList className="bg-muted grid w-full grid-cols-7 gap-1">
+                  {recommendations.weekly_plan.map((day: any, idx: number) => (
+                    <TabsTrigger
+                      key={idx}
+                      value={`day-${idx}`}
+                      className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs"
+                    >
+                      {day.day}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+
+                {recommendations.weekly_plan.map((day: any, dayIdx: number) => (
+                  <TabsContent key={dayIdx} value={`day-${dayIdx}`} className="space-y-4 pt-4">
+                    {/* Day Summary */}
+                    <div className="bg-muted/30 grid grid-cols-2 gap-3 rounded-lg p-3 sm:grid-cols-4">
+                      <div>
+                        <p className="text-muted-foreground text-xs">Калории</p>
+                        <p className="text-foreground font-semibold">{day.total_macros.calories} kcal</p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground text-xs">Протеини</p>
+                        <p className="text-foreground font-semibold">{day.total_macros.protein}g</p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground text-xs">Въглехидрати</p>
+                        <p className="text-foreground font-semibold">{day.total_macros.carbs}g</p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground text-xs">Мазнини</p>
+                        <p className="text-foreground font-semibold">{day.total_macros.fats}g</p>
+                      </div>
+                    </div>
+
+                    {/* Meals Grid */}
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                      {day.meals.map((meal: any, mealIdx: number) => (
+                        <Card
+                          key={mealIdx}
+                          className="border-border hover:border-primary/50 group cursor-pointer transition-all duration-200 hover:shadow-md"
+                          onClick={() => handleMealClick(meal)}
+                        >
+                          <CardHeader className="pb-3">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <div className="mb-1 flex items-center gap-2">
+                                  {getMealIcon(meal.meal_id)}
+                                  <CardTitle className="text-foreground text-sm">{meal.name}</CardTitle>
+                                </div>
+                                <Badge variant={getMealBadgeVariant(meal.meal_id)} className="text-xs">
+                                  <Clock className="mr-1 h-3 w-3" />
+                                  {meal.time}
+                                </Badge>
+                              </div>
+                            </div>
+                          </CardHeader>
+                          <CardContent className="space-y-2 pb-4">
+                            <p className="text-muted-foreground line-clamp-2 text-xs">{meal.description}</p>
+                            <div className="bg-muted/50 grid grid-cols-2 gap-2 rounded p-2 text-xs">
+                              <div>
+                                <span className="text-muted-foreground">Cal: </span>
+                                <span className="text-foreground font-medium">{meal.macros.calories}</span>
+                              </div>
+                              <div>
+                                <span className="text-muted-foreground">P: </span>
+                                <span className="text-foreground font-medium">{meal.macros.protein}g</span>
+                              </div>
+                              <div>
+                                <span className="text-muted-foreground">C: </span>
+                                <span className="text-foreground font-medium">{meal.macros.carbs}g</span>
+                              </div>
+                              <div>
+                                <span className="text-muted-foreground">F: </span>
+                                <span className="text-foreground font-medium">{meal.macros.fats}g</span>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </TabsContent>
+                ))}
+              </Tabs>
+            </CardContent>
+          </Card>
+
+          {/* Reset Button */}
+          <div className="flex justify-center">
+            <Button onClick={onReset} variant="outline" className="dark:text-foreground cursor-pointer">
+              Създай нов план
+            </Button>
+          </div>
         </motion.div>
+      ) : (
+        <Card className="border-border bg-card border-2">
+          <CardContent className="flex min-h-[40vh] items-center justify-center p-6">
+            <p className="text-muted-foreground">Не успяхме да генерираме препоръки. Моля, опитайте отново.</p>
+          </CardContent>
+        </Card>
       )}
-      {selectedExercise && (
-        <ExerciseModal
-          open={isModalOpen}
-          onOpenChange={setIsModalOpen}
-          exercise={selectedExercise}
-          cachedVideoUrl={videoCache[selectedExercise.exercise_name]}
-          onVideoFetched={handleVideoFetched}
-        />
-      )}
+
+      {selectedMeal && <MealModal open={isModalOpen} onOpenChange={setIsModalOpen} meal={selectedMeal} />}
     </div>
   );
 }

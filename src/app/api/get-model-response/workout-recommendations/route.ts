@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-5.1",
+        model: "gpt-5.2",
         input: [
           {
             role: "system",
