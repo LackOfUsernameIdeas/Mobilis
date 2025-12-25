@@ -117,9 +117,15 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
     },
     {
       field: "trainingTime",
-      title: "Кога горе-долу намирате време да тренирате?",
-      type: "time-picker",
-      placeholder: "Изберете час",
+      title: "По кое време намирате (или бихте желали да намирате) възможност да тренирате?",
+      type: "radio",
+      options: [
+        { value: "morning", label: "Сутрин", description: "06:00-09:00" },
+        { value: "before-noon", label: "Предиобед", description: "09:00-12:00" },
+        { value: "noon", label: "Обяд", description: "12:00-14:00" },
+        { value: "afternoon", label: "Следобед", description: "14:00-17:00" },
+        { value: "evening", label: "Вечер", description: "17:00-21:00" },
+      ],
     },
     {
       field: "targetWeight",

@@ -39,13 +39,13 @@ export default function MealModal({ open, onOpenChange, meal }: MealModalProps) 
               {meal.meal_id.includes("pre_workout") && (
                 <Badge className="bg-blue-500 text-xs">
                   <Activity className="mr-1 h-3 w-3" />
-                  Предтренировъчна
+                  Предтренировъчно хранене
                 </Badge>
               )}
               {meal.meal_id.includes("post_workout") && (
                 <Badge className="bg-green-500 text-xs">
                   <Activity className="mr-1 h-3 w-3" />
-                  Следтренировъчна
+                  Следтренировъчно хранене
                 </Badge>
               )}
             </div>

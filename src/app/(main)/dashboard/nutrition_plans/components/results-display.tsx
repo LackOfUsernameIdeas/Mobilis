@@ -96,10 +96,9 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
     return <Utensils className="h-4 w-4" />;
   };
 
-  const getMealBadgeVariant = (mealId: string) => {
-    if (mealId.includes("pre_workout")) return "default";
-    if (mealId.includes("post_workout")) return "secondary";
-    return "outline";
+  const getMealBadgeBg = (mealId: string) => {
+    if (mealId.includes("pre_workout") || mealId.includes("post_workout")) return "bg-primary";
+    return "bg-foreground";
   };
 
   return (
@@ -127,6 +126,7 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              <h3 className="text-foreground mb-2 text-lg font-semibold">Предпочетени стойности на макроси на ден:</h3>
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                 <div className="bg-muted/50 rounded-lg p-3">
                   <p className="text-muted-foreground text-xs">Калории</p>
@@ -181,6 +181,7 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
                 {recommendations.weekly_plan.map((day: any, dayIdx: number) => (
                   <TabsContent key={dayIdx} value={`day-${dayIdx}`} className="space-y-4 pt-4">
                     {/* Day Summary */}
+                    <h3 className="text-foreground mb-2 text-lg font-semibold">Общо стойности на макроси за деня:</h3>
                     <div className="bg-muted/30 grid grid-cols-2 gap-3 rounded-lg p-3 sm:grid-cols-4">
                       <div>
                         <p className="text-muted-foreground text-xs">Калории</p>
@@ -215,10 +216,11 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
                                   {getMealIcon(meal.meal_id)}
                                   <CardTitle className="text-foreground text-sm">{meal.name}</CardTitle>
                                 </div>
-                                <Badge variant={getMealBadgeVariant(meal.meal_id)} className="text-xs">
-                                  <Clock className="mr-1 h-3 w-3" />
+                                <Badge className={`flex items-center gap-1 text-xs ${getMealBadgeBg(meal.meal_id)}`}>
+                                  <Clock className="h-3 w-3" />
                                   {meal.time}
                                 </Badge>
+                                <p className="text-muted-foreground mt-1 text-[10px]">*ориентировъчно</p>
                               </div>
                             </div>
                           </CardHeader>
@@ -254,8 +256,8 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
 
           {/* Reset Button */}
           <div className="flex justify-center">
-            <Button onClick={onReset} variant="outline" className="dark:text-foreground cursor-pointer">
-              Създай нов план
+            <Button onClick={onReset} className="text-md hover:shadow-primary/20 w-full cursor-pointer hover:shadow-lg">
+              Генерирайте отново
             </Button>
           </div>
         </motion.div>

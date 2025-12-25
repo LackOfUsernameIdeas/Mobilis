@@ -72,6 +72,7 @@ function generateUserPrompt(category: string, answers: Record<string, any>, user
       - Пол: ${userStats?.gender || "не е посочен"}
       - Височина: ${userStats?.height || "не е посочена"} см
       - Тегло: ${userStats?.weight || "не е посочено"} кг
+      - Възраст: ${userStats?.age || "не е посочена"} години
       - BMI: ${userStats?.bmi || "не е изчислен"} (при здравословен диапазон: 18.5-25)
       - Body Fat: ${userStats?.bodyFat || "не е изчислен"}%
       - Маса на телесните мазнини: ${userStats?.bodyFatMass || "не е изчислена"} кг
@@ -116,6 +117,7 @@ function generateUserPrompt(category: string, answers: Record<string, any>, user
       - Пол: ${userStats?.gender || "не е посочен"}
       - Височина: ${userStats?.height || "не е посочена"} см
       - Тегло: ${userStats?.weight || "не е посочено"} кг
+      - Възраст: ${userStats?.age || "не е посочена"} години
       - BMI: ${userStats?.bmi || "не е изчислен"} (при здравословен диапазон: 18.5-25)
       - Body Fat: ${userStats?.bodyFat || "не е изчислен"}%
       - Маса на телесните мазнини: ${userStats?.bodyFatMass || "не е изчислена"} кг
