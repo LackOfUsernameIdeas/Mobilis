@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Category, user id and answers are required" }, { status: 400 });
     }
 
-    await saveUserPreferences(userId, category, answers);
+    saveUserPreferences(userId, category, answers);
 
     const systemPrompt = generateSystemPrompt(category);
     const userPrompt = generateUserPrompt(category, answers, userStats);
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
     const workoutRecommendations = data.output[0].content[0].text;
 
     const workoutProgramParsed = JSON.parse(workoutRecommendations);
-    await saveWorkoutRecommendations(userId, category, workoutProgramParsed);
+    saveWorkoutRecommendations(userId, category, workoutProgramParsed);
 
     return NextResponse.json(workoutRecommendations);
   } catch (error) {

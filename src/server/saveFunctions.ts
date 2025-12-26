@@ -83,6 +83,37 @@ export const saveUserPreferences = async (userId: string, category: string, answ
       return { success: true, message: "Category does not require saving" };
     }
 
+    // Handle nutrition separately since it uses a different table
+    if (category === "nutrition") {
+      const nutritionPreferences = {
+        user_id: userId,
+        mainGoal: answers.mainGoal || "",
+        trainingTime: answers.trainingTime || "",
+        targetWeight: answers.targetWeight || "no",
+        targetWeightValue: answers.targetWeight === "yes" ? parseFloat(answers.targetWeightValue) || null : null,
+        healthIssues: answers.healthIssues || "",
+        cuisinePreference: Array.isArray(answers.cuisinePreference) ? answers.cuisinePreference : [],
+        calories: parseFloat(answers.calories) || 0,
+        protein: parseFloat(answers.protein) || 0,
+        carbs: parseFloat(answers.carbs) || 0,
+        fats: parseFloat(answers.fats) || 0,
+      };
+
+      const { data, error } = await supabase
+        .from("nutrition_user_preferences")
+        .insert(nutritionPreferences)
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Database error saving nutrition preferences:", error);
+        throw new Error(`Failed to save nutrition preferences: ${error.message}`);
+      }
+
+      return { success: true, data };
+    }
+
+    // Handle workout categories (gym, calisthenics, yoga)
     const preferences: UserPreferences = {
       user_id: userId,
       category: category,
@@ -108,7 +139,7 @@ export const saveUserPreferences = async (userId: string, category: string, answ
       preferences.warmupSavasana = answers.warmupSavasana || "";
     }
 
-    const { data, error } = await supabase.from("user_preferences").insert(preferences).select().single();
+    const { data, error } = await supabase.from("workout_user_preferences").insert(preferences).select().single();
 
     if (error) {
       console.error("Database error saving preferences:", error);
@@ -134,9 +165,9 @@ export const saveWorkoutRecommendations = async (
       throw new Error("No workout schedule provided");
     }
 
-    // Step 1: Get the latest user_preferences id for this user and category
+    // Step 1: Get the latest workout_user_preferences id for this user and category
     const { data: preferencesData, error: preferencesError } = await supabase
-      .from("user_preferences")
+      .from("workout_user_preferences")
       .select("id")
       .eq("user_id", userId)
       .eq("category", category)
@@ -229,7 +260,6 @@ export const saveWorkoutRecommendations = async (
       ).values(),
     );
 
-    let savedWorkoutExercises = null;
     if (uniqueExercises.length > 0) {
       const { data: workoutExercisesData, error: workoutExercisesError } = await supabase
         .from("workout_exercises")
@@ -244,7 +274,6 @@ export const saveWorkoutRecommendations = async (
         throw new Error(`Failed to save workout exercises: ${workoutExercisesError.message}`);
       }
 
-      savedWorkoutExercises = workoutExercisesData;
       console.log(`Saved/Updated ${workoutExercisesData?.length} workout exercises`);
     }
 
@@ -279,6 +308,204 @@ export const saveWorkoutRecommendations = async (
     };
   } catch (error) {
     console.error("Error in saveWorkoutRecommendations:", error);
+    throw error;
+  }
+};
+
+interface NutritionMeal {
+  meal_id: string;
+  name: string;
+  meal_type: string;
+  time: string;
+  description: string;
+  ingredients: Array<{
+    name: string;
+    quantity: number;
+    unit: string;
+  }>;
+  macros: {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fats: number;
+  };
+  instructions: string[];
+  prep_time: number;
+  cooking_time: number;
+}
+
+interface DayPlan {
+  day: string;
+  total_macros: {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fats: number;
+  };
+  meals: NutritionMeal[];
+}
+
+interface NutritionRecommendationsResponse {
+  weekly_plan: DayPlan[];
+  nutrition_tips: string[];
+}
+
+export const saveNutritionRecommendations = async (
+  userId: string,
+  recommendations: NutritionRecommendationsResponse,
+) => {
+  try {
+    const { weekly_plan, nutrition_tips } = recommendations;
+
+    if (!weekly_plan || weekly_plan.length === 0) {
+      throw new Error("No nutrition plan provided");
+    }
+
+    // Step 1: Get the latest nutrition_user_preferences id for this user
+    const { data: preferencesData, error: preferencesError } = await supabase
+      .from("nutrition_user_preferences")
+      .select("id")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
+
+    if (preferencesError) {
+      console.error("Error fetching nutrition preferences:", preferencesError);
+      throw new Error(`Failed to fetch preferences: ${preferencesError.message}`);
+    }
+
+    const preferencesId = preferencesData.id;
+    console.log(`Using nutrition preferences ID: ${preferencesId}`);
+
+    // Step 2: Create a new generation entry
+    const { data: generationData, error: generationError } = await supabase
+      .from("nutrition_generations")
+      .insert({
+        user_id: userId,
+        preferences_id: preferencesId,
+        nutrition_tips: nutrition_tips || [],
+      })
+      .select()
+      .single();
+
+    if (generationError) {
+      console.error("Error creating nutrition generation:", generationError);
+      throw new Error(`Failed to create generation: ${generationError.message}`);
+    }
+
+    const generationId = generationData.id;
+    console.log(`Created nutrition generation with ID: ${generationId}`);
+
+    // Step 3: Save day recommendations with total macros
+    const dayRecommendations = weekly_plan.map((dayPlan) => ({
+      generation_id: generationId,
+      day: dayPlan.day,
+      calories: dayPlan.total_macros.calories,
+      protein: dayPlan.total_macros.protein,
+      carbs: dayPlan.total_macros.carbs,
+      fats: dayPlan.total_macros.fats,
+    }));
+
+    const { data: savedDays, error: daysError } = await supabase
+      .from("nutrition_day_recommendations")
+      .insert(dayRecommendations)
+      .select();
+
+    if (daysError) {
+      console.error("Error saving nutrition day recommendations:", daysError);
+      throw new Error(`Failed to save day recommendations: ${daysError.message}`);
+    }
+
+    console.log(`Saved ${savedDays?.length} nutrition day recommendations`);
+
+    // Step 4: Collect all unique meals from all days
+    const allMeals: Array<NutritionMeal & { day: string }> = [];
+    weekly_plan.forEach((dayPlan) => {
+      dayPlan.meals.forEach((meal) => {
+        allMeals.push({ ...meal, day: dayPlan.day });
+      });
+    });
+
+    if (allMeals.length === 0) {
+      console.log("No meals found in recommendations");
+      return {
+        success: true,
+        generationId,
+        data: { generation: generationData, days: savedDays, meals: [], dayMeals: [] },
+      };
+    }
+
+    // Step 5: Save unique meals to nutrition_meals table
+    const uniqueMeals = Array.from(
+      new Map(
+        allMeals.map((meal) => [
+          meal.meal_id,
+          {
+            meal_id: meal.meal_id,
+            description: meal.description,
+            ingredients: meal.ingredients,
+            calories: meal.macros.calories,
+            protein: meal.macros.protein,
+            carbs: meal.macros.carbs,
+            fats: meal.macros.fats,
+            instructions: meal.instructions,
+            prep_time: meal.prep_time,
+            cooking_time: meal.cooking_time,
+          },
+        ]),
+      ).values(),
+    );
+
+    if (uniqueMeals.length > 0) {
+      const { data: mealsData, error: mealsError } = await supabase
+        .from("nutrition_meals")
+        .upsert(uniqueMeals, {
+          onConflict: "meal_id",
+          ignoreDuplicates: false,
+        })
+        .select();
+
+      if (mealsError) {
+        console.error("Error saving nutrition meals:", mealsError);
+        throw new Error(`Failed to save meals: ${mealsError.message}`);
+      }
+
+      console.log(`Saved/Updated ${mealsData?.length} nutrition meals`);
+    }
+
+    // Step 6: Save nutrition_day_meals (linking meals to specific days)
+    const dayMeals = allMeals.map((meal) => ({
+      generation_id: generationId,
+      meal_id: meal.meal_id,
+      name: meal.name,
+      meal_type: meal.meal_type,
+      day: meal.day,
+      time: meal.time,
+    }));
+
+    const { data: savedDayMeals, error: dayMealsError } = await supabase
+      .from("nutrition_day_meals")
+      .insert(dayMeals)
+      .select();
+
+    if (dayMealsError) {
+      console.error("Error saving nutrition day meals:", dayMealsError);
+      throw new Error(`Failed to save day meals: ${dayMealsError.message}`);
+    }
+
+    console.log(`Saved ${savedDayMeals?.length} nutrition day meals`);
+
+    return {
+      success: true,
+      generationId,
+      data: {
+        generation: generationData,
+        days: savedDays,
+      },
+    };
+  } catch (error) {
+    console.error("Error in saveNutritionRecommendations:", error);
     throw error;
   }
 };

@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextRequest, NextResponse } from "next/server";
+import { checkTodayMeasurements } from "./server/measurements";
 
 export async function middleware(req: NextRequest) {
   let response = NextResponse.next({
@@ -42,6 +43,21 @@ export async function middleware(req: NextRequest) {
 
   if (user && (pathname === "/auth/login" || pathname === "/auth/register")) {
     return NextResponse.redirect(new URL("/dashboard/measurements", req.url));
+  }
+
+  // Check for today's measurements if user is authenticated and not on measurements page
+  if (user && pathname.startsWith("/dashboard") && pathname !== "/dashboard/measurements") {
+    try {
+      const result = await checkTodayMeasurements();
+
+      // If no measurement for today, redirect to measurements page
+      if (result.success && !result.hasTodayMeasurement) {
+        return NextResponse.redirect(new URL("/dashboard/measurements", req.url));
+      }
+    } catch (error) {
+      console.error("Error checking today's measurements:", error);
+      // On error, allow access but log the issue
+    }
   }
 
   return response;

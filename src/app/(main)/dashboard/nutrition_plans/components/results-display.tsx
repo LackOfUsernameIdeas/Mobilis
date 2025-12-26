@@ -27,11 +27,49 @@ interface ResultsDisplayProps {
   onReset: () => void;
 }
 
+interface NutritionMeal {
+  meal_id: string;
+  name: string;
+  meal_type: string;
+  time: string;
+  description: string;
+  ingredients: Array<{
+    name: string;
+    quantity: number;
+    unit: string;
+  }>;
+  macros: {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fats: number;
+  };
+  instructions: string[];
+  prep_time: number;
+  cooking_time: number;
+}
+
+interface DayPlan {
+  day: string;
+  total_macros: {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fats: number;
+  };
+  meals: NutritionMeal[];
+}
+
+interface NutritionPlan {
+  weekly_plan: DayPlan[];
+  nutrition_tips: string[];
+}
+
 export default function ResultsDisplay({ category, answers, userStats, onReset }: ResultsDisplayProps) {
-  const [recommendations, setRecommendations] = useState<any>(null);
+  const [recommendations, setRecommendations] = useState<NutritionPlan | null>(null);
   const [loading, setLoading] = useState(true);
   const hasFetched = useRef(false);
-  const [selectedMeal, setSelectedMeal] = useState<any>(null);
+  const [selectedMeal, setSelectedMeal] = useState<NutritionMeal | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
@@ -67,6 +105,7 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
 
         if (!response.ok) {
           console.error("An error occurred while fetching recommendations");
+          return;
         }
 
         const responseJson = await response.json();
@@ -84,21 +123,31 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
     fetchRecommendations();
   }, []);
 
-  const handleMealClick = (meal: any) => {
+  const handleMealClick = (meal: NutritionMeal) => {
     setSelectedMeal(meal);
     setIsModalOpen(true);
   };
 
-  const getMealIcon = (mealId: string) => {
-    if (mealId.includes("pre_workout") || mealId.includes("post_workout")) {
+  const getMealIcon = (mealType: string) => {
+    if (mealType === "pre_workout_snack" || mealType === "post_workout_snack") {
       return <Activity className="h-4 w-4" />;
     }
     return <Utensils className="h-4 w-4" />;
   };
 
-  const getMealBadgeBg = (mealId: string) => {
-    if (mealId.includes("pre_workout") || mealId.includes("post_workout")) return "bg-primary";
+  const getMealBadgeBg = (mealType: string) => {
+    if (mealType === "pre_workout_snack" || mealType === "post_workout_snack") return "bg-primary";
     return "bg-foreground";
+  };
+
+  const mealTypeTranslations: Record<string, string> = {
+    breakfast: "Закуска",
+    morning_snack: "Предиобедна закуска",
+    lunch: "Обяд",
+    afternoon_snack: "Следобедна закуска",
+    pre_workout_snack: "Предтренировъчно ястие",
+    post_workout_snack: "Следтренировъчно ястие",
+    dinner: "Вечеря",
   };
 
   return (
@@ -167,7 +216,7 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
             <CardContent className="p-4 sm:p-6">
               <Tabs defaultValue="day-0" className="w-full">
                 <TabsList className="bg-muted grid w-full grid-cols-7 gap-1">
-                  {recommendations.weekly_plan.map((day: any, idx: number) => (
+                  {recommendations.weekly_plan.map((day: DayPlan, idx: number) => (
                     <TabsTrigger
                       key={idx}
                       value={`day-${idx}`}
@@ -178,7 +227,7 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
                   ))}
                 </TabsList>
 
-                {recommendations.weekly_plan.map((day: any, dayIdx: number) => (
+                {recommendations.weekly_plan.map((day: DayPlan, dayIdx: number) => (
                   <TabsContent key={dayIdx} value={`day-${dayIdx}`} className="space-y-4 pt-4">
                     {/* Day Summary */}
                     <h3 className="text-foreground mb-2 text-lg font-semibold">Общо стойности на макроси за деня:</h3>
@@ -203,7 +252,7 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
 
                     {/* Meals Grid */}
                     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                      {day.meals.map((meal: any, mealIdx: number) => (
+                      {day.meals.map((meal: NutritionMeal, mealIdx: number) => (
                         <Card
                           key={mealIdx}
                           className="border-border hover:border-primary/50 group cursor-pointer transition-all duration-200 hover:shadow-md"
@@ -213,10 +262,12 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
                                 <div className="mb-1 flex items-center gap-2">
-                                  {getMealIcon(meal.meal_id)}
-                                  <CardTitle className="text-foreground text-sm">{meal.name}</CardTitle>
+                                  {getMealIcon(meal.meal_type)}
+                                  <CardTitle className="text-foreground text-sm">
+                                    {mealTypeTranslations[meal.meal_type]}
+                                  </CardTitle>
                                 </div>
-                                <Badge className={`flex items-center gap-1 text-xs ${getMealBadgeBg(meal.meal_id)}`}>
+                                <Badge className={`flex items-center gap-1 text-xs ${getMealBadgeBg(meal.meal_type)}`}>
                                   <Clock className="h-3 w-3" />
                                   {meal.time}
                                 </Badge>

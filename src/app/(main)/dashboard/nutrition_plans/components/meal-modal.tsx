@@ -19,14 +19,14 @@ export default function MealModal({ open, onOpenChange, meal }: MealModalProps) 
     onOpenChange(newOpen);
   };
 
-  const totalTime = meal.prep_time + meal.cooking_time;
+  const totalTime = (meal.prep_time || 0) + (meal.cooking_time || 0);
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[700px]">
         <DialogHeader>
           <div className="space-y-2">
-            <DialogTitle className="text-foreground text-2xl text-pretty">{meal.recipe_name}</DialogTitle>
+            <DialogTitle className="text-foreground text-2xl text-pretty">{meal.name}</DialogTitle>
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="outline" className="text-xs">
                 <Clock className="mr-1 h-3 w-3" />
@@ -36,16 +36,16 @@ export default function MealModal({ open, onOpenChange, meal }: MealModalProps) 
                 <ChefHat className="mr-1 h-3 w-3" />
                 {totalTime} мин общо
               </Badge>
-              {meal.meal_id.includes("pre_workout") && (
+              {meal.meal_type?.includes("pre_workout") && (
                 <Badge className="bg-blue-500 text-xs">
                   <Activity className="mr-1 h-3 w-3" />
-                  Предтренировъчно хранене
+                  Предтренировъчно ястие
                 </Badge>
               )}
-              {meal.meal_id.includes("post_workout") && (
+              {meal.meal_type?.includes("post_workout") && (
                 <Badge className="bg-green-500 text-xs">
                   <Activity className="mr-1 h-3 w-3" />
-                  Следтренировъчно хранене
+                  Следтренировъчно ястие
                 </Badge>
               )}
             </div>
@@ -61,19 +61,19 @@ export default function MealModal({ open, onOpenChange, meal }: MealModalProps) 
                 <div className="mb-1 flex items-center justify-center">
                   <Flame className="h-4 w-4 text-orange-500" />
                 </div>
-                <p className="text-foreground text-lg font-bold">{meal.macros.calories}</p>
+                <p className="text-foreground text-lg font-bold">{meal.macros?.calories}</p>
                 <p className="text-muted-foreground text-xs">kcal</p>
               </div>
               <div className="text-center">
-                <p className="text-foreground text-lg font-bold">{meal.macros.protein}g</p>
+                <p className="text-foreground text-lg font-bold">{meal.macros?.protein}g</p>
                 <p className="text-muted-foreground text-xs">Протеини</p>
               </div>
               <div className="text-center">
-                <p className="text-foreground text-lg font-bold">{meal.macros.carbs}g</p>
+                <p className="text-foreground text-lg font-bold">{meal.macros?.carbs}g</p>
                 <p className="text-muted-foreground text-xs">Въглехидр.</p>
               </div>
               <div className="text-center">
-                <p className="text-foreground text-lg font-bold">{meal.macros.fats}g</p>
+                <p className="text-foreground text-lg font-bold">{meal.macros?.fats}g</p>
                 <p className="text-muted-foreground text-xs">Мазнини</p>
               </div>
             </CardContent>
@@ -99,7 +99,7 @@ export default function MealModal({ open, onOpenChange, meal }: MealModalProps) 
           <div>
             <h3 className="text-foreground mb-3 text-lg font-semibold">Съставки</h3>
             <div className="space-y-2">
-              {meal.ingredients.map((ingredient: any, idx: number) => (
+              {meal.ingredients?.map((ingredient: any, idx: number) => (
                 <div
                   key={idx}
                   className="hover:bg-muted/50 flex items-center justify-between rounded-lg p-2 transition-colors"
@@ -119,7 +119,7 @@ export default function MealModal({ open, onOpenChange, meal }: MealModalProps) 
           <div>
             <h3 className="text-foreground mb-3 text-lg font-semibold">Начин на приготвяне</h3>
             <ol className="space-y-3">
-              {meal.instructions.map((instruction: string, idx: number) => (
+              {meal.instructions?.map((instruction: string, idx: number) => (
                 <li key={idx} className="flex gap-3">
                   <span className="bg-primary text-primary-foreground flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-semibold">
                     {idx + 1}

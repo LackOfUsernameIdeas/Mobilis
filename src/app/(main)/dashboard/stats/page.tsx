@@ -23,7 +23,7 @@ const mockData = {
   },
   targetWeight: {
     current: 78.0, //user_measurements.weight
-    target: undefined, //user_preferences.targetWeight
+    target: undefined, //workout_user_preferences.targetWeight
   },
   nextWorkout: {
     //workout_day_recommendations

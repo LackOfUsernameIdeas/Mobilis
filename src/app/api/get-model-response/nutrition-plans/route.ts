@@ -1,5 +1,4 @@
-// import { saveUserPreferences, saveNutritionRecommendations } from "@/server/saveFunctions";
-import { saveUserPreferences } from "@/server/saveFunctions";
+import { saveUserPreferences, saveNutritionRecommendations } from "@/server/saveFunctions";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -10,7 +9,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Category, user id and answers are required" }, { status: 400 });
     }
 
-    // await saveUserPreferences(userId, category, answers);
+    saveUserPreferences(userId, category, answers);
 
     const systemPrompt = generateSystemPrompt();
     const userPrompt = generateUserPrompt(answers, userStats);
@@ -46,7 +45,7 @@ export async function POST(req: NextRequest) {
     const nutritionRecommendations = data.output[0].content[0].text;
 
     const nutritionPlanParsed = JSON.parse(nutritionRecommendations);
-    // await saveNutritionRecommendations(userId, category, nutritionPlanParsed);
+    saveNutritionRecommendations(userId, nutritionPlanParsed);
 
     return NextResponse.json(nutritionRecommendations);
   } catch (error) {
@@ -119,7 +118,6 @@ function generateUserPrompt(answers: Record<string, any>, userStats?: any): stri
         **Общи правила:**
         - Разпредели храненията през деня така, че да се покрият дневните нутриенти (${answers.calories} kcal, ${answers.protein}g протеини, ${answers.carbs}g въглехидрати, ${answers.fats}g мазнини)
         - Всяко хранене трябва да има точни порции и грамаж на съставките
-        - meal_id ВИНАГИ трябва да следва формата: "meal_" + тип на храненето на английски с малки букви и долни черти (например: "meal_breakfast", "meal_pre_workout_snack", "meal_post_workout_snack", "meal_lunch", "meal_afternoon_snack", "meal_dinner")
         - Адаптирай рецептите според предпочитаните кухни (${answers.cuisinePreference?.join(", ")})
         - Вземи предвид здравословните проблеми/алергии: ${answers.healthIssues}
 
@@ -149,11 +147,11 @@ function generateUserPrompt(answers: Record<string, any>, userStats?: any): stri
         * Порции: 400-600 kcal, 30-40g протеини, 40-60g въглехидрати
 
         **Формат на отговора:**
-        - name: Наименование на храненето на БЪЛГАРСКИ (например: "Закуска", "Предтренировъчно хранене", "Следтренировъчно хранене", "Обяд", "Вечеря")
-        - meal_id: Формат "meal_" + тип на английски (например: "meal_breakfast", "meal_pre_workout_snack", "meal_post_workout_snack")
+        - meal_id: Уникален идентификатор за рецептата във формат малки букви с долни черти (например: "oatmeal_protein_blueberries", "chicken_rice_broccoli", "tuna_salad_olive_oil"). ВИНАГИ в единствено число.
+        - name: Име на рецептата на БЪЛГАРСКИ (например: "Овесена каша с протеин и боровинки", "Пилешко филе с ориз и броколи")
+        - meal_type: Тип на храненето на английски (например: "breakfast", "morning_snack", "lunch", "afternoon_snack", "pre_workout_snack", "post_workout_snack", "dinner")
         - time: Препоръчително време за хранене във формат "HH:MM" (например: "07:00", "09:30")
         - description: Кратко описание на БЪЛГАРСКИ (2-3 изречения)
-        - recipe_name: Име на рецептата на БЪЛГАРСКИ
         - ingredients: Масив от съставки с name (на БЪЛГАРСКИ), quantity (число), unit (на БЪЛГАРСКИ като "г", "мл", "бр")
         - macros: Точни стойности за calories, protein, carbs, fats за цялото хранене
         - instructions: Масив от стъпки за приготвяне на БЪЛГАРСКИ
@@ -183,7 +181,7 @@ function generateUserPrompt(answers: Record<string, any>, userStats?: any): stri
         - Съвети за следене на прогрес, тегло или телесни измервания
 
         **КРИТИЧНО ВАЖНО:**
-        - ВСИЧКИ текстове (name, description, recipe_name, ingredients.name, instructions) трябва да са на БЪЛГАРСКИ
+        - ВСИЧКИ текстове (name, description, ingredients.name, instructions) трябва да са на БЪЛГАРСКИ
         - Използвай само български единици: "г" (грама), "мл" (милилитри), "бр" (броя), "ч.л." (чаена лъжичка), "с.л." (супена лъжичка)
         - Макросите за всяко хранене трябва да са точни и сумата им да отговаря на дневните цели
         - Предтренировъчното и следтренировъчното хранене са ЗАДЪЛЖИТЕЛНИ и трябва да са позиционирани правилно спрямо периода на тренировка - ${trainingPeriodBG}
@@ -232,13 +230,28 @@ function generateResponseFormat() {
                   items: {
                     type: "object",
                     properties: {
-                      name: {
-                        type: "string",
-                        description: "Име на храненето на български",
-                      },
                       meal_id: {
                         type: "string",
-                        description: "Уникален идентификатор във формат meal_type",
+                        description:
+                          "Уникален идентификатор за рецептата (например: 'oatmeal_protein_blueberries', 'chicken_rice_broccoli')",
+                      },
+                      name: {
+                        type: "string",
+                        description:
+                          "Име на рецептата на български (например: 'Овесена каша с протеин и боровинки', 'Пилешко филе с ориз и броколи')",
+                      },
+                      meal_type: {
+                        type: "string",
+                        description: "Тип на храненето",
+                        enum: [
+                          "breakfast",
+                          "morning_snack",
+                          "lunch",
+                          "afternoon_snack",
+                          "pre_workout_snack",
+                          "post_workout_snack",
+                          "dinner",
+                        ],
                       },
                       time: {
                         type: "string",
@@ -247,10 +260,6 @@ function generateResponseFormat() {
                       description: {
                         type: "string",
                         description: "Кратко описание на български",
-                      },
-                      recipe_name: {
-                        type: "string",
-                        description: "Име на рецептата на български",
                       },
                       ingredients: {
                         type: "array",
@@ -310,11 +319,11 @@ function generateResponseFormat() {
                       },
                     },
                     required: [
-                      "name",
                       "meal_id",
+                      "name",
+                      "meal_type",
                       "time",
                       "description",
-                      "recipe_name",
                       "ingredients",
                       "macros",
                       "instructions",
