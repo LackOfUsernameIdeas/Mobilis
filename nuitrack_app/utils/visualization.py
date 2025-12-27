@@ -2,12 +2,15 @@ from PIL import ImageFont, ImageDraw, Image
 import numpy as np
 import cv2
 import time
+import os
 
 from utils.skeleton_processing import project_world_to_screen
 
 import globals
 
-def draw_text(img, text, pos, font_path="D:/Projects/Mobilis/public/fonts/ARIAL.TTF", font_size=24, color=(255,255,255)):
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+def draw_text(img, text, pos, font_path=os.path.join(BASE_DIR, 'ARIAL.TTF'), font_size=24, color=(255,255,255)):
     # Уверете се, че работим с копие, за да избегнем промяна на оригинала
     img_copy = img.copy()
     
@@ -126,7 +129,7 @@ def _draw_ui_overlays(image, nuitrack):
 
 def _draw_calibration_if_active(image):
     """Начертава таймер за калибрация."""
-    if globals.calibration_active[0]:
+    if globals.calibration_active:
         draw_calibration_overlay(image)
 
 
@@ -148,7 +151,7 @@ def _draw_exercise_guidance_if_active(image, nuitrack):
     if not _should_draw_exercise_guidance():
         return
         
-    current_step_data = globals.EXERCISE_JSON["steps"][globals.current_step[0]]
+    current_step_data = globals.EXERCISE_JSON["steps"][globals.current_step]
     required_poses = current_step_data.get("required_poses", {})
     
     _draw_pose_guidance_arrows(image, nuitrack, required_poses)
@@ -156,8 +159,8 @@ def _draw_exercise_guidance_if_active(image, nuitrack):
 
 def _should_draw_exercise_guidance():
     """Проверява дали трябва да се начертаят насоки за упражненията."""
-    return (globals.exercise_active[0] and 
-            globals.current_step[0] < len(globals.EXERCISE_JSON["steps"]) and 
+    return (globals.exercise_active and 
+            globals.current_step < len(globals.EXERCISE_JSON["steps"]) and 
             globals.current_user_skeleton)
 
 
@@ -248,13 +251,13 @@ def _get_joint_projection(joint_name, skeleton, nuitrack):
 def draw_calibration_overlay(image):
     """Рисува таймер с обратно броене до калибриране върху видео потока."""
     # Проверява дали калибрирането е активно
-    if not globals.calibration_active[0]:
+    if not globals.calibration_active:
         return
     
     # Взема размерите на изображението (височина и ширина)
     height, width = image.shape[:2]
     # Изчислява изминалото време от началото на калибрирането
-    elapsed_time = time.time() - globals.calibration_start_time[0]
+    elapsed_time = time.time() - globals.calibration_start_time
     # Изчислява оставащото време (максимум 0, минимум 5 секунди)
     remaining_time = max(0, 5 - elapsed_time)
     

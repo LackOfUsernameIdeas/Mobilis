@@ -90,7 +90,7 @@ def check_relative_pose(user_skeleton, required_poses, target_angles, tolerances
     all_ok = all(v['ok'] for v in feedback.values() if 'ok' in v)
     
     # Отпечатваме критични стави за дебъг
-    globals.logger.debug(f"Step {globals.current_step[0] + 1}: Critical joints - {[(k, v) for k, v in rel_skeleton.items() if k in ['TORSO', 'RIGHT_SHOULDER', 'RIGHT_WRIST', 'LEFT_SHOULDER', 'LEFT_WRIST', 'RIGHT_HIP', 'LEFT_HIP', 'RIGHT_KNEE', 'LEFT_KNEE']]}")
+    globals.logger.debug(f"Step {globals.current_step + 1}: Critical joints - {[(k, v) for k, v in rel_skeleton.items() if k in ['TORSO', 'RIGHT_SHOULDER', 'RIGHT_WRIST', 'LEFT_SHOULDER', 'LEFT_WRIST', 'RIGHT_HIP', 'LEFT_HIP', 'RIGHT_KNEE', 'LEFT_KNEE']]}")
 
     return accuracy, {"feedback": detailed_feedback, "all_ok": all_ok}
 
@@ -99,12 +99,12 @@ def update_exercise_progress():
     # Декларира глобални променливи за състоянието на упражнението и скелета
     
     # Проверява дали упражнението е активно и има ли скелетни данни и метрики
-    if not globals.exercise_active[0] or not globals.current_user_skeleton or not globals.user_metrics or not globals.calibration_completed[0]:
+    if not globals.exercise_active or not globals.current_user_skeleton or not globals.user_metrics or not globals.calibration_completed:
         globals.logger.debug("No exercise active, skeleton, metrics, or calibration incomplete")
         return
     
     # Взема данните за текущата стъпка от упражнението
-    current_step_data = globals.EXERCISE_JSON["steps"][globals.current_step[0]]
+    current_step_data = globals.EXERCISE_JSON["steps"][globals.current_step]
     # Извлича изискваните пози (напр. arms_raised, legs_together)
     required_poses = current_step_data.get("required_poses", {})
     # Извлича целевите ъгли (напр. ъгъл на ръката)
@@ -116,7 +116,7 @@ def update_exercise_progress():
     user_z = globals.current_user_skeleton.get('TORSO', {}).get('z', 1500)
 
     # Записва дебъг информация за стъпката, разстоянието и толерансите
-    globals.logger.debug(f"Step {globals.current_step[0] + 1}: user_z={user_z:.0f}, tolerances={tolerances}")
+    globals.logger.debug(f"Step {globals.current_step + 1}: user_z={user_z:.0f}, tolerances={tolerances}")
 
     # Проверява точността на позата спрямо изискванията
     accuracy, details = check_relative_pose(globals.current_user_skeleton, required_poses, target_angles, tolerances, globals.user_metrics)
@@ -126,7 +126,7 @@ def update_exercise_progress():
     all_ok = details["all_ok"]
     
     # Изчислява изминалото време за текущата стъпка
-    elapsed_time = time.time() - globals.step_start_time[0]
+    elapsed_time = time.time() - globals.step_start_time
     # Взема продължителността на стъпката
     duration = current_step_data["duration_seconds"]
     # Изчислява оставащото време
@@ -161,7 +161,7 @@ def update_exercise_progress():
         instructions = current_step_data["instructions"]
         
         # Актуализира етикета за стъпката в интерфейса
-        globals.app.instruction_label.config(text=f"Step {globals.current_step[0] + 1}/{len(globals.EXERCISE_JSON['steps'])}: {step_name}")
+        globals.app.instruction_label.config(text=f"Step {globals.current_step + 1}/{len(globals.EXERCISE_JSON['steps'])}: {step_name}")
         # Актуализира инструкциите в интерфейса
         globals.app.instruction_label.config(text=instructions)
         
@@ -177,7 +177,7 @@ def update_exercise_progress():
         
         # Ако стъпката е завършена, показва съобщение за успех
         if step_complete:
-            globals.logger.info(f"СТЪПКА {globals.current_step[0] + 1} ЗАВЪРШЕНА: Точност на изпълнение={accuracy:.1f}%")
+            globals.logger.info(f"СТЪПКА {globals.current_step + 1} ЗАВЪРШЕНА: Точност на изпълнение={accuracy:.1f}%")
             globals.app.timer_label.config(text="✅ СТЪПКАТА Е ЗАВЪРШЕНА! Преминаване към следваща...", fg="green", bg="lightgreen")
         # Ако точността е добра, но времето не е изтекло
         elif accuracy >= min_accuracy:
@@ -207,17 +207,17 @@ def advance_to_next_step():
     """Преминаване към следващата стъпка на упражнението."""
     
     # Увеличава индекса на текущата стъпка
-    globals.current_step[0] += 1
+    globals.current_step += 1
     # Записва времето на започване на новата стъпка
-    globals.step_start_time[0] = time.time()
+    globals.step_start_time = time.time()
     # Ресетва hold timers за новата стъпка
     globals.hold_start_time[0] = 0
     globals.hold_duration[0] = 0
     
     # Проверява дали всички стъпки са завършени
-    if globals.current_step[0] >= len(globals.EXERCISE_JSON["steps"]):
-        globals.exercise_active[0] = False
-        globals.current_step[0] = 0
+    if globals.current_step >= len(globals.EXERCISE_JSON["steps"]):
+        globals.exercise_active = False
+        globals.current_step = 0
         messagebox.showinfo("Упражнението е завършено!", 
                           "Поздравления! Вие изпълнихте всички стъпки успешно! 🎉")
         globals.app.exercise_btn.config(text="Стартиране на упражнение", bg="blue")

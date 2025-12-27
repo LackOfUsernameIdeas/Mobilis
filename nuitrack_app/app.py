@@ -26,7 +26,7 @@ class ModernExerciseApp:
         """Настройка на главния прозорец с модерен стил"""
         self.root = tk.Tk()
         
-        self.root.iconbitmap(default='D:\Projects\Mobilis\public\logo.ico')
+        self.root.iconbitmap(default='logo.ico')
 
         self.root.title("Персонален треньор за упражнения")
         self.root.geometry("950x650")
@@ -207,29 +207,29 @@ class ModernExerciseApp:
     
     def start_calibration(self):
         """Започва процеса на калибриране."""
-        if not globals.session_running[0]:
+        if not globals.session_running:
             tk.messagebox.showwarning("Грешка", "Моля, стартирайте сесия преди калибриране!")
             return
-        if globals.calibration_completed[0]:
+        if globals.calibration_completed:
             tk.messagebox.showinfo("Информация", "Калибрирането вече е извършено!")
             return
-        globals.calibration_active[0] = True
-        globals.calibration_start_time[0] = time.time()
+        globals.calibration_active = True
+        globals.calibration_start_time = time.time()
         result = perform_calibration(globals.nuitrack_instance)
         if result:
-            globals.calibration_completed[0] = True
+            globals.calibration_completed = True
             tk.messagebox.showinfo("Успех", "Калибрирането е успешно завършено!")
             self.exercise_btn.configure(state="normal")
-        globals.calibration_active[0] = False
+        globals.calibration_active = False
     
     def _update_exercise(self, value):
-        if globals.exercise_active[0]:
+        if globals.exercise_active:
             if tk.messagebox.askyesno(
                 "Потвърждение",
                 "Текущото упражнение е активно. Искате ли да го спрете и смените?"
             ):
-                globals.exercise_active[0] = False
-                globals.current_step[0] = 0
+                globals.exercise_active = False
+                globals.current_step = 0
                 self.exercise_btn.config(text="Стартиране на упражнение")
             else:
                 self.exercise_var.set(globals.EXERCISE_JSON["exercise_name"])

@@ -15,19 +15,19 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Глобални променливи
-session_running = [False]       # Дали сесията е активна
+session_running = False         # Дали сесията е активна
 session_start_time = 0          # Време на стартиране на сесията
 current_user_skeleton = None    # Последната заснета скелетна рамка на потребителя
-exercise_active = [False]       # Дали упражнението е активно
-current_step = [0]              # Индекс на текущата стъпка
-step_start_time = [0]           # Време на стартиране на текущата стъпка
+exercise_active = False         # Дали упражнението е активно
+current_step = 0                # Индекс на текущата стъпка
+step_start_time = 0             # Време на стартиране на текущата стъпка
 nuitrack_instance = None        # Инстанция на Nuitrack
 depth_to_color_frame = None     # Преобразувана дълбочинна рамка към цветова
 user_metrics = None             # Данни от калибриране (височина, дължина на ръка, ширина на таз)
 previous_user_skeleton = None   # Скелет от предишния кадър за откриване на движение
-calibration_active = [False]    # Следи дали е активна калибриране
-calibration_start_time = [0]    # Време на стартиране на калибриране
-calibration_completed = [False] # Следи дали калибрирането е успешно завършено
+calibration_active = False      # Следи дали е активна калибриране
+calibration_start_time = 0      # Време на стартиране на калибриране
+calibration_completed = False   # Следи дали калибрирането е успешно завършено
 
 app = None                     # Основен обект на приложението
 

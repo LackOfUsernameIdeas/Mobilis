@@ -30,7 +30,7 @@ def run_nuitrack():
         globals.session_start_time = time.time()
         
         # 3) Главен цикъл за обработка на данни
-        while globals.session_running[0]:
+        while globals.session_running:
             cv2.waitKey(1)
 
             try:
@@ -65,16 +65,16 @@ def run_nuitrack():
                     ]
                     
                     # Статус при калибриране
-                    if globals.calibration_active[0]:
-                        elapsed_cal = time.time() - globals.calibration_start_time[0]
+                    if globals.calibration_active:
+                        elapsed_cal = time.time() - globals.calibration_start_time
                         remaining_cal = max(0, 5 - elapsed_cal)
                         status_lines.extend([
                             f"КАЛИБРИРАНЕ: {remaining_cal:.1f} секунди остават"
                         ])
                     
                     # Статус при упражнение
-                    elif globals.exercise_active[0]:
-                        step_data = globals.EXERCISE_JSON["steps"][globals.current_step[0]]
+                    elif globals.exercise_active:
+                        step_data = globals.EXERCISE_JSON["steps"][globals.current_step]
                         if globals.current_user_skeleton and globals.user_metrics:
                             accuracy, details = check_relative_pose(
                                 globals.current_user_skeleton,
@@ -87,7 +87,7 @@ def run_nuitrack():
                             accuracy = 0
                         
                         status_lines.extend([
-                            f"Упражнение: Стъпка {globals.current_step[0] + 1}/{len(globals.EXERCISE_JSON['steps'])}",
+                            f"Упражнение: Стъпка {globals.current_step + 1}/{len(globals.EXERCISE_JSON['steps'])}",
                             f"Точност: {accuracy:.0f}%",
                             f"Цел: {step_data['name']}"
                         ])
@@ -125,10 +125,10 @@ def run_nuitrack():
 def update_timer_display():
     """Обновява таймера и прогреса в отделен нишков процес (thread)."""
     
-    while globals.session_running[0]:
+    while globals.session_running:
         try:
             # Изчисляване на изминалото време от старта на сесията
-            if globals.session_running[0]:
+            if globals.session_running:
                 elapsed = time.time() - globals.session_start_time
                 minutes = int(elapsed // 60)   # цели минути
                 seconds = elapsed % 60         # остатъчни секунди
@@ -137,9 +137,9 @@ def update_timer_display():
             # Обновяване на прогреса:
             #    - Ако е активна калибриране → обновяваме прогреса на калибрирането
             #    - Ако е активно упражнение → обновяваме прогреса на упражнението
-            if globals.calibration_active[0]:
+            if globals.calibration_active:
                 update_calibration_progress()
-            elif globals.exercise_active[0]:
+            elif globals.exercise_active:
                 update_exercise_progress()
             
             # Пауза между обновяванията, за да не натоварваме CPU

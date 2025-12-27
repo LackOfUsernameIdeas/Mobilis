@@ -7,12 +7,12 @@ import globals
 def start_session(update_timer_display, run_nuitrack, app):
     """Започва нова сесия на Nuitrack програмата."""
 
-    if globals.session_running[0]:
+    if globals.session_running:
         messagebox.showwarning("Session Running", "Session already active!")
         return
     
     globals.session_start_time = time.time()
-    globals.session_running[0] = True
+    globals.session_running = True
     
     threading.Thread(target=update_timer_display, daemon=True).start()
     threading.Thread(target=run_nuitrack, daemon=True).start()
@@ -24,10 +24,10 @@ def start_session(update_timer_display, run_nuitrack, app):
 def stop_session(app):
     """Прекратява текуща сесия на Nuitrack програмата."""
 
-    globals.session_running[0] = False
-    globals.exercise_active[0] = False
-    globals.calibration_active[0] = False 
-    globals.current_step[0] = 0
+    globals.session_running = False
+    globals.exercise_active = False
+    globals.calibration_active = False 
+    globals.current_step = 0
     globals.session_start_time = 0
     globals.nuitrack_instance = None
     
@@ -48,14 +48,14 @@ def toggle_exercise(app, perform_calibration):
     """
             
     # Проверка дали сесията е стартирана
-    if not globals.session_running[0]:
+    if not globals.session_running:
         messagebox.showwarning("Няма сесия", "Моля, първо стартирайте сесия!")
         return
     
     # Ако упражнението вече е активно → спиране
-    if globals.exercise_active[0]:
-        globals.exercise_active[0] = False
-        globals.current_step[0] = 0
+    if globals.exercise_active:
+        globals.exercise_active = False
+        globals.current_step = 0
 
         # Възстановяване на UI в изходно състояние
         app.exercise_btn.config(text="Стартиране на упражнение", bg="blue")
@@ -66,9 +66,9 @@ def toggle_exercise(app, perform_calibration):
         # Ако калибрирането е успешно, стартиране на упражнението
         if globals.user_metrics:
             print(f"Calibrated: Height ~{globals.user_metrics['height']:.0f}mm, Arm Length ~{globals.user_metrics['arm_length']:.0f}mm, Hip Width ~{globals.user_metrics['hip_width']:.0f}mm")
-            globals.exercise_active[0] = True
-            globals.current_step[0] = 0
-            globals.step_start_time[0] = time.time()
+            globals.exercise_active = True
+            globals.current_step = 0
+            globals.step_start_time = time.time()
             app.exercise_btn.config(text="Спиране на упражнението", bg="red")
             print("=== EXERCISE STARTED WITH RELATIVE POSES ===")
         else:

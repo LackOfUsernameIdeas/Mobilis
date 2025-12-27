@@ -20,7 +20,7 @@ def perform_calibration(nuitrack):
     samples = []
     
     # Продължава цикъла за 5 секунди, докато сесията и калибрирането са активни
-    while time.time() - start_time < 5 and globals.session_running[0] and globals.calibration_active[0]:
+    while time.time() - start_time < 5 and globals.session_running and globals.calibration_active:
         try:
             nuitrack.update() # Актуализиране на данните от камерата
             skeleton_data = nuitrack.get_skeleton()
@@ -107,7 +107,7 @@ def perform_calibration(nuitrack):
         "standing_head_y": standing_head_y
     }
 
-    globals.calibration_completed[0] = True
+    globals.calibration_completed = True
 
     globals.logger.info(f"Calibration successful: {len(samples)} samples collected")
     return globals.user_metrics
@@ -116,11 +116,11 @@ def update_calibration_progress():
     """Актуализира таймера на калибрирането с визуално обратно броене."""
 
     # Проверява дали калибрирането е активно
-    if not globals.calibration_active[0]:
+    if not globals.calibration_active:
         return
     
     # Изчислява изминалото време от началото на калибрирането
-    elapsed_time = time.time() - globals.calibration_start_time[0]
+    elapsed_time = time.time() - globals.calibration_start_time
     # Изчислява оставащото време (максимум 0, минимум 5 секунди)
     remaining_time = max(0, 5 - elapsed_time)
     
