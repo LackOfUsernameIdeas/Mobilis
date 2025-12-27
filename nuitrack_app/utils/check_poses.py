@@ -46,20 +46,6 @@ def _check_arms_bent_waist(rel_skeleton, required_poses, tolerances_data, user_m
     logger.debug(f"arms_bent_waist: right_bent={right_elbow_bent}, left_bent={left_elbow_bent}, required={required}, ok={is_ok}")
     return is_ok, msg
 
-def _check_arms_raised(rel_skeleton, required_poses, tolerances_data, user_metrics):
-    """Проверка: Ръце вдигнати нагоре"""
-    right_wrist_y = rel_skeleton.get('RIGHT_WRIST', {}).get('y', 0)
-    left_wrist_y = rel_skeleton.get('LEFT_WRIST', {}).get('y', 0)
-    head_y = rel_skeleton.get('HEAD', {}).get('y', 0)
-    
-    # Китките трябва да са по-високо от главата
-    is_right_raised = right_wrist_y > head_y + tolerances_data['arm_tol']
-    is_left_raised = left_wrist_y > head_y + tolerances_data['arm_tol']
-    is_raised = is_right_raised and is_left_raised
-    
-    logger.debug(f"arms_raised: right={is_right_raised}, left={is_left_raised}")
-    return is_raised, "✓" if is_raised else "✗ Повдигнете ръцете си до нивото на раменете или по-високо"
-
 def _check_arms_back(rel_skeleton, required_poses, tolerances_data, user_metrics):
     """Проверка: Ръце назад (гърди изпъчени)"""
     tol = tolerances_data['arm_tol'] * 1.5 
@@ -165,91 +151,6 @@ def _check_legs_apart(rel_skeleton, required_poses, tolerances_data, user_metric
     logger.debug(f"legs_apart: {is_apart}, right_x={right_x:.0f}, left_x={left_x:.0f}")
     
     return is_apart, "✓" if is_apart else "✗ Разтворете краката си на ширината на раменете"
-
-def _check_lunge_pose(rel_skeleton, required_poses, tolerances_data, user_metrics):
-    """Проверка: Lunge поза"""
-    tol_dist = tolerances_data['height_tol'] * 0.3 
-    tol_bend = tolerances_data['leg_tol'] * 2.5
-    has_right_knee = 'RIGHT_KNEE' in rel_skeleton and 'RIGHT_HIP' in rel_skeleton
-    has_left_knee = 'LEFT_KNEE' in rel_skeleton and 'LEFT_HIP' in rel_skeleton
-    has_right_ankle = 'RIGHT_ANKLE' in rel_skeleton
-    has_left_ankle = 'LEFT_ANKLE' in rel_skeleton
-    
-    # Проверка за стъпаловидно разположение (Z разлика)
-    z_diff = 0
-    if has_right_knee and has_left_knee:
-        z_diff = abs(rel_skeleton['RIGHT_KNEE']['z'] - rel_skeleton['LEFT_KNEE']['z'])
-    elif has_right_ankle and has_left_ankle:
-        z_diff = abs(rel_skeleton['RIGHT_ANKLE']['z'] - rel_skeleton['LEFT_ANKLE']['z'])
-        logger.debug("Fallback to ankles for lunge stagger check")
-    
-    is_staggered = z_diff > tol_dist
-    
-    # Проверка за сгъване на едно коляно
-    is_right_bent = False
-    is_left_bent = False
-    fallback = False
-    
-    if has_right_knee:
-        y_diff_right = rel_skeleton['RIGHT_HIP']['y'] - rel_skeleton['RIGHT_KNEE']['y']
-        is_right_bent = y_diff_right < user_metrics.get('leg_length', 0) - tol_bend  # Използване на .get() за безопасност
-    
-    if has_left_knee:
-        y_diff_left = rel_skeleton['LEFT_HIP']['y'] - rel_skeleton['LEFT_KNEE']['y']
-        is_left_bent = y_diff_left < user_metrics.get('leg_length', 0) - tol_bend  # Използване на .get() за безопасност
-    
-    # Резервен метод ако няма колене/тазове: спад на главата като индикатор
-    if not (has_right_knee or has_left_knee):
-        if 'HEAD' in rel_skeleton:
-            head_y = rel_skeleton['HEAD']['y']
-            if user_metrics is not None:
-                expected_standing_head_y = user_metrics.get('standing_head_y', user_metrics.get('height', 0) * 0.8)
-                fallback = head_y < expected_standing_head_y * 0.8
-                logger.debug(f"Fallback lunge detection: head_y={head_y:.0f}, expected={expected_standing_head_y:.0f}, bent={fallback}")
-    
-    # Lunge ако е стъпаловидно и точно едно коляно е сгънато (или резервен метод)
-    is_bent = (is_right_bent != is_left_bent) or (fallback and not (is_right_bent and is_left_bent))
-    is_lunge = is_staggered and is_bent
-    
-    logger.debug(f"lunge_pose: staggered={is_staggered} (z_diff={z_diff:.0f}, tol_dist={tol_dist:.0f}), bent={is_bent} (right={is_right_bent}, left={is_left_bent}, fallback={fallback})")
-    return is_lunge, "✓" if is_lunge else "✗ Пристъпете напред и сгънете само едното коляно (осигурете дълбочина и видимост)"
-
-def _check_knees_bent(rel_skeleton, required_poses, tolerances_data, user_metrics):
-    """Проверка: Колене свити"""
-    tol = tolerances_data['height_tol'] * 0.15
-    
-    # Изисква налични стави
-    has_right = 'RIGHT_KNEE' in rel_skeleton and 'RIGHT_HIP' in rel_skeleton
-    has_left = 'LEFT_KNEE' in rel_skeleton and 'LEFT_HIP' in rel_skeleton
-    
-    is_right_bent = False
-    if has_right:
-        right_knee_y = rel_skeleton['RIGHT_KNEE']['y']
-        right_hip_y = rel_skeleton['RIGHT_HIP']['y']
-        diff_right = abs(right_hip_y - right_knee_y) # Малка разлика = свито (бедрата спуснати до нивото на коляното)
-        is_right_bent = diff_right < tol
-    
-    is_left_bent = False
-    if has_left:
-        left_knee_y = rel_skeleton['LEFT_KNEE']['y']
-        left_hip_y = rel_skeleton['LEFT_HIP']['y']
-        diff_left = abs(left_hip_y - left_knee_y)
-        is_left_bent = diff_left < tol
-    
-    # Разрешава, ако поне едната страна е свита (обработва частично засичане)
-    is_bent = (is_right_bent and has_right) or (is_left_bent and has_left)
-    
-    # Резервен вариант при липса на долна част на тялото
-    if not is_bent and not (has_right or has_left):
-        if 'TORSO' in rel_skeleton:
-            torso_y = rel_skeleton['TORSO']['y']
-            calibration_torso_y = user_metrics.get('torso_y', 0)
-            if calibration_torso_y and torso_y < calibration_torso_y - tol:
-                is_bent = True
-                logger.debug(f"Knees bent fallback: Torso Y drop detected ({torso_y:.0f} vs {calibration_torso_y:.0f})")
-    
-    logger.debug(f"knees_bent: right={is_right_bent} (has_right={has_right}), left={is_left_bent} (has_left={has_left}), fallback={is_bent}")
-    return is_bent, "✓" if is_bent else "✗ Сгънете повече коленете си (спуснете бедрата до нивото на коленете)"
 
 def _check_shoulders_retracted(rel_skeleton, required_poses, tolerances_data, user_metrics):
     """Проверка: Рамене прибрани назад (shoulder retraction)"""

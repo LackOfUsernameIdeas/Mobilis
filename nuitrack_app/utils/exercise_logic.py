@@ -4,7 +4,7 @@ from tkinter import messagebox
 from utils.calibration import calculate_tolerances
 from utils.check_angles import check_single_angle
 from utils.check_poses import (
-    _check_arms_down, _check_arms_bent_waist, _check_arms_raised, _check_arms_back, _check_arms_forward, _check_arms_w_shape, _check_arms_y_shape, _check_legs_together, _check_legs_apart, _check_lunge_pose, _check_knees_bent, _check_shoulders_retracted, _check_pelvis_anterior, _check_pelvis_posterior, _check_head_retracted, _check_head_tilted_left, _check_head_tilted_right, _check_spine_extended
+    _check_arms_down, _check_arms_bent_waist, _check_arms_back, _check_arms_forward, _check_arms_w_shape, _check_arms_y_shape, _check_legs_together, _check_legs_apart, _check_shoulders_retracted, _check_pelvis_anterior, _check_pelvis_posterior, _check_head_retracted, _check_head_tilted_left, _check_head_tilted_right, _check_spine_extended
 )
 from utils.skeleton_processing import normalize_skeleton
 
@@ -32,15 +32,12 @@ def check_relative_pose(user_skeleton, required_poses, target_angles, tolerances
     pose_checkers = {
         'arms_down': _check_arms_down,
         'arms_bent_waist': _check_arms_bent_waist,
-        'arms_raised': _check_arms_raised,
         'arms_back': _check_arms_back,
         'arms_forward': _check_arms_forward,
         'arms_w_shape': _check_arms_w_shape,
         'arms_y_shape': _check_arms_y_shape,
         'legs_together': _check_legs_together,
         'legs_apart': _check_legs_apart,
-        'lunge_pose': _check_lunge_pose,
-        'knees_bent': _check_knees_bent,
         'shoulders_retracted': _check_shoulders_retracted,
         'pelvis_anterior': _check_pelvis_anterior,
         'pelvis_posterior': _check_pelvis_posterior,
@@ -105,7 +102,7 @@ def update_exercise_progress():
     
     # Взема данните за текущата стъпка от упражнението
     current_step_data = globals.EXERCISE_JSON["steps"][globals.current_step]
-    # Извлича изискваните пози (напр. arms_raised, legs_together)
+    # Извлича изискваните пози (напр. arms_down, legs_together)
     required_poses = current_step_data.get("required_poses", {})
     # Извлича целевите ъгли (напр. ъгъл на ръката)
     target_angles = current_step_data.get("target_angles", {})

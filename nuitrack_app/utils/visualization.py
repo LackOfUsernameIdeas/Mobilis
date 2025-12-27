@@ -168,9 +168,6 @@ def _draw_pose_guidance_arrows(image, nuitrack, required_poses):
     """Начертава стрелки за изискваните пози."""
     skeleton = globals.current_user_skeleton
     
-    if "arms_raised" in required_poses:
-        _draw_arms_raised_arrows(image, nuitrack, skeleton)
-    
     if "legs_apart" in required_poses:
         _draw_legs_apart_arrows(image, nuitrack, skeleton)
     
@@ -182,17 +179,6 @@ def _draw_pose_guidance_arrows(image, nuitrack, required_poses):
     
     if required_poses.get("head_tilted_right"):
         _draw_head_tilt_arrow(image, nuitrack, skeleton, direction="right")
-
-
-def _draw_arms_raised_arrows(image, nuitrack, skeleton):
-    """Начертава стрелки нагоре за поза с вдигнати ръце."""
-    joints = ['RIGHT_SHOULDER', 'LEFT_SHOULDER']
-    
-    for joint_name in joints:
-        joint_proj = _get_joint_projection(joint_name, skeleton, nuitrack)
-        if joint_proj:
-            end_point = (joint_proj[0], joint_proj[1] - 100)
-            cv2.arrowedLine(image, joint_proj, end_point, (0, 255, 0), 3, tipLength=0.3)
 
 
 def _draw_legs_apart_arrows(image, nuitrack, skeleton):
