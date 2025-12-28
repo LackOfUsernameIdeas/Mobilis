@@ -30,7 +30,7 @@ class ModernExerciseApp:
         self.root.iconbitmap(default='logo.ico')
 
         self.root.title("Персонален треньор за упражнения")
-        self.root.geometry("950x650")
+        self.root.geometry("750x500")
         self.root.configure(bg=self.theme.colors['background'])
         
     def create_widgets(self):
@@ -174,37 +174,6 @@ class ModernExerciseApp:
             style="body_medium"
         )
         self.timer_label.pack(side=tk.LEFT)
-        
-        # Карта за съвети
-        tips_card = self.widget_factory.create_card(main_container)
-        tips_card.pack(fill=tk.X)
-        
-        tips_content = tk.Frame(tips_card, bg=self.theme.colors['card'])
-        tips_content.pack(fill=tk.BOTH, padx=20, pady=16)
-        
-        tips_title = self.widget_factory.create_label(
-            tips_content,
-            "💡 Полезни съвети",
-            style="heading_small"
-        )
-        tips_title.pack(anchor=tk.W, pady=(0, 8))
-        
-        tips_text = """• Застанете на 2.5 до 3 метра от камерата за оптимално улавяне
-• Отметките означават, че позата ви е правилна
-• X знаците означават, че трябва да коригирате позицията си
-• Поддържайте добро осветление
-• По време на калибриране: Застанете изправени, ръцете надолу, останете напълно неподвижни"""
-        
-        tips_label = self.widget_factory.create_label(
-            tips_content,
-            tips_text,
-            style="body_small"
-        )
-        tips_label.pack(anchor=tk.W, fill=tk.X)
-        tips_label.configure(
-            justify=tk.LEFT,
-            fg=self.theme.colors['muted_foreground']
-        )
     
     def start_calibration(self):
         """Започва процеса на калибриране."""
