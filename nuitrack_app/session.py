@@ -1,4 +1,4 @@
-from tkinter import messagebox
+import custom_messagebox as messagebox
 import threading
 import time
 

@@ -1,5 +1,5 @@
 import time
-from tkinter import messagebox
+import custom_messagebox as messagebox
 
 import numpy as np
 from utils.skeleton_processing import calculate_3d_distance, process_skeleton_data

@@ -1,5 +1,5 @@
 import time
-from tkinter import messagebox
+import custom_messagebox as messagebox
 
 from utils.calibration import calculate_tolerances
 from utils.check_angles import check_single_angle
@@ -220,7 +220,7 @@ def advance_to_next_step():
         globals.sound_manager.play_exercise_complete()
         
         messagebox.showinfo("Упражнението е завършено!", 
-                          "Поздравления! Вие изпълнихте всички стъпки успешно! 🎉")
+                          "Поздравления! Вие изпълнихте всички стъпки успешно! 🎉", False)
         globals.app.exercise_btn.config(text="Стартиране на упражнение", bg="blue")
         
         globals.app.instruction_label.config(text="🏆 Упражнението е завършено!")

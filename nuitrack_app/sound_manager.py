@@ -19,7 +19,7 @@ class SoundManager:
         # Prepare paths but don't initialize yet
         base_dir = os.path.dirname(os.path.abspath(__file__))
         self.step_complete_path = os.path.join(base_dir, 'step_complete_sound.wav')
-        self.exercise_complete_path = os.path.join(base_dir, 'exercise_complete_sound.wav')
+        self.exercise_complete_path = os.path.join(base_dir, 'exercise_calibration_complete_sound.wav')
         
         # Log file existence
         if os.path.exists(self.step_complete_path):
@@ -28,9 +28,9 @@ class SoundManager:
             logger.warning(f"step_complete_sound.wav not found at {self.step_complete_path}")
             
         if os.path.exists(self.exercise_complete_path):
-            logger.info(f"Found exercise_complete_sound.wav")
+            logger.info(f"Found exercise_calibration_complete_sound.wav")
         else:
-            logger.warning(f"exercise_complete_sound.wav not found at {self.exercise_complete_path}")
+            logger.warning(f"exercise_calibration_complete_sound.wav not found at {self.exercise_complete_path}")
     
     def _lazy_initialize(self):
         """Initialize sound system only when first needed"""

@@ -1,5 +1,6 @@
 import time
 import tkinter as tk
+import custom_messagebox as messagebox
 
 from session import start_session, stop_session, toggle_exercise
 from theme import ModernTheme, ModernWidget
@@ -208,32 +209,29 @@ class ModernExerciseApp:
     def start_calibration(self):
         """Започва процеса на калибриране."""
         if not globals.session_running:
-            tk.messagebox.showwarning("Грешка", "Моля, стартирайте сесия преди калибриране!")
+            messagebox.showwarning("Грешка", "Моля, стартирайте сесия преди калибриране!")
             return
         if globals.calibration_completed:
-            tk.messagebox.showinfo("Информация", "Калибрирането вече е извършено!")
+            messagebox.showinfo("Информация", "Калибрирането вече е извършено!")
             return
         globals.calibration_active = True
         globals.calibration_start_time = time.time()
         result = perform_calibration(globals.nuitrack_instance)
         if result:
             globals.calibration_completed = True
-            tk.messagebox.showinfo("Успех", "Калибрирането е успешно завършено!")
+            messagebox.showinfo("Успех", "Калибрирането е успешно завършено!", False)
             self.exercise_btn.configure(state="normal")
         globals.calibration_active = False
     
     def _update_exercise(self, value):
         if globals.exercise_active:
-            if tk.messagebox.askyesno(
-                "Потвърждение",
-                "Текущото упражнение е активно. Искате ли да го спрете и смените?"
-            ):
-                globals.exercise_active = False
-                globals.current_step = 0
-                self.exercise_btn.config(text="Стартиране на упражнение")
-            else:
-                self.exercise_var.set(globals.EXERCISE_JSON["exercise_name"])
-                return
+            messagebox.showwarning(
+                "Упражнение активно",
+                "Не можете да смените упражнението докато е активно. Моля, спрете го първо."
+            )
+            # Revert to the current exercise - force update after dialog closes
+            self.root.after(10, lambda: self.exercise_var.set(globals.EXERCISE_JSON["exercise_name"]))
+            return
         
         # Намери упражнението по име
         for ex in globals.ALL_EXERCISES:

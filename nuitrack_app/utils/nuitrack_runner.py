@@ -1,5 +1,5 @@
 import time
-from tkinter import messagebox
+import custom_messagebox as messagebox
 import cv2
 from PyNuitrack import py_nuitrack
 
