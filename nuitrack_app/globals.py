@@ -2,6 +2,7 @@ import logging
 import os
 
 from exercises import ALL_EXERCISES
+from sound_manager import sound_manager
 
 # Настройка за логване в отделен файл
 log_file = os.path.join(os.path.dirname(__file__), 'nuitrack_log.txt')
@@ -29,7 +30,8 @@ calibration_active = False      # Следи дали е активна кали
 calibration_start_time = 0      # Време на стартиране на калибриране
 calibration_completed = False   # Следи дали калибрирането е успешно завършено
 
-app = None                     # Основен обект на приложението
+app = None                      # Основен обект на приложението
+sound_manager = sound_manager   # Мениджър за звукови ефекти
 
 # Обект за упражнение (по подразбиране първото)
 EXERCISE_JSON = ALL_EXERCISES[0]

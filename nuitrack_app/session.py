@@ -31,6 +31,8 @@ def stop_session(app):
     globals.session_start_time = 0
     globals.nuitrack_instance = None
     
+    globals.sound_manager.stop_all()
+
     app.elapsed_label.config(text="Време на сесията: 00:00.00")
     app.instruction_label.config(text="Стартирайте сесия, за да започнете")
     app.accuracy_label.config(text="Точност на изпълнение: --")

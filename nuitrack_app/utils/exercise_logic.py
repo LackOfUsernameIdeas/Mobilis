@@ -215,6 +215,10 @@ def advance_to_next_step():
     if globals.current_step >= len(globals.EXERCISE_JSON["steps"]):
         globals.exercise_active = False
         globals.current_step = 0
+        
+        # Пускане на звук за минато упражнение
+        globals.sound_manager.play_exercise_complete()
+        
         messagebox.showinfo("Упражнението е завършено!", 
                           "Поздравления! Вие изпълнихте всички стъпки успешно! 🎉")
         globals.app.exercise_btn.config(text="Стартиране на упражнение", bg="blue")
@@ -225,3 +229,6 @@ def advance_to_next_step():
         globals.app.timer_label.config(text="🎯 Браво!")
         
         print("🎉 === EXERCISE COMPLETED === 🎉")
+    else:
+        # Пускане на звук за мината стъпка
+        globals.sound_manager.play_step_complete()
