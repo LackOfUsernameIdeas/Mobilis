@@ -109,7 +109,7 @@ def perform_calibration(nuitrack):
 
     globals.calibration_completed = True
     
-    # Play calibration success sound
+    # Пускане на звук при успешно калибриране
     globals.sound_manager.play_exercise_complete()
 
     globals.logger.info(f"Calibration successful: {len(samples)} samples collected")

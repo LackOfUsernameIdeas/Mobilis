@@ -229,7 +229,7 @@ class ModernExerciseApp:
                 "Упражнение активно",
                 "Не можете да смените упражнението докато е активно. Моля, спрете го първо."
             )
-            # Revert to the current exercise - force update after dialog closes
+            # Връщане към текущото упражнение - принудително актуализиране след затваряне на диалоговия прозорец
             self.root.after(10, lambda: self.exercise_var.set(globals.EXERCISE_JSON["exercise_name"]))
             return
         
