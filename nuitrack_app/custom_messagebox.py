@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter import font as tkfont
 
 def _create_dialog(parent, title, message, dialog_type="info", buttons="ok", play_sound=True):
     """Създава персонализиран диалогов прозорец с модерен стил, съответстващ на уеб приложението"""

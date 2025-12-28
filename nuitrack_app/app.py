@@ -17,8 +17,6 @@ class ModernExerciseApp:
     def __init__(self):
         self.theme = ModernTheme()
         self.widget_factory = ModernWidget(self.theme)
-        self.session_active = False
-        self.exercise_active = False
         
         self.setup_window()
         self.create_widgets()
