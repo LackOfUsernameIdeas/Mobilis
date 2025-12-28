@@ -2,8 +2,8 @@ import tkinter as tk
 from tkinter import font as tkfont
 
 def _create_dialog(parent, title, message, dialog_type="info", buttons="ok", play_sound=True):
-    """Create a custom dialog with modern styling matching the web app design"""
-    # Get the parent window, defaulting to root
+    """Създава персонализиран диалогов прозорец с модерен стил, съответстващ на уеб приложението"""
+    # Вземане на родителския прозорец, по подразбиране root
     if parent is None:
         parent = tk._default_root
     
@@ -11,55 +11,55 @@ def _create_dialog(parent, title, message, dialog_type="info", buttons="ok", pla
     dialog.title(title)
     dialog.resizable(False, False)
     
-    # Color scheme matching web app (converted from oklch to hex approximations)
+    # Цветова схема съответстваща на уеб приложението (конвертирана от oklch към hex)
     colors = {
         "background": "#EEEFF2",  # --background
         "card": "#FFFFFF",  # --card
-        "foreground": "#525252",  # --foreground (dark text)
-        "primary": "#4338CA",  # --primary (blue/indigo)
-        "primary_hover": "#3730A3",  # darker primary
-        "accent": "#FBBF24",  # --accent (yellow/gold)
-        "destructive": "#DC2626",  # --destructive (red)
-        "destructive_hover": "#B91C1C",  # darker destructive
+        "foreground": "#525252",  # --foreground (тъмен текст)
+        "primary": "#4338CA",  # --primary (синьо/индиго)
+        "primary_hover": "#3730A3",  # по-тъмен primary
+        "accent": "#FBBF24",  # --accent (жълто/златно)
+        "destructive": "#DC2626",  # --destructive (червено)
+        "destructive_hover": "#B91C1C",  # по-тъмен destructive
         "border": "#E5E7EB",  # --border
         "muted": "#F3F4F6",  # --muted
         "muted_foreground": "#6B7280",  # --muted-foreground
     }
     
-    # Configure dialog background
+    # Конфигуриране на фона на диалога
     dialog.configure(bg=colors["background"])
     
-    # Make dialog modal
+    # Прави диалога модален
     dialog.transient(parent)
     dialog.grab_set()
     
-    # Ensure dialog appears on top
+    # Гарантира, че диалогът се появява отгоре
     dialog.lift()
     dialog.focus_force()
     
-    # Play system sound if enabled
+    # Пуска системен звук, ако е разрешено
     if play_sound:
         dialog.bell()
     
-    # Main card container with padding and border
+    # Главен контейнер на картата с padding
     main_frame = tk.Frame(dialog, bg=colors["card"])
     main_frame.pack(padx=0, pady=0, fill=tk.BOTH, expand=True)
     
-    # Icon and message frame
+    # Рамка за икона и съобщение
     content_frame = tk.Frame(main_frame, bg=colors["card"], padx=24, pady=20)
     content_frame.pack(fill=tk.BOTH, expand=True)
     
-    # Icon configuration based on type
+    # Конфигурация на иконата според типа
     icon_config = {
-        "info": {"symbol": "ℹ", "bg": "#DBEAFE", "fg": "#1E40AF"},  # blue
-        "warning": {"symbol": "⚠", "bg": "#FEF3C7", "fg": "#B45309"},  # yellow/amber
-        "error": {"symbol": "✕", "bg": "#FEE2E2", "fg": "#991B1B"},  # red
-        "question": {"symbol": "?", "bg": "#E0E7FF", "fg": "#3730A3"}  # indigo
+        "info": {"symbol": "ℹ", "bg": "#DBEAFE", "fg": "#1E40AF"},  # синьо
+        "warning": {"symbol": "⚠", "bg": "#FEF3C7", "fg": "#B45309"},  # жълто/кехлибарено
+        "error": {"symbol": "✕", "bg": "#FEE2E2", "fg": "#991B1B"},  # червено
+        "question": {"symbol": "?", "bg": "#E0E7FF", "fg": "#3730A3"}  # индиго
     }
     
     config = icon_config.get(dialog_type, icon_config["info"])
     
-    # Icon with circular background
+    # Икона с кръгъл фон
     icon_frame = tk.Frame(content_frame, bg=config["bg"], width=48, height=48)
     icon_frame.pack(side=tk.LEFT, padx=(0, 16))
     icon_frame.pack_propagate(False)
@@ -73,11 +73,11 @@ def _create_dialog(parent, title, message, dialog_type="info", buttons="ok", pla
     )
     icon_label.place(relx=0.5, rely=0.5, anchor="center")
     
-    # Message container
+    # Контейнер за съобщение
     message_frame = tk.Frame(content_frame, bg=colors["card"])
     message_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
     
-    # Title
+    # Заглавие
     title_label = tk.Label(
         message_frame, 
         text=title, 
@@ -89,7 +89,7 @@ def _create_dialog(parent, title, message, dialog_type="info", buttons="ok", pla
     )
     title_label.pack(fill=tk.X, pady=(0, 8))
     
-    # Message
+    # Съобщение
     msg_label = tk.Label(
         message_frame, 
         text=message, 
@@ -102,14 +102,14 @@ def _create_dialog(parent, title, message, dialog_type="info", buttons="ok", pla
     )
     msg_label.pack(fill=tk.X)
     
-    # Button frame with proper spacing
+    # Рамка за бутони с подходящо разстояние
     button_frame = tk.Frame(main_frame, bg=colors["card"], padx=24, pady=16)
     button_frame.pack(fill=tk.X)
     
     result = [None]
     
     def create_button(parent, text, command, style="primary"):
-        """Create a styled button matching web app design"""
+        """Създава стилизиран бутон, съответстващ на дизайна на уеб приложението"""
         if style == "primary":
             bg = colors["primary"]
             hover_bg = colors["primary_hover"]
@@ -139,7 +139,7 @@ def _create_dialog(parent, title, message, dialog_type="info", buttons="ok", pla
             cursor="hand2"
         )
         
-        # Hover effects
+        # Ефекти при hover
         def on_enter(e):
             btn.config(bg=hover_bg)
         
@@ -178,7 +178,7 @@ def _create_dialog(parent, title, message, dialog_type="info", buttons="ok", pla
         dialog.bind('<Escape>', lambda e: on_cancel())
         yes_btn.focus_set()
     
-    # Center the dialog AFTER all widgets are added
+    # Центриране на диалога СЛЕД като всички уиджети са добавени
     dialog.update_idletasks()
     width = dialog.winfo_reqwidth()
     height = dialog.winfo_reqheight()
@@ -186,26 +186,26 @@ def _create_dialog(parent, title, message, dialog_type="info", buttons="ok", pla
     y = (dialog.winfo_screenheight() // 2) - (height // 2)
     dialog.geometry(f'{width}x{height}+{x}+{y}')
     
-    # Protocol for window close button
+    # Протокол за бутона за затваряне на прозореца
     dialog.protocol("WM_DELETE_WINDOW", on_cancel if buttons == "yesno" else on_ok)
     
-    # Wait for dialog to close
+    # Изчакване диалогът да се затвори
     parent.wait_window(dialog)
     
     return result[0]
 
 def showinfo(title, message, play_sound=True):
-    """Custom showinfo with modern styling"""
+    """Персонализиран showinfo с модерен стил"""
     return _create_dialog(None, title, message, "info", "ok", play_sound)
 
 def showwarning(title, message, play_sound=True):
-    """Custom showwarning with modern styling"""
+    """Персонализиран showwarning с модерен стил"""
     return _create_dialog(None, title, message, "warning", "ok", play_sound)
 
 def showerror(title, message, play_sound=True):
-    """Custom showerror with modern styling"""
+    """Персонализиран showerror с модерен стил"""
     return _create_dialog(None, title, message, "error", "ok", play_sound)
 
 def askyesno(title, message, play_sound=True):
-    """Custom askyesno with modern styling"""
+    """Персонализиран askyesno с модерен стил"""
     return _create_dialog(None, title, message, "question", "yesno", play_sound)
