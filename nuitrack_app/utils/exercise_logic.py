@@ -143,53 +143,20 @@ def update_exercise_progress():
         if globals.hold_start_time[0] == 0:
             globals.hold_start_time[0] = current_time
         globals.hold_duration[0] = current_time - globals.hold_start_time[0]
-        remaining_time = max(0, duration - globals.hold_duration[0])
     else:
         globals.hold_start_time[0] = 0
         globals.hold_duration[0] = 0
-        remaining_time = duration  # Показва пълната продължителност, докато не се постигне позата
 
     # Проверява дали стъпката е завършена (задържане за необходимата продължителност - точност, време, пози)
     step_complete = (globals.hold_duration[0] >= duration)
         
     try:
-        # Взема името и инструкциите за текущата стъпка
-        step_name = current_step_data["name"]
-        instructions = current_step_data["instructions"]
-        
-        # Актуализира етикета за стъпката в интерфейса
-        globals.app.instruction_label.config(text=f"Step {globals.current_step + 1}/{len(globals.EXERCISE_JSON['steps'])}: {step_name}")
-        # Актуализира инструкциите в интерфейса
-        globals.app.instruction_label.config(text=instructions)
-        
         # Формира текст за точността
         accuracy_text = f"Точност на изпълнение: {accuracy:.1f}% (need {min_accuracy}%)"
         if all_ok:
             accuracy_text += " ✓ Всички пози са ОК!"
         else:
             accuracy_text += " ✗ Коригирайте позите"
-        
-        # Актуализира етикета за точност
-        globals.app.accuracy_label.config(text=accuracy_text)
-        
-        # Ако стъпката е завършена, показва съобщение за успех
-        if step_complete:
-            globals.logger.info(f"СТЪПКА {globals.current_step + 1} ЗАВЪРШЕНА: Точност на изпълнение={accuracy:.1f}%")
-            globals.app.timer_label.config(text="✅ СТЪПКАТА Е ЗАВЪРШЕНА! Преминаване към следваща...", fg="green", bg="lightgreen")
-        # Ако точността е добра, но времето не е изтекло
-        elif accuracy >= min_accuracy:
-            globals.app.timer_label.config(text=f"🎯 Добре! Задръж още {remaining_time:.1f}s more", fg="orange", bg="lightyellow")
-        # Ако точността е ниска, показва оставащото време
-        else:
-            globals.app.timer_label.config(text=f"⏱️ Време: {remaining_time:.1f}s | Коригирайте позите", fg="red", bg="white")
-        
-        # Променя цвета на етикета за точност според стойността
-        if accuracy >= 90:
-            globals.app.accuracy_label.config(fg="green")
-        elif accuracy >= min_accuracy:
-            globals.app.accuracy_label.config(fg="orange")
-        else:
-            globals.app.accuracy_label.config(fg="red")
         
         # Ако стъпката е завършена, преминава към следващата
         if step_complete:
@@ -223,10 +190,7 @@ def advance_to_next_step():
                           "Поздравления! Вие изпълнихте всички стъпки успешно! 🎉", False)
         globals.app.exercise_btn.config(text="Стартиране на упражнение", bg="blue")
         
-        globals.app.instruction_label.config(text="🏆 Упражнението е завършено!")
-        globals.app.instruction_label.config(text="Поздравления! Всички позиции са изпълнени успешно!")
         globals.app.accuracy_label.config(text="Упражнението е завършено!")
-        globals.app.timer_label.config(text="🎯 Браво!")
         
         print("🎉 === EXERCISE COMPLETED === 🎉")
     else:

@@ -121,40 +121,6 @@ def update_calibration_progress():
     # Проверява дали калибрирането е активно
     if not globals.calibration_active:
         return
-    
-    # Изчислява изминалото време от началото на калибрирането
-    elapsed_time = time.time() - globals.calibration_start_time
-    # Изчислява оставащото време (максимум 0, минимум 5 секунди)
-    remaining_time = max(0, 5 - elapsed_time)
-    
-    # Актуализира етикетите в графичния интерфейс с прогреса на калибрирането
-    globals.app.instruction_label.config(text="🎯 КАЛИБРИРАНЕТО Е В ПРОЦЕС")
-    globals.app.instruction_label.config(text="Stand straight with arms at sides. Stay still!")
-    
-    # Ако остава време за калибриране
-    if remaining_time > 0:
-        # Актуализира таймера с оставащото време
-        globals.app.timer_label.config(
-            text=f"⏱️ Калибриране... {remaining_time:.1f} секунди остават", 
-            fg="blue", 
-            bg="lightblue"
-        )
-        
-        # Показва статуса на откриване на скелета
-        if globals.current_user_skeleton:
-            # Ако скелетът е открит, показва броя на ставите
-            skeleton_status = f"✅ Skeleton detected ({len(globals.current_user_skeleton)} joints)"
-            globals.app.accuracy_label.config(text=skeleton_status, fg="green")
-        else:
-            # Ако скелетът не е открит, показва съобщение за търсене
-            globals.app.accuracy_label.config(text="🔍 Търсене на скелет...", fg="orange")
-    else:
-        # Ако калибрирането е приключило, показва съобщение за обработка
-        globals.app.timer_label.config(
-            text="🔄 Обработка на данни за калибриране...", 
-            fg="green", 
-            bg="lightgreen"
-        )
 
 def calculate_tolerances(tolerances, user_metrics):
     """Изчисляване на толеранси базирани на метриките на потребителя."""

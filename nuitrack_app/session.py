@@ -32,11 +32,6 @@ def stop_session(app):
     globals.nuitrack_instance = None
     
     globals.sound_manager.stop_all()
-
-    app.elapsed_label.config(text="Време на сесията: 00:00.00")
-    app.instruction_label.config(text="Стартирайте сесия, за да започнете")
-    app.accuracy_label.config(text="Точност на изпълнение: --")
-    app.timer_label.config(text="Време: --", fg="black", bg="white")
     
     app.start_btn.config(state="normal")
     app.stop_btn.config(state="disabled") 
@@ -61,9 +56,6 @@ def toggle_exercise(app, perform_calibration):
 
         # Възстановяване на UI в изходно състояние
         app.exercise_btn.config(text="Стартиране на упражнение", bg="blue")
-        app.instruction_label.config(text="Стартирайте сесия, за да започнете")
-        app.accuracy_label.config(text="Точност на изпълнение: --")
-        app.timer_label.config(text="Време: --", fg="black", bg="white")
     else:
         # Ако калибрирането е успешно, стартиране на упражнението
         if globals.user_metrics:

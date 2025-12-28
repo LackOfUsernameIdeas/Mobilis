@@ -10,7 +10,9 @@ def _create_dialog(parent, title, message, dialog_type="info", buttons="ok", pla
     dialog = tk.Toplevel(parent)
     dialog.title(title)
     dialog.resizable(False, False)
-    
+
+    dialog.withdraw()
+
     # Цветова схема съответстваща на уеб приложението (конвертирана от oklch към hex)
     colors = {
         "background": "#EEEFF2",  # --background
@@ -186,6 +188,8 @@ def _create_dialog(parent, title, message, dialog_type="info", buttons="ok", pla
     y = (dialog.winfo_screenheight() // 2) - (height // 2)
     dialog.geometry(f'{width}x{height}+{x}+{y}')
     
+    dialog.deiconify()
+
     # Протокол за бутона за затваряне на прозореца
     dialog.protocol("WM_DELETE_WINDOW", on_cancel if buttons == "yesno" else on_ok)
     

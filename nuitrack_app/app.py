@@ -30,7 +30,7 @@ class ModernExerciseApp:
         self.root.iconbitmap(default='logo.ico')
 
         self.root.title("Персонален треньор за упражнения")
-        self.root.geometry("750x500")
+        self.root.geometry("685x385")
         self.root.configure(bg=self.theme.colors['background'])
         
     def create_widgets(self):
@@ -52,13 +52,6 @@ class ModernExerciseApp:
             style="heading_medium"
         )
         session_title.pack(anchor=tk.W, pady=(0, 12))
-        
-        self.elapsed_label = self.widget_factory.create_label(
-            session_content,
-            "Време на сесията: 00:00.00",
-            style="body_large"
-        )
-        self.elapsed_label.pack(anchor=tk.W, pady=(0, 16))
         
         button_frame = tk.Frame(session_content, bg=self.theme.colors['card'])
         button_frame.pack(fill=tk.X)
@@ -102,14 +95,6 @@ class ModernExerciseApp:
         )
         exercise_title.pack(anchor=tk.W, pady=(0, 8))
         
-        exercise_subtitle = self.widget_factory.create_label(
-            exercise_content,
-            "Проследяване на стойката в реално време",
-            style="body_medium"
-        )
-        exercise_subtitle.pack(anchor=tk.W, pady=(0, 16))
-        exercise_subtitle.configure(fg=self.theme.colors['muted_foreground'])
-        
         # Dropdown за избор на упражнение
         select_frame = tk.Frame(exercise_content, bg=self.theme.colors['card'])
         select_frame.pack(fill=tk.X, pady=(0, 8))
@@ -142,39 +127,6 @@ class ModernExerciseApp:
         self.exercise_btn.pack(anchor=tk.W, pady=(0, 16))
         self.exercise_btn.configure(state="disabled")
         
-        # Секция за статус
-        status_frame = tk.Frame(exercise_content, bg=self.theme.colors['card'])
-        status_frame.pack(fill=tk.X, pady=(0, 16))
-        
-        self.instruction_label = self.widget_factory.create_label(
-            status_frame,
-            "Стартирайте сесия, за да започнете",
-            style="body_medium"
-        )
-        self.instruction_label.pack(anchor=tk.W)
-        self.instruction_label.configure(fg=self.theme.colors['muted_foreground'])
-        
-        # Секция за напредък
-        progress_frame = tk.Frame(exercise_content, bg=self.theme.colors['card'])
-        progress_frame.pack(fill=tk.X)
-        
-        metrics_frame = tk.Frame(progress_frame, bg=self.theme.colors['card'])
-        metrics_frame.pack(fill=tk.X)
-        
-        self.accuracy_label = self.widget_factory.create_label(
-            metrics_frame,
-            "Точност на изпълнение: --",
-            style="body_medium"
-        )
-        self.accuracy_label.pack(side=tk.LEFT, padx=(0, 20))
-        
-        self.timer_label = self.widget_factory.create_label(
-            metrics_frame,
-            "Време: --",
-            style="body_medium"
-        )
-        self.timer_label.pack(side=tk.LEFT)
-    
     def start_calibration(self):
         """Започва процеса на калибриране."""
         if not globals.session_running:

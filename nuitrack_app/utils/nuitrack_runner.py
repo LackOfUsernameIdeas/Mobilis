@@ -126,14 +126,7 @@ def update_timer_display():
     """Обновява таймера и прогреса в отделен нишков процес (thread)."""
     
     while globals.session_running:
-        try:
-            # Изчисляване на изминалото време от старта на сесията
-            if globals.session_running:
-                elapsed = time.time() - globals.session_start_time
-                minutes = int(elapsed // 60)   # цели минути
-                seconds = elapsed % 60         # остатъчни секунди
-                globals.app.elapsed_label.config(text=f"Session Time: {minutes:02d}:{seconds:05.2f}")
-            
+        try:            
             # Обновяване на прогреса:
             #    - Ако е активна калибриране → обновяваме прогреса на калибрирането
             #    - Ако е активно упражнение → обновяваме прогреса на упражнението
