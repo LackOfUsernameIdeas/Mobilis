@@ -142,8 +142,6 @@ class TTSManager:
                 json=payload,
                 timeout=30
             )
-
-            logger.info(f"KEY: {headers}")
             
             if response.status_code == 200:
                 with open(output_path, 'wb') as f:
