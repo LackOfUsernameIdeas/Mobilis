@@ -1,6 +1,8 @@
 import time
 import tkinter as tk
 import custom_messagebox as messagebox
+import sys
+import os
 
 from session import start_session, stop_session, toggle_exercise
 from theme import ModernTheme, ModernWidget
@@ -20,15 +22,26 @@ class ModernExerciseApp:
         
         self.setup_window()
         self.create_widgets()
+        self.update_cache_status()  # Първоначална проверка на статуса
     
     def setup_window(self):
         """Настройка на главния прозорец с модерен стил"""
         self.root = tk.Tk()
         
-        self.root.iconbitmap(default='logo.ico')
+        # Извличане на .ico при компилирано .exe
+        if getattr(sys, 'frozen', False):
+            base_path = sys._MEIPASS
+        else:
+            base_path = os.path.dirname(os.path.abspath(__file__))
+        
+        icon_path = os.path.join(base_path, 'logo.ico')
+        try:
+            self.root.iconbitmap(default=icon_path)
+        except Exception as e:
+            print(f"Could not load icon: {e}")
 
         self.root.title("Персонален треньор за упражнения")
-        self.root.geometry("685x385")
+        self.root.geometry("685x450")  # Малко по-висок за статус лентата
         self.root.configure(bg=self.theme.colors['background'])
         
     def create_widgets(self):
@@ -36,6 +49,21 @@ class ModernExerciseApp:
         # Главен контейнер
         main_container = tk.Frame(self.root, bg=self.theme.colors['background'])
         main_container.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+        
+        # === СТАТУС ЛЕНТА ЗА КЕШИРАНЕ ===
+        self.cache_status_frame = tk.Frame(main_container, bg="#FFF3CD", relief=tk.SOLID, borderwidth=1)
+        self.cache_status_frame.pack(fill=tk.X, pady=(0, 16))
+        
+        self.cache_status_label = tk.Label(
+            self.cache_status_frame,
+            text="⏳ Зареждане на аудио инструкции...",
+            bg="#FFF3CD",
+            fg="#856404",
+            font=("Segoe UI", 10),
+            padx=12,
+            pady=8
+        )
+        self.cache_status_label.pack()
         
         # Карта за сесия
         session_card = self.widget_factory.create_card(main_container)
@@ -124,7 +152,51 @@ class ModernExerciseApp:
         )
         self.exercise_btn.pack(anchor=tk.W, pady=(0, 16))
         self.exercise_btn.configure(state="disabled")
+    
+    def update_cache_status(self):
+        """Актуализира статуса на кеширането"""
+        from preload_exercises import cache_status
         
+        # Не показва нищо ако кеширането не е започнало
+        if not cache_status.is_caching and not cache_status.error and not cache_status.is_complete:
+            self.cache_status_frame.pack_forget()
+            return
+        
+        # Ако кеширането е завършено без грешки и нищо ново не е генерирано, не показва нищо
+        if cache_status.is_complete and not cache_status.error and cache_status.files_generated == 0:
+            self.cache_status_frame.pack_forget()
+            return
+        
+        # Показва статус лентата само ако има активно кеширане, грешка или генерирани файлове
+        self.cache_status_frame.pack(fill=tk.X, pady=(0, 16))
+        
+        # Взима текущия статус
+        status_text = cache_status.get_progress_text()
+        self.cache_status_label.config(text=status_text)
+        
+        # Променя цветовете според статуса
+        if cache_status.is_complete and not cache_status.error:
+            # Зелен цвят за успех
+            self.cache_status_frame.config(bg="#D4EDDA")
+            self.cache_status_label.config(bg="#D4EDDA", fg="#155724")
+            
+            # Скрива статус лентата след 3 секунди
+            self.root.after(3000, lambda: self.cache_status_frame.pack_forget())
+            
+        elif cache_status.error:
+            # Червен цвят за грешка
+            self.cache_status_frame.config(bg="#F8D7DA")
+            self.cache_status_label.config(bg="#F8D7DA", fg="#721C24")
+            
+        else:
+            # Жълт цвят за прогрес
+            self.cache_status_frame.config(bg="#FFF3CD")
+            self.cache_status_label.config(bg="#FFF3CD", fg="#856404")
+            
+            # Продължава да проверява докато не приключи
+            if cache_status.is_caching:
+                self.root.after(500, self.update_cache_status)
+
     def start_calibration(self):
         """Започва процеса на калибриране."""
         if not globals.session_running:

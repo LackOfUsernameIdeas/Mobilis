@@ -39,6 +39,7 @@ next-env.d.ts
 
 # nuitrack app
 __pycache__/
+tts_cache/
 nuitrack_app/nuitrack-env
 nuitrack_log.txt
 nuitrack_app/build

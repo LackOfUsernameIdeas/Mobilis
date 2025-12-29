@@ -38,7 +38,7 @@ EXERCISE_JSON_1 = {
         {
             "name": "Позиция 3 - Неутрална стойка",
             "duration_seconds": 3,
-            "instructions": "Позиция 3 - Освободѐте и върнете главата в неутрално положение.",
+            "instructions": "Позиция 3 - Освободете и върнете главата в неутрално положение.",
             "required_poses": {
                 "arms_down": True,
                 "legs_together": True,

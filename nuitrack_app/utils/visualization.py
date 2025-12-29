@@ -3,17 +3,25 @@ import numpy as np
 import cv2
 import time
 import os
+import sys
 
 from utils.skeleton_processing import project_world_to_screen
 
 import globals
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-def draw_text(img, text, pos, font_path=os.path.join(BASE_DIR, 'ARIAL.TTF'), font_size=24, color=(255,255,255)):
+def draw_text(img, text, pos, font_path=None, font_size=24, color=(255,255,255)):
     # Уверете се, че работим с копие, за да избегнем промяна на оригинала
     img_copy = img.copy()
     
+    if getattr(sys, 'frozen', False):
+        # Compiled .exe, PyInstaller copies ARIAL.TTF to _MEIPASS
+        base_path = sys._MEIPASS
+        font_path = font_path or os.path.join(base_path, "ARIAL.TTF")
+    else:
+        # Dev mode: ARIAL.TTF is outside utils folder
+        base_path = os.path.dirname(os.path.abspath(__file__))
+        font_path = font_path or os.path.join(base_path, '../ARIAL.TTF')
+
     try:
         img_pil = Image.fromarray(cv2.cvtColor(img_copy, cv2.COLOR_BGR2RGB))
         draw = ImageDraw.Draw(img_pil)

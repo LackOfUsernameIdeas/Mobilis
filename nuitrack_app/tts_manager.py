@@ -2,13 +2,20 @@ import logging
 import threading
 import queue
 import os
-import tempfile
 from pathlib import Path
+from dotenv import load_dotenv
+
+import requests
+import sys
+import tempfile
 
 import pygame
-from gtts import gTTS
 
 logger = logging.getLogger(__name__)
+
+# Get absolute path to the .env file
+env_path = Path(__file__).resolve().parent.parent / ".env"
+load_dotenv(dotenv_path=env_path)
 
 class TTSManager:
     """Управлява text-to-speech за прочитане на инструкции за упражнения"""
@@ -19,10 +26,26 @@ class TTSManager:
         self.tts_thread = None
         self.running = False
         self.current_speech_thread = None
-        self.use_gtts = True
         
+        # OpenAI API настройки
+        self.api_key = os.getenv("OPENAI_API_KEY")
+        self.api_url = "https://api.openai.com/v1/audio/speech"
+        self.model = "gpt-4o-mini-tts"
+        self.voice = "coral" 
+        self.instructions = "Speak in a friendly, clear, and natural tone. Pronounce Bulgarian correctly, with normal speed."
+        
+        if cache_dir is None:
+            if getattr(sys, 'frozen', False):
+                # Извличане на tts_cache директорията при компилирано .exe
+                base_path = sys._MEIPASS
+                cache_dir = os.path.join(base_path, 'tts_cache')
+            else:
+                base_path = os.path.dirname(os.path.abspath(__file__))
+                cache_dir = os.path.join(base_path, "tts_cache")
+
         # Кеш директория за предварително генерирани аудио файлове
-        self.cache_dir = cache_dir or tempfile.gettempdir()
+        self.cache_dir = cache_dir
+        os.makedirs(self.cache_dir, exist_ok=True)
         self.cache_enabled = True
         
         # Предварително зареждане на често използвани фрази
@@ -40,7 +63,6 @@ class TTSManager:
                 pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=512)
                 logger.info("Pygame mixer initialized with optimized settings")
             
-            self.use_gtts = True
             self.initialized = True
             logger.info("TTS manager initialized successfully")
             return True
@@ -51,10 +73,9 @@ class TTSManager:
     
     def _get_cache_path(self, text):
         """Генерира път за кеширан файл базиран на текста"""
-        # Използва hash за име на файл
         import hashlib
         text_hash = hashlib.md5(text.encode('utf-8')).hexdigest()
-        return os.path.join(self.cache_dir, f"tts_{text_hash}.mp3")
+        return os.path.join(self.cache_dir, f"openai_tts_{text_hash}.mp3")
     
     def preload_phrases(self, phrases):
         """
@@ -78,8 +99,7 @@ class TTSManager:
                     # Генерира файла ако не съществува
                     if not os.path.exists(cache_path):
                         logger.info(f"[{idx}/{total}] Generating: {text[:40]}...")
-                        tts = gTTS(text=text, lang='bg', slow=False)
-                        tts.save(cache_path)
+                        self._generate_audio_file(text, cache_path)
                     else:
                         logger.debug(f"[{idx}/{total}] Already cached: {text[:40]}...")
                     
@@ -94,11 +114,54 @@ class TTSManager:
         # Стартира в background thread за да не блокира
         threading.Thread(target=preload_worker, daemon=True).start()
     
-    def _speak_text_gtts(self, text):
-        """Произнася текст използвайки Google TTS (поддържа български)"""
+    def _generate_audio_file(self, text, output_path):
+        """
+        Генерира аудио файл от текст използвайки OpenAI TTS API
+        
+        Args:
+            text: Текст за произнасяне
+            output_path: Път където да се запази аудио файла
+        """
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json"
+        }
+        
+        payload = {
+            "model": self.model,
+            "input": text,
+            "voice": self.voice,
+            "instructions": self.instructions,
+            "response_format": "mp3"
+        }
+        
+        try:
+            response = requests.post(
+                self.api_url, 
+                headers=headers, 
+                json=payload,
+                timeout=30
+            )
+
+            logger.info(f"KEY: {headers}")
+            
+            if response.status_code == 200:
+                with open(output_path, 'wb') as f:
+                    f.write(response.content)
+                logger.debug(f"Audio generated and saved to {output_path}")
+            else:
+                logger.error(f"OpenAI API error: {response.status_code} - {response.text}")
+                raise Exception(f"API request failed: {response.status_code}")
+                
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Network error calling OpenAI API: {e}")
+            raise
+    
+    def _speak_text_openai(self, text):
+        """Произнася текст използвайки OpenAI TTS"""
         temp_file = None
         try:            
-            logger.info(f"Speaking with gTTS: {text[:50]}...")
+            logger.info(f"Speaking with OpenAI TTS: {text[:50]}...")
             
             # Проверка за кеширан файл
             if self.cache_enabled and text in self.preloaded_audio:
@@ -115,8 +178,7 @@ class TTSManager:
                     with tempfile.NamedTemporaryFile(delete=False, suffix='.mp3') as fp:
                         temp_file = fp.name
                     
-                    tts = gTTS(text=text, lang='bg', slow=False)
-                    tts.save(temp_file)
+                    self._generate_audio_file(text, temp_file)
                     audio_file = temp_file
                     
                     # Кешира файла ако е разрешено
@@ -136,10 +198,10 @@ class TTSManager:
             while pygame.mixer.music.get_busy():
                 pygame.time.Clock().tick(10)
             
-            logger.info("Finished speaking with gTTS")
+            logger.info("Finished speaking with OpenAI TTS")
             
         except Exception as e:
-            logger.error(f"Error speaking with gTTS: {e}")
+            logger.error(f"Error speaking with OpenAI TTS: {e}")
         finally:
             # Изчиства временния файл само ако е създаден нов
             if temp_file and os.path.exists(temp_file):
@@ -149,49 +211,9 @@ class TTSManager:
                 except Exception as e:
                     logger.warning(f"Could not delete temp file: {e}")
     
-    def _speak_text_pyttsx3(self, text):
-        """Произнася текст използвайки pyttsx3 (резервен вариант)"""
-        try:
-            import pyttsx3
-            
-            # Създава engine в този thread
-            local_engine = pyttsx3.init()
-            local_engine.setProperty('rate', 150)
-            local_engine.setProperty('volume', 0.9)
-            
-            # Опит за намиране на български глас
-            voices = local_engine.getProperty('voices')
-            bulgarian_voice_found = False
-            
-            for voice in voices:
-                # Проверка за български глас
-                if hasattr(voice, 'languages'):
-                    if 'bg' in voice.languages or 'bulgarian' in voice.name.lower():
-                        local_engine.setProperty('voice', voice.id)
-                        bulgarian_voice_found = True
-                        logger.info(f"Using Bulgarian voice: {voice.name}")
-                        break
-            
-            if not bulgarian_voice_found:
-                logger.warning("No Bulgarian voice found, using default voice")
-            
-            logger.info(f"Speaking with pyttsx3: {text[:50]}...")
-            local_engine.say(text)
-            local_engine.runAndWait()
-            
-            # Освобождаване на ресурси
-            del local_engine
-            logger.info("Finished speaking with pyttsx3")
-            
-        except Exception as e:
-            logger.error(f"Error speaking with pyttsx3: {e}")
-    
     def _speak_text(self, text):
         """Произнася един текст в отделен thread"""
-        if self.use_gtts:
-            self._speak_text_gtts(text)
-        else:
-            self._speak_text_pyttsx3(text)
+        self._speak_text_openai(text)
     
     def _tts_worker(self):
         """Фонов thread, който обработва TTS опашката"""
@@ -277,13 +299,12 @@ class TTSManager:
     def stop(self):
         """Спира TTS и изчиства опашката"""
         try:
-            # Спира pygame mixer ако използва gTTS
-            if self.use_gtts:
-                try:
-                    if pygame.mixer.get_init():
-                        pygame.mixer.music.stop()
-                except:
-                    pass
+            # Спира pygame mixer
+            try:
+                if pygame.mixer.get_init():
+                    pygame.mixer.music.stop()
+            except:
+                pass
             
             # Изчиства опашката
             while not self.tts_queue.empty():
@@ -304,12 +325,11 @@ class TTSManager:
             self.running = False
             
             # Спира pygame mixer
-            if self.use_gtts:
-                try:
-                    if pygame.mixer.get_init():
-                        pygame.mixer.quit()
-                except:
-                    pass
+            try:
+                if pygame.mixer.get_init():
+                    pygame.mixer.quit()
+            except:
+                pass
             
             # Изпраща сигнал за спиране на worker thread-а
             if self.tts_thread and self.tts_thread.is_alive():
