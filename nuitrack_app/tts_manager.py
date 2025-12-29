@@ -269,9 +269,9 @@ class TTSManager:
         except Exception as e:
             logger.error(f"Error adding text to TTS queue: {e}")
     
-    def speak_step(self, step_name, instructions):
+    def speak_step(self, instructions):
         """Произнася инструкциите за стъпка веднага и прекъсва текущото говорене"""
-        text = f"{step_name}. {instructions}"
+        text = f"{instructions}"
         self.speak(text, interrupt=True)
     
     def stop(self):

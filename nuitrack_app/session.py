@@ -83,7 +83,7 @@ def toggle_exercise(app):
 
             # Четене на новите инструкции на първата стъпка
             first_step = globals.EXERCISE_JSON["steps"][0]
-            globals.tts_manager.speak_step(first_step["name"], first_step["instructions"])
+            globals.tts_manager.speak_step(first_step["instructions"])
         else:
             messagebox.showerror("Грешка", "Невалидни данни от калибриране!")
             return

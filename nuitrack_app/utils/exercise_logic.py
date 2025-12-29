@@ -199,4 +199,4 @@ def advance_to_next_step():
 
         # Четене на новите инструкции на стъпката
         new_step = globals.EXERCISE_JSON["steps"][globals.current_step]
-        globals.tts_manager.speak_step(new_step["name"], new_step["instructions"])
+        globals.tts_manager.speak_step(new_step["instructions"])
