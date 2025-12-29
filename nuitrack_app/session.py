@@ -11,7 +11,7 @@ def start_session(update_timer_display, run_nuitrack, app):
     """Започва нова сесия на Nuitrack програмата."""
 
     if globals.session_running:
-        messagebox.showwarning("Session Running", "Session already active!")
+        messagebox.showwarning("Активна сесия", "Сесията вече е активна!")
         return
     
     globals.session_start_time = time.time()

@@ -44,9 +44,16 @@ def perform_calibration(nuitrack):
     # Проверка за достатъчен брой валидни обекти със засечени стави
     if len(samples) < 5: 
         globals.logger.info(f"Calibration failed: Only {len(samples)} valid samples (need 5)")
-        feedback = f"Не са открити достатъчно валидни пози. Събрани са само {len(samples)} проби.\n"
-        feedback += "Уверете се: Цялото тяло е видимо, стойте неподвижно, ръцете надолу, краката заедно.\n"
-        feedback += "Проверете прозореца на OpenCV за скелета (жълти линии, магента точки)."
+        feedback = (
+            "Не са открити достатъчно валидни стави.\n"
+            f"Събрани са само {len(samples)}.\n\n"
+            "Уверете се, че:\n"
+            "- цялото тяло е видимо\n"
+            "- стоите неподвижно\n"
+            "- ръцете са отпуснати надолу\n"
+            "- краката са събрани\n\n"
+            "Трябва да виждате модела на вашия скелет (жълти линии, магента точки)."
+        )
         messagebox.showwarning("Неуспешно калибриране", feedback)
         return None
     
@@ -74,9 +81,13 @@ def perform_calibration(nuitrack):
     torso_z = avg_skeleton.get('TORSO', {}).get('z', 1500)
     if abs(torso_x) > 400 or not (1000 < torso_z < 3000):  # Relaxed X to 400mm
         globals.logger.error(f"Calibration failed: Torso off-center (X={torso_x:.0f}mm) or bad distance (Z={torso_z:.0f}mm)")
-        feedback = "Торсът не е в правилна позиция. Твърде сте близо или далече.\n"
-        feedback += "Застанете изправени в центъра на кадъра на около 1.5–2м от камерата.\n"
-        feedback += "Осветлението трябва да е равномерно – не твърде тъмно и не твърде силно. Камерата да е на височината на гърдите."
+        feedback = (
+            "Торсът не е в правилна позиция.\n"
+            "Твърде сте близо или далече.\n\n"
+            "Застанете изправени в центъра на кадъра на около 2.5–3м от камерата.\n"
+            "Осветлението трябва да е равномерно – не твърде тъмно и не твърде силно.\n"
+            "Камерата да е на височината на гърдите."
+        )
         messagebox.showwarning("Нужно е коригиране на позицията", feedback)
         return None
     
@@ -84,9 +95,12 @@ def perform_calibration(nuitrack):
     height = abs(avg_skeleton.get('HEAD', {}).get('y', 0) - avg_skeleton.get('LEFT_ANKLE', {}).get('y', 0))
     if height < 1000 or height > 2500:
         globals.logger.error(f"Calibration failed: Unrealistic height ({height:.0f}mm)")
-        feedback = f"Нереалистична височина ({height:.0f}мм). Увери се, че главата и глезените са засечени.\n"
-        feedback += "Провери OpenCV прозореца за стабилно скелетно проследяване."
-        messagebox.showwarning("Калибрирането е неуспешна", feedback)
+        feedback = (
+            f"Нереалистична височина ({height:.0f} мм).\n\n"
+            "Уверете се, че главата и глезените се виждат в кадъра.\n\n"
+            "Трябва да виждате модела на вашия скелет (жълти линии, магента точки)."
+        )
+        messagebox.showwarning("Калибрирането е неуспешно", feedback)
         return None
     
     # Изчисляване на дължина и ширина на различни части на тялото
