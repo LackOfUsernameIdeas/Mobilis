@@ -118,7 +118,7 @@ class ModernExerciseApp:
         self.exercise_btn = self.widget_factory.create_button(
             exercise_content,
             "Стартиране на упражнение",
-            command=lambda: toggle_exercise(self, perform_calibration),
+            command=lambda: toggle_exercise(self),
             variant="primary",
             state="disabled"
         )

@@ -3,6 +3,7 @@ import os
 
 from exercises import ALL_EXERCISES
 from sound_manager import sound_manager
+from tts_manager import tts_manager
 
 # Настройка за логване в отделен файл
 log_file = os.path.join(os.path.dirname(__file__), 'nuitrack_log.txt')
@@ -32,6 +33,7 @@ calibration_completed = False   # Следи дали калибрирането
 
 app = None                      # Основен обект на приложението
 sound_manager = sound_manager   # Мениджър за звукови ефекти
+tts_manager = tts_manager       # Мениджър за четене на текст
 
 # Обект за упражнение (по подразбиране първото)
 EXERCISE_JSON = ALL_EXERCISES[0]
