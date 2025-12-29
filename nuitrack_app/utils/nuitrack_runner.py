@@ -59,19 +59,19 @@ def run_nuitrack():
                     seconds = elapsed % 60
                     
                     # 5) Събиране на статус линии за показване върху видео
-                    status_lines = [
-                        f"Сесия: {minutes:02d}:{seconds:05.2f}",
-                        f"Скелет: {'ЗАСЕЧЕН' if globals.current_user_skeleton else 'ТЪРСЕНЕ...'}",
-                    ]
-                    
-                    # Статус при калибриране
-                    if globals.calibration_active:
-                        elapsed_cal = time.time() - globals.calibration_start_time
-                        remaining_cal = max(0, 5 - elapsed_cal)
-                        status_lines.extend([
-                            f"КАЛИБРИРАНЕ: {remaining_cal:.1f} секунди остават"
-                        ])
-                    
+                    status_lines = [f"Сесия: {minutes:02d}:{seconds:05.2f}"]
+
+                    # Статус само при незасечен скелет
+                    if not globals.current_user_skeleton:
+                        # Статус при калибриране
+                        if globals.calibration_active:
+                            elapsed_cal = time.time() - globals.calibration_start_time
+                            remaining_cal = max(0, 5 - elapsed_cal)
+                            status_lines.extend([
+                                f"КАЛИБРИРАНЕ: {remaining_cal:.1f} секунди остават"
+                            ])
+                        status_lines.append("Скелет: ТЪРСЕНЕ...")
+                                        
                     # Статус при упражнение
                     elif globals.exercise_active:
                         step_data = globals.EXERCISE_JSON["steps"][globals.current_step]
@@ -86,14 +86,15 @@ def run_nuitrack():
                         else:
                             accuracy = 0
                         
+                        accuracy_display = get_accuracy_indicator(accuracy)
+                        
                         status_lines.extend([
-                            f"Упражнение: Стъпка {globals.current_step + 1}/{len(globals.EXERCISE_JSON['steps'])}",
-                            f"Точност: {accuracy:.0f}%",
-                            f"Цел: {step_data['name']}"
+                            f"{step_data['name']}",
+                            f"Форма: {accuracy_display}"
                         ])
                     
                     # Статус при изчакване
-                    else:
+                    elif not globals.calibration_active:
                         status_lines.append("Упражнение: В готовност за стартиране")
                     
                     # 6) Показване на всички статус линии върху екрана
@@ -141,3 +142,21 @@ def update_timer_display():
         except:
             # При грешка прекратяваме нишката
             break
+
+def get_accuracy_indicator(accuracy):
+    """
+    Създава визуална индикация за точност вместо процент.
+    Показва специален индикатор само когато точността е 100%.
+    """
+    if accuracy >= 100:
+        return "██████ ПЕРФЕКТНА!"
+    elif accuracy >= 95:
+        return "█████░ Отлична"
+    elif accuracy >= 85:
+        return "████░░ Много добра"
+    elif accuracy >= 70:
+        return "███░░░ Добра"
+    elif accuracy >= 50:
+        return "██░░░░ Добра"
+    else:
+        return "█░░░░░ Коригирайте позата"
