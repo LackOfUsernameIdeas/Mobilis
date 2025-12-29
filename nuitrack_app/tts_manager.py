@@ -3,9 +3,9 @@ import threading
 import queue
 import os
 import tempfile
+from pathlib import Path
 
 import pygame
-import gtts
 from gtts import gTTS
 
 logger = logging.getLogger(__name__)
@@ -13,13 +13,20 @@ logger = logging.getLogger(__name__)
 class TTSManager:
     """Управлява text-to-speech за прочитане на инструкции за упражнения"""
     
-    def __init__(self):
+    def __init__(self, cache_dir=None):
         self.initialized = False
         self.tts_queue = queue.Queue()
         self.tts_thread = None
         self.running = False
         self.current_speech_thread = None
-        self.use_gtts = True  # По подразбиране използва gTTS за български
+        self.use_gtts = True
+        
+        # Кеш директория за предварително генерирани аудио файлове
+        self.cache_dir = cache_dir or tempfile.gettempdir()
+        self.cache_enabled = True
+        
+        # Предварително зареждане на често използвани фрази
+        self.preloaded_audio = {}
         
     def _lazy_initialize(self):
         """Инициализира TTS engine само при първа нужда"""
@@ -27,15 +34,13 @@ class TTSManager:
             return True
             
         try:
-            # Проверка дали gTTS е налично
-            try:
-                self.use_gtts = True
-                logger.info("Using gTTS for Bulgarian text-to-speech")
-            except ImportError:
-                logger.warning("gTTS not available, falling back to pyttsx3")
-                logger.warning("Install with: pip install gtts pygame")
-                self.use_gtts = False
+            # Инициализира pygame mixer веднъж в началото
+            if not pygame.mixer.get_init():
+                # Намалени буфери за по-малка латентност
+                pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=512)
+                logger.info("Pygame mixer initialized with optimized settings")
             
+            self.use_gtts = True
             self.initialized = True
             logger.info("TTS manager initialized successfully")
             return True
@@ -44,45 +49,105 @@ class TTSManager:
             logger.error(f"Failed to initialize TTS manager: {e}")
             return False
     
+    def _get_cache_path(self, text):
+        """Генерира път за кеширан файл базиран на текста"""
+        # Използва hash за име на файл
+        import hashlib
+        text_hash = hashlib.md5(text.encode('utf-8')).hexdigest()
+        return os.path.join(self.cache_dir, f"tts_{text_hash}.mp3")
+    
+    def preload_phrases(self, phrases):
+        """
+        Предварително генерира и кешира често използвани фрази
+        Извиква това в началото с често използваните инструкции
+        
+        Аргументи:
+            phrases: List или dict с текстове за предварително зареждане
+        """
+        if not self._lazy_initialize():
+            return
+        
+        def preload_worker():
+            items = list(phrases.items() if isinstance(phrases, dict) else enumerate(phrases))
+            total = len(items)
+            
+            for idx, (key, text) in enumerate(items, 1):
+                try:
+                    cache_path = self._get_cache_path(text)
+                    
+                    # Генерира файла ако не съществува
+                    if not os.path.exists(cache_path):
+                        logger.info(f"[{idx}/{total}] Generating: {text[:40]}...")
+                        tts = gTTS(text=text, lang='bg', slow=False)
+                        tts.save(cache_path)
+                    else:
+                        logger.debug(f"[{idx}/{total}] Already cached: {text[:40]}...")
+                    
+                    # Запазва пътя в паметта
+                    self.preloaded_audio[text] = cache_path
+                    
+                except Exception as e:
+                    logger.error(f"[{idx}/{total}] Error preloading: {e}")
+            
+            logger.info(f"✓ Preloading complete! {len(self.preloaded_audio)} phrases ready.")
+        
+        # Стартира в background thread за да не блокира
+        threading.Thread(target=preload_worker, daemon=True).start()
+    
     def _speak_text_gtts(self, text):
         """Произнася текст използвайки Google TTS (поддържа български)"""
+        temp_file = None
         try:            
             logger.info(f"Speaking with gTTS: {text[:50]}...")
             
-            # Създава временен файл за аудиото
-            with tempfile.NamedTemporaryFile(delete=False, suffix='.mp3') as fp:
-                temp_file = fp.name
+            # Проверка за кеширан файл
+            if self.cache_enabled and text in self.preloaded_audio:
+                audio_file = self.preloaded_audio[text]
+                logger.debug("Using preloaded audio")
+            else:
+                # Проверка за кеширан файл на диска
+                cache_path = self._get_cache_path(text)
+                if self.cache_enabled and os.path.exists(cache_path):
+                    audio_file = cache_path
+                    logger.debug("Using cached audio file")
+                else:
+                    # Генерира нов файл
+                    with tempfile.NamedTemporaryFile(delete=False, suffix='.mp3') as fp:
+                        temp_file = fp.name
+                    
+                    tts = gTTS(text=text, lang='bg', slow=False)
+                    tts.save(temp_file)
+                    audio_file = temp_file
+                    
+                    # Кешира файла ако е разрешено
+                    if self.cache_enabled:
+                        try:
+                            import shutil
+                            shutil.copy(temp_file, cache_path)
+                            logger.debug(f"Cached audio to {cache_path}")
+                        except Exception as e:
+                            logger.warning(f"Could not cache audio: {e}")
             
-            try:
-                # Генерира речта
-                tts = gTTS(text=text, lang='bg', slow=False)
-                tts.save(temp_file)
-                
-                # Инициализира pygame mixer ако не е инициализиран
-                if not pygame.mixer.get_init():
-                    pygame.mixer.init()
-                
-                # Възпроизвежда аудиото
-                pygame.mixer.music.load(temp_file)
-                pygame.mixer.music.play()
-                
-                # Изчаква завършване
-                while pygame.mixer.music.get_busy():
-                    pygame.time.Clock().tick(10)
-                
-                logger.info("Finished speaking with gTTS")
-                
-            finally:
-                # Изчиства временния файл
-                try:
-                    if pygame.mixer.get_init():
-                        pygame.mixer.music.unload()
-                    os.unlink(temp_file)
-                except Exception as e:
-                    logger.warning(f"Could not delete temp file: {e}")
+            # Възпроизвежда аудиото
+            pygame.mixer.music.load(audio_file)
+            pygame.mixer.music.play()
+            
+            # Изчаква завършване
+            while pygame.mixer.music.get_busy():
+                pygame.time.Clock().tick(10)
+            
+            logger.info("Finished speaking with gTTS")
             
         except Exception as e:
             logger.error(f"Error speaking with gTTS: {e}")
+        finally:
+            # Изчиства временния файл само ако е създаден нов
+            if temp_file and os.path.exists(temp_file):
+                try:
+                    pygame.mixer.music.unload()
+                    os.unlink(temp_file)
+                except Exception as e:
+                    logger.warning(f"Could not delete temp file: {e}")
     
     def _speak_text_pyttsx3(self, text):
         """Произнася текст използвайки pyttsx3 (резервен вариант)"""
@@ -108,7 +173,7 @@ class TTSManager:
                         break
             
             if not bulgarian_voice_found:
-                logger.warning("No Bulgarian voice found, using default voice (may not support Bulgarian)")
+                logger.warning("No Bulgarian voice found, using default voice")
             
             logger.info(f"Speaking with pyttsx3: {text[:50]}...")
             local_engine.say(text)
