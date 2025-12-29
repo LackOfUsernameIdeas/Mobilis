@@ -22,17 +22,14 @@ class ModernExerciseApp:
         
         self.setup_window()
         self.create_widgets()
-        self.update_cache_status()  # Първоначална проверка на статуса
         
-        # Auto-size and center window, then show it
+        # Автоматично оразмеряване и центриране на прозореца
         self.auto_size_window()
-        self.root.deiconify()  # Show the window after everything is ready
+        self.root.deiconify() 
     
     def setup_window(self):
         """Настройка на главния прозорец с модерен стил"""
         self.root = tk.Tk()
-        
-        # Hide window initially to prevent flicker
         self.root.withdraw()
         
         # Извличане на .ico при компилирано .exe
@@ -48,25 +45,27 @@ class ModernExerciseApp:
             print(f"Could not load icon: {e}")
 
         self.root.title("Персонален треньор за упражнения")
-        # Don't set geometry here - let it auto-size
         self.root.configure(bg=self.theme.colors['background'])
         
     def auto_size_window(self, show_on_first_call=False):
-        """Automatically sizes the window to fit all content"""
-        # Force update to calculate sizes
+        """Автоматично оразмеряване на прозореца според съдържанието"""
+        
+        # Принудително обновяване, за да се изчислят реалните размери
         self.root.update_idletasks()
         
-        # Get required width and height
+        # Вземане на необходимата ширина и височина
         required_width = self.root.winfo_reqwidth()
         required_height = self.root.winfo_reqheight()
         
-        # Center the window on screen
+        # Вземане на размерите на екрана
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
+        
+        # Изчисляване на позицията за центриране
         x = (screen_width - required_width) // 2
         y = (screen_height - required_height) // 2
         
-        # Set size and position in one call
+        # Задаване на размер и позиция с едно извикване
         self.root.geometry(f"{required_width}x{required_height}+{x}+{y}")
         
     def create_widgets(self):
@@ -74,21 +73,6 @@ class ModernExerciseApp:
         # Главен контейнер
         main_container = tk.Frame(self.root, bg=self.theme.colors['background'])
         main_container.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
-        
-        # === СТАТУС ЛЕНТА ЗА КЕШИРАНЕ ===
-        self.cache_status_frame = tk.Frame(main_container, bg="#FFF3CD", relief=tk.SOLID, borderwidth=1)
-        self.cache_status_frame.pack(fill=tk.X, pady=(0, 16))
-        
-        self.cache_status_label = tk.Label(
-            self.cache_status_frame,
-            text="⏳ Зареждане на аудио инструкции...",
-            bg="#FFF3CD",
-            fg="#856404",
-            font=("Segoe UI", 10),
-            padx=12,
-            pady=8
-        )
-        self.cache_status_label.pack()
         
         # Карта за сесия
         session_card = self.widget_factory.create_card(main_container)
@@ -177,62 +161,6 @@ class ModernExerciseApp:
         )
         self.exercise_btn.pack(anchor=tk.W, pady=(0, 16))
         self.exercise_btn.configure(state="disabled")
-    
-    def update_cache_status(self):
-        """Актуализира статуса на кеширането"""
-        from preload_exercises import cache_status
-        
-        # Store previous visibility state
-        was_visible = self.cache_status_frame.winfo_ismapped()
-        
-        # Не показва нищо ако кеширането не е започнало
-        if not cache_status.is_caching and not cache_status.error and not cache_status.is_complete:
-            self.cache_status_frame.pack_forget()
-            if was_visible:
-                self.auto_size_window()  # Resize when hiding
-            return
-        
-        # Ако кеширането е завършено без грешки и нищо ново не е генерирано, не показва нищо
-        if cache_status.is_complete and not cache_status.error and cache_status.files_generated == 0:
-            self.cache_status_frame.pack_forget()
-            if was_visible:
-                self.auto_size_window()  # Resize when hiding
-            return
-        
-        # Показва статус лентата само ако има активно кеширане, грешка или генерирани файлове
-        if not was_visible:
-            self.cache_status_frame.pack(fill=tk.X, pady=(0, 16))
-            self.auto_size_window()  # Resize when showing
-        
-        # Взима текущия статус
-        status_text = cache_status.get_progress_text()
-        self.cache_status_label.config(text=status_text)
-        
-        # Променя цветовете според статуса
-        if cache_status.is_complete and not cache_status.error:
-            # Зелен цвят за успех
-            self.cache_status_frame.config(bg="#D4EDDA")
-            self.cache_status_label.config(bg="#D4EDDA", fg="#155724")
-            
-            # Скрива статус лентата след 3 секунди
-            def hide_and_resize():
-                self.cache_status_frame.pack_forget()
-                self.auto_size_window()
-            self.root.after(3000, hide_and_resize)
-            
-        elif cache_status.error:
-            # Червен цвят за грешка
-            self.cache_status_frame.config(bg="#F8D7DA")
-            self.cache_status_label.config(bg="#F8D7DA", fg="#721C24")
-            
-        else:
-            # Жълт цвят за прогрес
-            self.cache_status_frame.config(bg="#FFF3CD")
-            self.cache_status_label.config(bg="#FFF3CD", fg="#856404")
-            
-            # Продължава да проверява докато не приключи
-            if cache_status.is_caching:
-                self.root.after(500, self.update_cache_status)
 
     def start_calibration(self):
         """Започва процеса на калибриране."""

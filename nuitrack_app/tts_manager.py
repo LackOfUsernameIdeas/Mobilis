@@ -13,7 +13,7 @@ import pygame
 
 logger = logging.getLogger(__name__)
 
-# Get absolute path to the .env file
+# Получаване на абсолютен път до .env файла
 env_path = Path(__file__).resolve().parent.parent / ".env"
 load_dotenv(dotenv_path=env_path)
 
@@ -111,7 +111,7 @@ class TTSManager:
             
             logger.info(f"✓ Preloading complete! {len(self.preloaded_audio)} phrases ready.")
         
-        # Стартира в background thread за да не блокира
+        # Стартира в background thread, за да не блокира
         threading.Thread(target=preload_worker, daemon=True).start()
     
     def _generate_audio_file(self, text, output_path):
