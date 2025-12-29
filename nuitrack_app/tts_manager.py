@@ -1,7 +1,12 @@
 import logging
 import threading
 import queue
-import pyttsx3
+import os
+import tempfile
+
+import pygame
+import gtts
+from gtts import gTTS
 
 logger = logging.getLogger(__name__)
 
@@ -10,11 +15,11 @@ class TTSManager:
     
     def __init__(self):
         self.initialized = False
-        self.engine = None
         self.tts_queue = queue.Queue()
         self.tts_thread = None
         self.running = False
         self.current_speech_thread = None
+        self.use_gtts = True  # По подразбиране използва gTTS за български
         
     def _lazy_initialize(self):
         """Инициализира TTS engine само при първа нужда"""
@@ -22,63 +27,106 @@ class TTSManager:
             return True
             
         try:
+            # Проверка дали gTTS е налично
+            try:
+                self.use_gtts = True
+                logger.info("Using gTTS for Bulgarian text-to-speech")
+            except ImportError:
+                logger.warning("gTTS not available, falling back to pyttsx3")
+                logger.warning("Install with: pip install gtts pygame")
+                self.use_gtts = False
+            
             self.initialized = True
             logger.info("TTS manager initialized successfully")
             return True
             
-        except ImportError:
-            logger.error("pyttsx3 not installed. Run: pip install pyttsx3")
-            return False
         except Exception as e:
             logger.error(f"Failed to initialize TTS manager: {e}")
             return False
     
-    def _init_engine_in_thread(self):
-        """Инициализира pyttsx3 engine в работния thread, нужно за COM под Windows"""
-        if self.engine is not None:
-            return True
+    def _speak_text_gtts(self, text):
+        """Произнася текст използвайки Google TTS (поддържа български)"""
+        try:            
+            logger.info(f"Speaking with gTTS: {text[:50]}...")
             
-        try:
-            self.engine = pyttsx3.init()
+            # Създава временен файл за аудиото
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.mp3') as fp:
+                temp_file = fp.name
             
-            # Настройки на гласа
-            self.engine.setProperty('rate', 150)
-            self.engine.setProperty('volume', 0.9)
-            
-            # Опит за избор на български глас, ако е наличен
-            voices = self.engine.getProperty('voices')
-            for voice in voices:
-                if 'bg' in voice.languages or 'bulgarian' in voice.name.lower():
-                    self.engine.setProperty('voice', voice.id)
-                    logger.info(f"Using Bulgarian voice: {voice.name}")
-                    break
-            else:
-                logger.info("No Bulgarian voice found, using default voice")
-            
-            logger.info("TTS engine initialized in worker thread")
-            return True
+            try:
+                # Генерира речта
+                tts = gTTS(text=text, lang='bg', slow=False)
+                tts.save(temp_file)
+                
+                # Инициализира pygame mixer ако не е инициализиран
+                if not pygame.mixer.get_init():
+                    pygame.mixer.init()
+                
+                # Възпроизвежда аудиото
+                pygame.mixer.music.load(temp_file)
+                pygame.mixer.music.play()
+                
+                # Изчаква завършване
+                while pygame.mixer.music.get_busy():
+                    pygame.time.Clock().tick(10)
+                
+                logger.info("Finished speaking with gTTS")
+                
+            finally:
+                # Изчиства временния файл
+                try:
+                    if pygame.mixer.get_init():
+                        pygame.mixer.music.unload()
+                    os.unlink(temp_file)
+                except Exception as e:
+                    logger.warning(f"Could not delete temp file: {e}")
             
         except Exception as e:
-            logger.error(f"Failed to initialize TTS engine in thread: {e}")
-            return False
+            logger.error(f"Error speaking with gTTS: {e}")
     
-    def _speak_text(self, text):
-        """Произнася един текст в отделен thread"""
+    def _speak_text_pyttsx3(self, text):
+        """Произнася текст използвайки pyttsx3 (резервен вариант)"""
         try:
-            # Създава engine в този thread при нужда
+            import pyttsx3
+            
+            # Създава engine в този thread
             local_engine = pyttsx3.init()
             local_engine.setProperty('rate', 150)
+            local_engine.setProperty('volume', 0.9)
             
-            logger.info(f"Speaking: {text[:50]}...")
+            # Опит за намиране на български глас
+            voices = local_engine.getProperty('voices')
+            bulgarian_voice_found = False
+            
+            for voice in voices:
+                # Проверка за български глас
+                if hasattr(voice, 'languages'):
+                    if 'bg' in voice.languages or 'bulgarian' in voice.name.lower():
+                        local_engine.setProperty('voice', voice.id)
+                        bulgarian_voice_found = True
+                        logger.info(f"Using Bulgarian voice: {voice.name}")
+                        break
+            
+            if not bulgarian_voice_found:
+                logger.warning("No Bulgarian voice found, using default voice (may not support Bulgarian)")
+            
+            logger.info(f"Speaking with pyttsx3: {text[:50]}...")
             local_engine.say(text)
             local_engine.runAndWait()
             
             # Освобождаване на ресурси
             del local_engine
-            logger.info("Finished speaking")
+            logger.info("Finished speaking with pyttsx3")
             
         except Exception as e:
-            logger.error(f"Error speaking text: {e}")
+            logger.error(f"Error speaking with pyttsx3: {e}")
+    
+    def _speak_text(self, text):
+        """Произнася един текст в отделен thread"""
+        if self.use_gtts:
+            self._speak_text_gtts(text)
+        else:
+            self._speak_text_pyttsx3(text)
     
     def _tts_worker(self):
         """Фонов thread, който обработва TTS опашката"""
@@ -164,6 +212,14 @@ class TTSManager:
     def stop(self):
         """Спира TTS и изчиства опашката"""
         try:
+            # Спира pygame mixer ако използва gTTS
+            if self.use_gtts:
+                try:
+                    if pygame.mixer.get_init():
+                        pygame.mixer.music.stop()
+                except:
+                    pass
+            
             # Изчиства опашката
             while not self.tts_queue.empty():
                 try:
@@ -181,6 +237,14 @@ class TTSManager:
         """Освобождава всички TTS ресурси"""
         try:
             self.running = False
+            
+            # Спира pygame mixer
+            if self.use_gtts:
+                try:
+                    if pygame.mixer.get_init():
+                        pygame.mixer.quit()
+                except:
+                    pass
             
             # Изпраща сигнал за спиране на worker thread-а
             if self.tts_thread and self.tts_thread.is_alive():
