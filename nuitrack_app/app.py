@@ -23,10 +23,17 @@ class ModernExerciseApp:
         self.setup_window()
         self.create_widgets()
         self.update_cache_status()  # Първоначална проверка на статуса
+        
+        # Auto-size and center window, then show it
+        self.auto_size_window()
+        self.root.deiconify()  # Show the window after everything is ready
     
     def setup_window(self):
         """Настройка на главния прозорец с модерен стил"""
         self.root = tk.Tk()
+        
+        # Hide window initially to prevent flicker
+        self.root.withdraw()
         
         # Извличане на .ico при компилирано .exe
         if getattr(sys, 'frozen', False):
@@ -41,8 +48,26 @@ class ModernExerciseApp:
             print(f"Could not load icon: {e}")
 
         self.root.title("Персонален треньор за упражнения")
-        self.root.geometry("685x450")  # Малко по-висок за статус лентата
+        # Don't set geometry here - let it auto-size
         self.root.configure(bg=self.theme.colors['background'])
+        
+    def auto_size_window(self, show_on_first_call=False):
+        """Automatically sizes the window to fit all content"""
+        # Force update to calculate sizes
+        self.root.update_idletasks()
+        
+        # Get required width and height
+        required_width = self.root.winfo_reqwidth()
+        required_height = self.root.winfo_reqheight()
+        
+        # Center the window on screen
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+        x = (screen_width - required_width) // 2
+        y = (screen_height - required_height) // 2
+        
+        # Set size and position in one call
+        self.root.geometry(f"{required_width}x{required_height}+{x}+{y}")
         
     def create_widgets(self):
         """Създаване на всички уиджети с модерен стил"""
@@ -157,18 +182,27 @@ class ModernExerciseApp:
         """Актуализира статуса на кеширането"""
         from preload_exercises import cache_status
         
+        # Store previous visibility state
+        was_visible = self.cache_status_frame.winfo_ismapped()
+        
         # Не показва нищо ако кеширането не е започнало
         if not cache_status.is_caching and not cache_status.error and not cache_status.is_complete:
             self.cache_status_frame.pack_forget()
+            if was_visible:
+                self.auto_size_window()  # Resize when hiding
             return
         
         # Ако кеширането е завършено без грешки и нищо ново не е генерирано, не показва нищо
         if cache_status.is_complete and not cache_status.error and cache_status.files_generated == 0:
             self.cache_status_frame.pack_forget()
+            if was_visible:
+                self.auto_size_window()  # Resize when hiding
             return
         
         # Показва статус лентата само ако има активно кеширане, грешка или генерирани файлове
-        self.cache_status_frame.pack(fill=tk.X, pady=(0, 16))
+        if not was_visible:
+            self.cache_status_frame.pack(fill=tk.X, pady=(0, 16))
+            self.auto_size_window()  # Resize when showing
         
         # Взима текущия статус
         status_text = cache_status.get_progress_text()
@@ -181,7 +215,10 @@ class ModernExerciseApp:
             self.cache_status_label.config(bg="#D4EDDA", fg="#155724")
             
             # Скрива статус лентата след 3 секунди
-            self.root.after(3000, lambda: self.cache_status_frame.pack_forget())
+            def hide_and_resize():
+                self.cache_status_frame.pack_forget()
+                self.auto_size_window()
+            self.root.after(3000, hide_and_resize)
             
         elif cache_status.error:
             # Червен цвят за грешка
