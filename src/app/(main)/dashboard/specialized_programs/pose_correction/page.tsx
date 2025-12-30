@@ -9,6 +9,8 @@ import { AlertTriangle, Target, Activity } from "lucide-react";
 import ExerciseDetailModal from "./components/exercise-modal";
 import DownloadButton from "./components/download-button";
 import { Loader } from "../../_components/loader";
+import DiVi from "../../../../../../public/3DiVi.png";
+import nuitrackRuntime from "../../../../../../public/nuitrack_runtime.png";
 
 const exercises = [
   {
@@ -302,6 +304,115 @@ export default function SpecializedProgramsPage() {
             </p>
           </div>
           <DownloadButton fileName="mobilis_pose_correction.zip" />
+        </CardContent>
+      </Card>
+
+      {/* Installation Steps Section */}
+      <Card className="border-blue-200 bg-blue-50 dark:border-blue-900/50 dark:bg-blue-950/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-xl">
+            <Activity className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            Стъпки за конфигурация на приложението с камерата
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4 text-sm leading-relaxed text-blue-800 dark:text-blue-300">
+          <div className="space-y-3">
+            {/* Step 1 */}
+            <div className="flex gap-3">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white dark:bg-blue-400 dark:text-blue-950">
+                1
+              </div>
+              <div className="flex-1 space-y-1">
+                <p className="font-medium">
+                  Инсталиране на Nuitrack Runtime - Изберете правилната версия, според вашата операционна система
+                </p>
+                <a
+                  href="https://github.com/3DiVi/nuitrack-sdk/releases"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-blue-700 underline hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200"
+                >
+                  github.com/3DiVi/nuitrack-sdk/releases →
+                </a>
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="flex gap-3">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white dark:bg-blue-400 dark:text-blue-950">
+                2
+              </div>
+              <div className="flex-1 space-y-2">
+                <p className="font-medium">
+                  Взимане на ключ за достъп - Регистрирайте се и получете безплатен лиценз и ключ за достъп от 3DiVi
+                </p>
+                <a
+                  href="https://cognitive.3divi.com/app/nuitrack/dashboard"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-blue-700 underline hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200"
+                >
+                  cognitive.3divi.com/app/nuitrack/dashboard →
+                </a>
+                <img
+                  src={DiVi.src}
+                  alt="3DiVi Dashboard"
+                  className="mt-2 rounded border border-blue-300 dark:border-blue-700"
+                />
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="flex gap-3">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white dark:bg-blue-400 dark:text-blue-950">
+                3
+              </div>
+              <div className="flex-1 space-y-1">
+                <p className="font-medium">
+                  Отваряне на activation tool - Намерете и стартирайте{" "}
+                  <code className="rounded bg-blue-200 px-1.5 py-0.5 text-xs dark:bg-blue-900">Nuitrack.exe</code> от
+                  папката:
+                </p>
+                <code className="block rounded bg-blue-200 p-2 text-xs dark:bg-blue-900">
+                  Nuitrack\nuitrack\nuitrack\activation_tool
+                </code>
+              </div>
+            </div>
+
+            {/* Step 4 */}
+            <div className="flex gap-3">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white dark:bg-blue-400 dark:text-blue-950">
+                4
+              </div>
+              <div className="flex-1 space-y-2">
+                <p className="font-medium">
+                  Активиране на устройството - Въведете получения ключ за достъп в activation tool за активиране на
+                  вашата камера
+                </p>
+                <img
+                  src={nuitrackRuntime.src}
+                  alt="Nuitrack Activation Tool"
+                  className="mt-2 rounded border border-blue-300 dark:border-blue-700"
+                />
+              </div>
+            </div>
+
+            {/* Step 5 */}
+            <div className="flex gap-3">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white dark:bg-blue-400 dark:text-blue-950">
+                5
+              </div>
+              <div className="flex-1">
+                <p className="font-medium">
+                  Инсталиране на Mobilis приложението - След активиране на камерата, инсталирайте{" "}
+                  <code className="rounded bg-blue-200 px-1.5 py-0.5 text-xs dark:bg-blue-900">
+                    mobilis_pose_correction.exe
+                  </code>{" "}
+                  от изтегления zip файл
+                </p>
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
