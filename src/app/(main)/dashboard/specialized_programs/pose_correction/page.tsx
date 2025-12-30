@@ -292,35 +292,39 @@ export default function SpecializedProgramsPage() {
         ))}
       </div>
 
-      {/* Download Section */}
-      <Card className="border-primary/20 from-primary/5 to-primary/10 border-2 bg-gradient-to-br">
-        <CardContent className="flex flex-col items-center gap-4 py-8 text-center md:flex-row md:justify-between md:text-left">
-          <div className="flex-1 space-y-2">
-            <h3 className="text-xl font-semibold">Приложение с камера за следене на изпълнението на упражненията</h3>
-            <p className="text-muted-foreground text-sm">
-              Свалете разработеното от нас приложение, което включва всички упражнения и стъпки за изпълнение. То работи
-              с камерата <strong>Orbbec Astra+</strong> и целта му е да следи за правилното изпълнение на стъпките в
-              реално време, като сравнява движенията на потребителя с правилната техника за всяко от тях
-            </p>
-          </div>
-          <DownloadButton fileName="mobilis_pose_correction.zip" />
-        </CardContent>
-      </Card>
-
       {/* Installation Steps Section */}
       <Card className="border-blue-200 bg-blue-50 dark:border-blue-900/50 dark:bg-blue-950/50">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
             <Activity className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-            Стъпки за конфигурация на приложението с камерата
+            Стъпки за конфигурация на приложение за следене на изпълнението на упражненията за коригиране на стойката
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 text-sm leading-relaxed text-blue-800 dark:text-blue-300">
+          <p className="mb-4">
+            Приложението работи с камерата <strong>Orbbec Astra+</strong> и следи за правилното изпълнение на всяка една
+            от стъпките за съответните упражнения в реално време, с помощта на гласов асистент, като сравнява движенията
+            на потребителя с правилната техника за всяко от тях.
+          </p>
+
           <div className="space-y-3">
-            {/* Step 1 */}
+            {/* Step 1 - Download */}
             <div className="flex gap-3">
               <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white dark:bg-blue-400 dark:text-blue-950">
                 1
+              </div>
+              <div className="flex-1 space-y-2">
+                <p className="font-medium">
+                  Инсталиране на приложението - То включва всички упражнения и стъпки за изпълнение
+                </p>
+                <DownloadButton fileName="mobilis_pose_correction.zip" />
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="flex gap-3">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white dark:bg-blue-400 dark:text-blue-950">
+                2
               </div>
               <div className="flex-1 space-y-1">
                 <p className="font-medium">
@@ -337,12 +341,12 @@ export default function SpecializedProgramsPage() {
               </div>
             </div>
 
-            {/* Step 2 */}
+            {/* Step 3 */}
             <div className="flex gap-3">
               <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white dark:bg-blue-400 dark:text-blue-950">
-                2
+                3
               </div>
-              <div className="flex-1 space-y-2">
+              <div className="flex-1 space-y-1">
                 <p className="font-medium">
                   Взимане на ключ за достъп - Регистрирайте се и получете безплатен лиценз и ключ за достъп от 3DiVi
                 </p>
@@ -354,18 +358,21 @@ export default function SpecializedProgramsPage() {
                 >
                   cognitive.3divi.com/app/nuitrack/dashboard →
                 </a>
-                <img
-                  src={DiVi.src}
-                  alt="3DiVi Dashboard"
-                  className="mt-2 rounded border border-blue-300 dark:border-blue-700"
-                />
+                <div>
+                  <button
+                    onClick={() => window.open(DiVi.src, "_blank")}
+                    className="mt-1 inline-flex cursor-pointer items-center gap-1 text-sm text-blue-600 underline hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
+                  >
+                    📷 Вижте снимка
+                  </button>
+                </div>
               </div>
             </div>
 
-            {/* Step 3 */}
+            {/* Step 4 */}
             <div className="flex gap-3">
               <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white dark:bg-blue-400 dark:text-blue-950">
-                3
+                4
               </div>
               <div className="flex-1 space-y-1">
                 <p className="font-medium">
@@ -379,28 +386,29 @@ export default function SpecializedProgramsPage() {
               </div>
             </div>
 
-            {/* Step 4 */}
-            <div className="flex gap-3">
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white dark:bg-blue-400 dark:text-blue-950">
-                4
-              </div>
-              <div className="flex-1 space-y-2">
-                <p className="font-medium">
-                  Активиране на устройството - Въведете получения ключ за достъп в activation tool за активиране на
-                  вашата камера
-                </p>
-                <img
-                  src={nuitrackRuntime.src}
-                  alt="Nuitrack Activation Tool"
-                  className="mt-2 rounded border border-blue-300 dark:border-blue-700"
-                />
-              </div>
-            </div>
-
             {/* Step 5 */}
             <div className="flex gap-3">
               <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white dark:bg-blue-400 dark:text-blue-950">
                 5
+              </div>
+              <div className="flex-1 space-y-1">
+                <p className="font-medium">
+                  Активиране на устройството - Въведете получения ключ за достъп в activation tool за активиране на
+                  вашата камера
+                </p>
+                <button
+                  onClick={() => window.open(nuitrackRuntime.src, "_blank")}
+                  className="mt-1 inline-flex cursor-pointer items-center gap-1 text-sm text-blue-600 underline hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
+                >
+                  📷 Вижте снимка
+                </button>
+              </div>
+            </div>
+
+            {/* Step 6 */}
+            <div className="flex gap-3">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white dark:bg-blue-400 dark:text-blue-950">
+                6
               </div>
               <div className="flex-1">
                 <p className="font-medium">
