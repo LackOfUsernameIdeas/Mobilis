@@ -26,7 +26,7 @@ export default function MealModal({ open, onOpenChange, meal }: MealModalProps) 
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[700px]">
         <DialogHeader>
           <div className="space-y-2">
-            <DialogTitle className="text-foreground text-2xl text-pretty">{meal.name}</DialogTitle>
+            <DialogTitle className="text-foreground pr-8 text-2xl text-pretty">{meal.name}</DialogTitle>{" "}
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="outline" className="text-xs">
                 <Clock className="mr-1 h-3 w-3" />
@@ -37,13 +37,13 @@ export default function MealModal({ open, onOpenChange, meal }: MealModalProps) 
                 {totalTime} мин общо
               </Badge>
               {meal.meal_type?.includes("pre_workout") && (
-                <Badge className="bg-blue-500 text-xs">
+                <Badge className="bg-primary text-xs">
                   <Activity className="mr-1 h-3 w-3" />
                   Предтренировъчно ястие
                 </Badge>
               )}
               {meal.meal_type?.includes("post_workout") && (
-                <Badge className="bg-green-500 text-xs">
+                <Badge className="bg-primary text-xs">
                   <Activity className="mr-1 h-3 w-3" />
                   Следтренировъчно ястие
                 </Badge>
@@ -55,14 +55,11 @@ export default function MealModal({ open, onOpenChange, meal }: MealModalProps) 
 
         <div className="space-y-6 pt-4">
           {/* Macros Overview */}
-          <Card className="border-border bg-muted/30 border">
+          <Card className="border-primary/30 bg-primary/5 border-l-3">
             <CardContent className="grid grid-cols-4 gap-3 p-4">
               <div className="text-center">
-                <div className="mb-1 flex items-center justify-center">
-                  <Flame className="h-4 w-4 text-orange-500" />
-                </div>
                 <p className="text-foreground text-lg font-bold">{meal.macros?.calories}</p>
-                <p className="text-muted-foreground text-xs">kcal</p>
+                <p className="text-muted-foreground text-xs">Калории</p>
               </div>
               <div className="text-center">
                 <p className="text-foreground text-lg font-bold">{meal.macros?.protein}g</p>
@@ -70,7 +67,7 @@ export default function MealModal({ open, onOpenChange, meal }: MealModalProps) 
               </div>
               <div className="text-center">
                 <p className="text-foreground text-lg font-bold">{meal.macros?.carbs}g</p>
-                <p className="text-muted-foreground text-xs">Въглехидр.</p>
+                <p className="text-muted-foreground text-xs">Въглехидрати</p>
               </div>
               <div className="text-center">
                 <p className="text-foreground text-lg font-bold">{meal.macros?.fats}g</p>

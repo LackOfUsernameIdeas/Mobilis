@@ -21,13 +21,10 @@ export default function ExerciseCard({ exercise, onClick }: ExerciseCardProps) {
 
   return (
     <Card
-      className="group hover:border-primary/50 hover:shadow-primary/20 relative cursor-pointer overflow-hidden border-2 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98]"
+      className="border-border hover:border-primary/50 group cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
       onClick={onClick}
     >
-      {/* Gradient Background */}
-      <div className="absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-
-      <CardContent className="relative p-4">
+      <CardContent className="p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 space-y-2">
             <h4 className="text-foreground text-md line-clamp-2 leading-tight font-semibold">

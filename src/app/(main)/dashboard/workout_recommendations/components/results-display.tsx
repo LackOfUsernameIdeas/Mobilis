@@ -138,7 +138,7 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
                             <TabsTrigger
                               key={index}
                               value={index.toString()}
-                              className="text-md cursor-pointer transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98]"
+                              className="text-md data-[state=active]:bg-primary dark:data-[state=active]:bg-primary data-[state=active]:text-primary-foreground hover:bg-primary/10 dark:text-foreground/80 cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-sm active:scale-[0.98] dark:data-[state=active]:text-black"
                             >
                               <span className="hidden sm:inline">{day.day}</span>
                               <span className="sm:hidden">D{index + 1}</span>
