@@ -120,7 +120,7 @@ export default function ExerciseModal({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto" style={{ maxWidth: "90vh", width: "90vh" }}>
         <DialogHeader>
-          <DialogTitle className="text-foreground text-2xl text-pretty">{exercise.exercise_name}</DialogTitle>
+          <DialogTitle className="text-foreground pr-8 text-2xl text-pretty">{exercise.exercise_name}</DialogTitle>
           <DialogDescription className="text-muted-foreground">Основна информация</DialogDescription>
         </DialogHeader>
         <div className="space-y-6">

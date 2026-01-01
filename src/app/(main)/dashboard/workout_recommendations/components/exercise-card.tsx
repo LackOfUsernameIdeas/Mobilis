@@ -36,7 +36,7 @@ export default function ExerciseCard({ exercise, onClick }: ExerciseCardProps) {
               </Badge>
               {activeMuscleCount > 0 && (
                 <span className="text-muted-foreground text-sm">
-                  {activeMuscleCount} muscle{activeMuscleCount !== 1 ? "s" : ""}
+                  {activeMuscleCount} {activeMuscleCount === 1 ? "мускул" : "мускула"}
                 </span>
               )}
             </div>
