@@ -28,7 +28,7 @@ export interface NavGroup {
 export const sidebarItems: NavGroup[] = [
   {
     id: 1,
-    label: "Dashboards",
+    label: "Основни страници",
     items: [
       {
         title: "Здравно табло",

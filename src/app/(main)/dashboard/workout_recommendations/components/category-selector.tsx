@@ -14,27 +14,18 @@ export default function CategorySelector({ onSelectCategory }: CategorySelectorP
       title: "Фитнес",
       description: "Получете персонализирани планове за тренировки в залата",
       icon: "🏋️",
-      gradient: "from-primary/10 to-primary/5",
-      hoverBorder: "hover:border-primary/50",
-      hoverGlow: "hover:shadow-primary/20",
     },
     {
       id: "calisthenics",
       title: "Калистеника",
       description: "Получете персонализирани планове за тренировки с калистеника",
       icon: "🏃",
-      gradient: "from-primary/10 to-primary/5",
-      hoverBorder: "hover:border-primary/50",
-      hoverGlow: "hover:shadow-primary/20",
     },
     {
       id: "yoga",
       title: "Йога",
       description: "Намерете йога практики, които отговарят на вашите цели",
       icon: "🧘",
-      gradient: "from-primary/10 to-primary/5",
-      hoverBorder: "hover:border-primary/50",
-      hoverGlow: "hover:shadow-primary/20",
     },
   ];
 
@@ -64,15 +55,10 @@ export default function CategorySelector({ onSelectCategory }: CategorySelectorP
               }}
             >
               <Card
-                className={`group relative cursor-pointer overflow-hidden border-2 transition-all duration-300 ${category.hoverBorder} ${category.hoverGlow} h-full hover:-translate-y-1 hover:shadow-xl active:scale-[0.98]`}
+                className="group border-border hover:border-primary/50 h-full cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
                 onClick={() => onSelectCategory(category.id as "gym" | "calisthenics" | "yoga")}
               >
-                {/* Gradient Background */}
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-0 transition-opacity duration-300 group-hover:opacity-100`}
-                />
-
-                <CardContent className="relative flex h-full min-h-[280px] flex-col px-6">
+                <CardContent className="flex h-full min-h-[280px] flex-col px-6">
                   <div className="flex-1 space-y-4">
                     {/* Icon Container */}
                     <div className="bg-muted/50 group-hover:bg-muted flex h-16 w-16 items-center justify-center rounded-2xl transition-colors duration-300">

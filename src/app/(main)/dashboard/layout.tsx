@@ -3,7 +3,6 @@ import { cookies } from "next/headers";
 import { createClient } from "@/app/utils/supabase/server";
 
 import { AppSidebar } from "@/app/(main)/dashboard/_components/sidebar/app-sidebar";
-import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { getPreference } from "@/server/cookies";
@@ -17,8 +16,6 @@ import {
 } from "@/types/preferences/layout";
 
 import { AccountSwitcher } from "./_components/sidebar/account-switcher";
-import { LayoutControls } from "./_components/sidebar/layout-controls";
-import { SearchDialog } from "./_components/sidebar/search-dialog";
 import { ThemeSwitcher } from "./_components/sidebar/theme-switcher";
 
 export default async function Layout({ children }: Readonly<{ children: ReactNode }>) {
@@ -31,12 +28,6 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
     getPreference<ContentLayout>("content_layout", CONTENT_LAYOUT_VALUES, "centered"),
   ]);
 
-  const layoutPreferences = {
-    contentLayout,
-    variant: sidebarVariant,
-    collapsible: sidebarCollapsible,
-  };
-
   const supabase = await createClient();
   const {
     data: { user },
@@ -48,7 +39,6 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
         name: user.user_metadata?.full_name || user.email || "User",
         email: user.email || "",
         avatar: user.user_metadata?.avatar_url || "",
-        role: user.user_metadata?.role || "user",
       }
     : null;
 
@@ -65,12 +55,9 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
         <header className="flex h-12 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex w-full items-center justify-between px-4 lg:px-6">
             <div className="flex items-center gap-1 lg:gap-2">
-              <SidebarTrigger className="-ml-1" />
-              <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
-              <SearchDialog />
+              <SidebarTrigger className="-ml-1 cursor-pointer" />
             </div>
             <div className="flex items-center gap-2">
-              <LayoutControls {...layoutPreferences} />
               <ThemeSwitcher />
               <AccountSwitcher user={currentUser} />
             </div>

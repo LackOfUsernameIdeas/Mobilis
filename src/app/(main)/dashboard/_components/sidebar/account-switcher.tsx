@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/app/utils/supabase/client";
 import { toast } from "sonner";
 
-import { BadgeCheck, Bell, CreditCard, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -12,9 +12,8 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
-import { cn, getInitials } from "@/lib/utils";
+import { getInitials } from "@/lib/utils";
 
 export function AccountSwitcher({
   user,
@@ -24,7 +23,6 @@ export function AccountSwitcher({
     name: string;
     email: string;
     avatar: string;
-    role: string;
   } | null;
 }) {
   const router = useRouter();
@@ -45,7 +43,7 @@ export function AccountSwitcher({
   if (!user) {
     return (
       <a href="/auth/login" className="text-muted-foreground hover:text-primary text-sm font-medium">
-        Login
+        Влезте
       </a>
     );
   }
@@ -53,43 +51,25 @@ export function AccountSwitcher({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Avatar className="size-9 rounded-lg">
+        <Avatar className="size-9 cursor-pointer rounded-lg">
           <AvatarImage src={user.avatar || undefined} alt={user.name} />
           <AvatarFallback className="rounded-lg">{getInitials(user.name)}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="min-w-56 space-y-1 rounded-lg" side="bottom" align="end" sideOffset={4}>
-        <DropdownMenuItem className="bg-accent/50 border-l-primary border-l-2 p-0">
-          <div className="flex w-full items-center justify-between gap-2 px-1 py-1.5">
-            <Avatar className="size-9 rounded-lg">
-              <AvatarImage src={user.avatar || undefined} alt={user.name} />
-              <AvatarFallback className="rounded-lg">{getInitials(user.name)}</AvatarFallback>
-            </Avatar>
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">{user.name}</span>
-              <span className="truncate text-xs capitalize">{user.role}</span>
-            </div>
+        <div className="flex w-full items-center gap-2 px-2 py-2">
+          <Avatar className="size-9 rounded-lg">
+            <AvatarImage src={user.avatar || undefined} alt={user.name} />
+            <AvatarFallback className="rounded-lg">{getInitials(user.name)}</AvatarFallback>
+          </Avatar>
+          <div className="grid flex-1 text-left text-sm leading-tight">
+            <span className="truncate font-semibold">{user.name}</span>
           </div>
-        </DropdownMenuItem>
+        </div>
         <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <BadgeCheck />
-            Account
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <CreditCard />
-            Billing
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Bell />
-            Notifications
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout}>
+        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
           <LogOut />
-          Log out
+          Изход
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
