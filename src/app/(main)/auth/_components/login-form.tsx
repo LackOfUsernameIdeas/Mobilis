@@ -13,10 +13,11 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { translateAuthError } from "@/lib/translate-error";
 
 const FormSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address." }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+  email: z.string().email({ message: "Моля, въведете валиден имейл адрес." }),
+  password: z.string().min(6, { message: "Паролата трябва да бъде поне 6 символа." }),
   remember: z.boolean().optional(),
 });
 
@@ -45,7 +46,7 @@ export function LoginForm() {
 
       if (error) {
         toast.error("Неуспешно влизане!", {
-          description: error.message,
+          description: translateAuthError(error.message),
         });
         setIsLoading(false);
         return;

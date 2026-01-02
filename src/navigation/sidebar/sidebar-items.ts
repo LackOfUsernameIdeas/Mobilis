@@ -51,16 +51,6 @@ export const sidebarItems: NavGroup[] = [
         icon: Layers,
         subItems: [{ title: "За стойката", url: "/dashboard/specialized_programs/pose_correction", newTab: false }],
       },
-      {
-        title: "CRM",
-        url: "/dashboard/crm",
-        icon: ChartBar,
-      },
-      {
-        title: "Finance",
-        url: "/dashboard/finance",
-        icon: Banknote,
-      },
     ],
   },
 ];

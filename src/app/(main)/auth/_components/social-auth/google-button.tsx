@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { SimpleIcon } from "@/components/simple-icon";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { translateAuthError } from "@/lib/translate-error";
 
 export function GoogleButton({ className, ...props }: React.ComponentProps<typeof Button>) {
   const supabase = createClient();
@@ -19,7 +20,7 @@ export function GoogleButton({ className, ...props }: React.ComponentProps<typeo
 
     if (error) {
       toast.error("Неуспешно влизане с Google!", {
-        description: error.message,
+        description: translateAuthError(error.message),
       });
     } else {
       toast.success("Пренасочване към Google вход...");

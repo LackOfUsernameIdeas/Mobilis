@@ -7,6 +7,6 @@ export const APP_CONFIG = {
   version: packageJson.version,
   copyright: `© ${currentYear}, Mobilis.`,
   meta: {
-    title: "Mobilis",
+    title: "Мобилис",
   },
 };

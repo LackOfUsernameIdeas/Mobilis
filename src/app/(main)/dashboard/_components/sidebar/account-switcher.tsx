@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { getInitials } from "@/lib/utils";
+import { translateAuthError } from "@/lib/translate-error";
 
 export function AccountSwitcher({
   user,
@@ -32,7 +33,7 @@ export function AccountSwitcher({
     const { error } = await supabase.auth.signOut();
     if (error) {
       toast.error("Неуспешно излизане от профила!", {
-        description: error.message,
+        description: translateAuthError(error.message),
       });
     } else {
       toast.success("Излязохте успешно от профила си!");

@@ -10,6 +10,7 @@ import { createClient } from "@/app/utils/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { translateAuthError } from "@/lib/translate-error";
 
 const FormSchema = z
   .object({
@@ -56,7 +57,7 @@ export function RegisterForm() {
 
     if (error) {
       toast.error("Неуспешна регистрация!", {
-        description: error.message,
+        description: translateAuthError(error.message),
       });
     } else {
       toast.success("Регистрацията е успешна! Проверете имейла си за потвърждение.");
