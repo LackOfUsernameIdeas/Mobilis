@@ -15,7 +15,7 @@ import {
   getMealIconName,
   getMealBadgeBg as getMealBadgeBgHelper,
 } from "../helper_functions";
-import { MEAL_TYPE_TRANSLATIONS, ANIMATION_VARIANTS, FORM_TEXT, RESULTS_TEXT } from "../constants";
+import { MEAL_TYPE_TRANSLATIONS, FORM_TEXT, RESULTS_TEXT } from "../constants";
 import type { ResultsDisplayProps, NutritionPlan, DayPlan, NutritionMeal } from "../types";
 
 export default function ResultsDisplay({ category, answers, userStats, onReset }: ResultsDisplayProps) {
