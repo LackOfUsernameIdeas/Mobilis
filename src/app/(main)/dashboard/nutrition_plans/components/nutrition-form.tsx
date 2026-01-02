@@ -11,7 +11,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { Scale, Utensils } from "lucide-react";
+import { Scale } from "lucide-react";
 import { fetchNutrientRecommendations } from "../helper_functions";
 
 interface NutritionFormProps {
