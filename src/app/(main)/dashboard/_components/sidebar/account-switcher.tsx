@@ -31,11 +31,11 @@ export function AccountSwitcher({
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
-      toast.error("Logout failed", {
+      toast.error("Неуспешно излизане от профила!", {
         description: error.message,
       });
     } else {
-      toast.success("Logged out successfully");
+      toast.success("Излязохте успешно от профила си!");
       router.push("/auth/login");
     }
   };

@@ -13,12 +13,12 @@ import { Input } from "@/components/ui/input";
 
 const FormSchema = z
   .object({
-    email: z.string().email({ message: "Please enter a valid email address." }),
-    password: z.string().min(6, { message: "Password must be at least 6 characters." }),
-    confirmPassword: z.string().min(6, { message: "Confirm Password must be at least 6 characters." }),
+    email: z.string().email({ message: "Моля, въведете валиден имейл адрес." }),
+    password: z.string().min(6, { message: "Паролата трябва да бъде поне 6 символа." }),
+    confirmPassword: z.string().min(6, { message: "Потвърждението на паролата трябва да бъде поне 6 символа." }),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match.",
+    message: "Паролите не съвпадат.",
     path: ["confirmPassword"],
   });
 
@@ -42,7 +42,7 @@ export function RegisterForm() {
     });
     const { exists } = await res.json();
     if (exists) {
-      toast.error("User already exists — try logging in or reset password");
+      toast.error("Профил с този имейл вече съществува!");
       return;
     }
 
@@ -55,11 +55,11 @@ export function RegisterForm() {
     });
 
     if (error) {
-      toast.error("Registration failed", {
+      toast.error("Неуспешна регистрация!", {
         description: error.message,
       });
     } else {
-      toast.success("Registration successful! Check your email for confirmation.");
+      toast.success("Регистрацията е успешна! Проверете имейла си за потвърждение.");
       // Optionally redirect to login or a confirmation page
       router.push("/auth/login");
     }

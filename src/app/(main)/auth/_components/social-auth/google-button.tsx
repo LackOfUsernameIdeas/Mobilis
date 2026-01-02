@@ -18,16 +18,16 @@ export function GoogleButton({ className, ...props }: React.ComponentProps<typeo
     });
 
     if (error) {
-      toast.error("Google login failed", {
+      toast.error("Неуспешно влизане с Google!", {
         description: error.message,
       });
     } else {
-      toast.success("Redirecting to Google login...");
+      toast.success("Пренасочване към Google вход...");
     }
   };
 
   return (
-    <Button variant="secondary" className={cn(className)} onClick={handleGoogleLogin} {...props}>
+    <Button variant="secondary" className={cn("hover:text-current", className)} onClick={handleGoogleLogin} {...props}>
       <SimpleIcon icon={siGoogle} className="size-4" />
       Влезте с Google профил
     </Button>

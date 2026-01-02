@@ -44,7 +44,7 @@ export function LoginForm() {
       });
 
       if (error) {
-        toast.error("Login failed", {
+        toast.error("Неуспешно влизане!", {
           description: error.message,
         });
         setIsLoading(false);
@@ -56,16 +56,16 @@ export function LoginForm() {
 
       if (measurementCheck.success && measurementCheck.hasTodayMeasurement) {
         // Has measurements, go directly to stats
-        toast.success("Logged in successfully!");
+        toast.success("Успешно влизане!");
         router.push("/dashboard/stats");
       } else {
         // No measurements, go to measurements page
-        toast.success("Logged in successfully!");
+        toast.success("Успешно влизане!");
         router.push("/dashboard/measurements");
       }
     } catch (err) {
       console.error("Login error:", err);
-      toast.error("An unexpected error occurred");
+      toast.error("Възникна неочаквана грешка");
       setIsLoading(false);
     }
   };
