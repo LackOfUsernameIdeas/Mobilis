@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -12,17 +11,21 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Scale } from "lucide-react";
-import { fetchNutrientRecommendations } from "../helper_functions";
-
-interface NutritionFormProps {
-  onSubmit: (answers: Record<string, any>) => void;
-  usersStats: any;
-}
+import { fetchNutrientRecommendations, validateNumericInput, calculateWeightDifference } from "../helper_functions";
+import {
+  CUISINE_OPTIONS,
+  GOAL_OPTIONS,
+  TRAINING_TIME_OPTIONS,
+  INPUT_LIMITS,
+  ANIMATION_VARIANTS,
+  FORM_TEXT,
+} from "../constants";
+import type { FormAnswers, NutritionFormProps, FormQuestion, QuestionOption } from "../types";
 
 export default function NutritionForm({ onSubmit, usersStats }: NutritionFormProps) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, any>>({
-    mainGoal: usersStats.goal,
+  const [answers, setAnswers] = useState<FormAnswers>({
+    mainGoal: usersStats?.goal || "",
     trainingTime: "",
     targetWeight: "",
     targetWeightValue: "",
@@ -39,11 +42,11 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
       if (answers.mainGoal && usersStats) {
         try {
           const recommendations = await fetchNutrientRecommendations({
-            height: usersStats.height,
-            weight: usersStats.weight,
-            age: usersStats.age,
-            gender: usersStats.gender,
-            activityLevel: usersStats.activityLevel,
+            height: usersStats.height || 0,
+            weight: usersStats.weight || 0,
+            age: usersStats.age || 0,
+            gender: usersStats.gender || "male",
+            activityLevel: usersStats.activityLevel || "moderate",
             goal: answers.mainGoal,
           });
 
@@ -63,106 +66,54 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
     };
 
     fetchNutrientsForGoal();
-  }, [answers.mainGoal]);
+  }, [answers.mainGoal, usersStats]);
 
-  const cuisineOptions = ["Българска", "Испанска", "Италианска", "Френска", "Нямам предпочитания"];
-
-  const questions = [
+  const questions: FormQuestion[] = [
     {
       field: "mainGoal",
       title: "Каква е вашата основна цел?",
       type: "radio",
-      options: [
-        {
-          value: "cut",
-          label: "Cut (Загуба на мазнини)",
-          description: "Хранене, насочено към понижаване на телесните мазнини",
-        },
-        {
-          value: "aggressive_cut",
-          label: "Aggressive Cut (Интензивна загуба на мазнини)",
-          description: "Хранене за бързо понижаване на телесните мазнини",
-        },
-        {
-          value: "lean_bulk",
-          label: "Lean Bulk (Покачване на мускулна маса)",
-          description: "Хранене, насочено към постепенно и контролирано покачване на мускулна маса",
-        },
-        {
-          value: "dirty_bulk",
-          label: "Dirty Bulk (Интензивно покачване на маса)",
-          description: "Хранене с висок калориен прием за бързо набавяне на маса",
-        },
-        {
-          value: "recomposition",
-          label: "Recomposition",
-          description:
-            "Хранене, насочено към едновременното понижаване на телесните мазнини и постепенното покачване на мускулна маса",
-        },
-        {
-          value: "maintenance",
-          label: "Maintenance (Поддържане)",
-          description: "Хранене за запазване на текущото тегло и форма",
-        },
-        {
-          value: "aesthetic",
-          label: "Aesthetic (Естетика и пропорции)",
-          description: "Хранене, насочено към постигане на естетичен външен вид и балансирани пропорции",
-        },
-        {
-          value: "strength",
-          label: "Strength (Максимална сила)",
-          description: "Хранене с фокус върху максимална сила и силови показатели",
-        },
-      ],
+      options: GOAL_OPTIONS,
     },
     {
       field: "trainingTime",
       title: "По кое време намирате (или бихте желали да намирате) възможност да тренирате?",
       type: "radio",
-      options: [
-        { value: "morning", label: "Сутрин", description: "06:00-09:00" },
-        { value: "before-noon", label: "Предиобед", description: "09:00-12:00" },
-        { value: "noon", label: "Обяд", description: "12:00-14:00" },
-        { value: "afternoon", label: "Следобед", description: "14:00-17:00" },
-        { value: "evening", label: "Вечер", description: "17:00-21:00" },
-      ],
+      options: TRAINING_TIME_OPTIONS,
     },
     {
       field: "targetWeight",
       title: "Има ли конкретно целево тегло, до което желаете да стигнете?",
       type: "target-weight",
-      currentWeight: usersStats.weight,
+      currentWeight: usersStats?.weight,
     },
     {
       field: "healthIssues",
       title: "Съществуват ли здравословни проблеми, алергии или други особености, свързани с храненето ви?",
       type: "textarea",
-      placeholder:
-        "напр. алергия към ядки, лактозна непоносимост, стомашни проблеми, високо кръвно налягане, религиозни ограничения",
+      placeholder: FORM_TEXT.healthIssuesPlaceholder,
     },
     {
       field: "nutrients",
       title: "Какви стойности на дневни нутриенти желаете?",
       type: "nutrients",
-      description:
-        "Стойностите по-долу са препоръчителни и са изчислени според избраната от вас цел. Можете по ваша преценка да ги промените.",
+      description: FORM_TEXT.nutrients.description,
     },
     {
       field: "cuisinePreference",
       title: "Ястия от каква кухня предпочитате?",
       type: "checkbox",
-      options: cuisineOptions,
+      options: Array.from(CUISINE_OPTIONS),
     },
   ];
 
-  const handleChange = (field: string, value: any) => {
+  const handleChange = (field: keyof FormAnswers, value: any) => {
     setAnswers((prev) => {
       if (field === "targetWeight" && value === "no") {
         return {
           ...prev,
           [field]: value,
-          targetWeightValue: null,
+          targetWeightValue: "",
         };
       }
       return {
@@ -173,15 +124,17 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
   };
 
   const handleCuisineChange = (cuisine: string, checked: boolean) => {
+    const noPreferenceOption = "Нямам предпочитания";
+
     setAnswers((prev) => {
-      if (cuisine === "Нямам предпочитания" && checked) {
+      if (cuisine === noPreferenceOption && checked) {
         return {
           ...prev,
-          cuisinePreference: ["Нямам предпочитания"],
+          cuisinePreference: [noPreferenceOption],
         };
       }
 
-      if (checked && prev.cuisinePreference.includes("Нямам предпочитания")) {
+      if (checked && prev.cuisinePreference.includes(noPreferenceOption)) {
         return {
           ...prev,
           cuisinePreference: [cuisine],
@@ -192,19 +145,26 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
         ...prev,
         cuisinePreference: checked
           ? [...prev.cuisinePreference, cuisine]
-          : prev.cuisinePreference.filter((c: string) => c !== cuisine),
+          : prev.cuisinePreference.filter((c) => c !== cuisine),
       };
     });
   };
 
+  const handleNumericInput = (field: keyof FormAnswers, value: string, limitKey: keyof typeof INPUT_LIMITS) => {
+    const limit = INPUT_LIMITS[limitKey];
+    if (validateNumericInput(value, limit.pattern, limit.max)) {
+      handleChange(field, value);
+    }
+  };
+
   const isCurrentQuestionAnswered = (): boolean => {
     const currentField = questions[currentQuestion].field;
-    const answer = answers[currentField];
 
     if (currentField === "targetWeight") {
+      const answer = answers.targetWeight;
       if (answer === "no") return true;
       if (answer === "yes") {
-        return answers.targetWeightValue && answers.targetWeightValue.trim() !== "";
+        return !!answers.targetWeightValue && answers.targetWeightValue.trim() !== "";
       }
       return false;
     }
@@ -213,6 +173,7 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
       return !!answers.calories && !!answers.protein && !!answers.carbs && !!answers.fats;
     }
 
+    const answer = answers[currentField as keyof FormAnswers];
     if (typeof answer === "string") return answer.trim() !== "";
     if (Array.isArray(answer)) return answer.length > 0;
     return false;
@@ -237,16 +198,12 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
   const isLastQuestion = currentQuestion === questions.length - 1;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.21, 0.47, 0.32, 0.98] }}
-    >
+    <motion.div {...ANIMATION_VARIANTS.fadeIn}>
       <Card className="border-border bg-card">
         <CardHeader className="border-border bg-card/50 border-b">
           <div className="space-y-2 sm:space-y-3">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-0">
-              <CardTitle className="text-foreground text-xl sm:text-2xl">Въпросник за хранителни препоръки</CardTitle>
+              <CardTitle className="text-foreground text-xl sm:text-2xl">{FORM_TEXT.title}</CardTitle>
               <span className="text-foreground text-xs sm:text-sm">
                 Въпрос {currentQuestion + 1} от {questions.length}
               </span>
@@ -259,32 +216,25 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
                 transition={{ duration: 0.3, ease: [0.21, 0.47, 0.32, 0.98] }}
               />
             </motion.div>
-            <CardDescription className="text-foreground text-xs sm:text-sm">
-              Отговорете на няколко въпроса, за да получите персонализирани хранителни препоръки
-            </CardDescription>
+            <CardDescription className="text-foreground text-xs sm:text-sm">{FORM_TEXT.description}</CardDescription>
           </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
             <AnimatePresence mode="wait">
-              <motion.div
-                key={currentQuestion}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3, ease: [0.21, 0.47, 0.32, 0.98] }}
-              >
+              <motion.div key={currentQuestion} {...ANIMATION_VARIANTS.slideIn}>
                 <fieldset className="space-y-3 sm:space-y-4">
                   <Label className="text-foreground text-sm font-semibold sm:text-base">{question.title}</Label>
 
                   {question.type === "radio" && (
                     <RadioGroup
-                      value={answers[question.field]}
-                      onValueChange={(value) => handleChange(question.field, value)}
+                      value={answers[question.field as keyof FormAnswers] as string}
+                      onValueChange={(value) => handleChange(question.field as keyof FormAnswers, value)}
                     >
                       <div className="space-y-2 sm:space-y-3">
-                        {question.options?.map((option: any, index: number) => {
-                          const isRecommended = question.field === "mainGoal" && option.value === usersStats.goal;
+                        {(question.options as QuestionOption[])?.map((option, index) => {
+                          const isRecommended = question.field === "mainGoal" && option.value === usersStats?.goal;
+
                           return (
                             <motion.div
                               key={option.value}
@@ -293,7 +243,7 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
                               transition={{
                                 duration: 0.2,
                                 delay: index * 0.05,
-                                ease: [0.21, 0.47, 0.32, 0.98],
+                                ease: [0.21, 0.47, 0.32, 0.98] as any,
                               }}
                             >
                               <Label
@@ -313,7 +263,7 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
                                   </div>
                                   {isRecommended && (
                                     <span className="bg-primary text-primary-foreground flex-shrink-0 rounded-full px-2 py-0.5 text-xs font-medium">
-                                      Препоръчителна цел
+                                      {FORM_TEXT.recommendedBadge}
                                     </span>
                                   )}
                                 </div>
@@ -342,8 +292,10 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
                             <Scale className="text-primary h-5 w-5" />
                           </div>
                           <div>
-                            <p className="text-muted-foreground text-xs">Текущо тегло</p>
-                            <p className="text-foreground text-lg font-semibold">{usersStats.weight} кг</p>
+                            <p className="text-muted-foreground text-xs">{FORM_TEXT.targetWeight.currentWeight}</p>
+                            <p className="text-foreground text-lg font-semibold">
+                              {usersStats?.weight} {FORM_TEXT.targetWeight.unit}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -356,21 +308,23 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
                           <motion.div
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.2, ease: [0.21, 0.47, 0.32, 0.98] }}
+                            transition={{ duration: 0.2, ease: [0.21, 0.47, 0.32, 0.98] as any }}
                           >
                             <Label
                               htmlFor="target-yes"
                               className="hover:bg-muted/50 flex cursor-pointer items-center space-x-3 rounded-lg p-3 transition-colors"
                             >
                               <RadioGroupItem value="yes" id="target-yes" className="h-4 w-4 flex-shrink-0" />
-                              <span className="text-foreground flex-1 text-sm font-normal">Да, имам целево тегло</span>
+                              <span className="text-foreground flex-1 text-sm font-normal">
+                                {FORM_TEXT.targetWeight.yes}
+                              </span>
                             </Label>
                           </motion.div>
 
                           <motion.div
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.2, delay: 0.05, ease: [0.21, 0.47, 0.32, 0.98] }}
+                            transition={{ duration: 0.2, delay: 0.05, ease: [0.21, 0.47, 0.32, 0.98] as any }}
                           >
                             <Label
                               htmlFor="target-no"
@@ -378,7 +332,7 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
                             >
                               <RadioGroupItem value="no" id="target-no" className="h-4 w-4 flex-shrink-0" />
                               <span className="text-foreground flex-1 text-sm font-normal">
-                                Не, нямам конкретно целево тегло
+                                {FORM_TEXT.targetWeight.no}
                               </span>
                             </Label>
                           </motion.div>
@@ -395,35 +349,27 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
                             className="space-y-2"
                           >
                             <Label htmlFor="target-weight-value" className="text-foreground text-xs">
-                              Въведете целевото си тегло
+                              {FORM_TEXT.targetWeight.inputLabel}
                             </Label>
                             <div className="relative">
                               <Input
                                 id="target-weight-value"
                                 type="text"
                                 inputMode="decimal"
-                                placeholder="напр. 75.5"
-                                value={answers.targetWeightValue || ""}
-                                onChange={(e) => {
-                                  const value = e.target.value;
-                                  if (value === "" || /^\d{0,3}(\.\d{0,2})?$/.test(value)) {
-                                    const numericValue = parseFloat(value);
-                                    if (isNaN(numericValue) || numericValue <= 200) {
-                                      handleChange("targetWeightValue", value);
-                                    }
-                                  }
-                                }}
+                                placeholder={FORM_TEXT.targetWeight.inputPlaceholder}
+                                value={answers.targetWeightValue}
+                                onChange={(e) =>
+                                  handleNumericInput("targetWeightValue", e.target.value, "targetWeight")
+                                }
                                 className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-12 text-sm"
                               />
                               <span className="text-foreground absolute top-1/2 right-3 -translate-y-1/2 text-sm">
-                                кг
+                                {FORM_TEXT.targetWeight.unit}
                               </span>
                             </div>
-                            {answers.targetWeightValue && (
+                            {answers.targetWeightValue && usersStats?.weight && (
                               <p className="text-muted-foreground text-xs">
-                                {parseFloat(answers.targetWeightValue) > usersStats.weight
-                                  ? `+${(parseFloat(answers.targetWeightValue) - usersStats.weight).toFixed(1)} кг от текущото тегло`
-                                  : `${(parseFloat(answers.targetWeightValue) - usersStats.weight).toFixed(1)} кг от текущото тегло`}
+                                {calculateWeightDifference(parseFloat(answers.targetWeightValue), usersStats?.weight)}
                               </p>
                             )}
                           </motion.div>
@@ -434,7 +380,7 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
 
                   {question.type === "checkbox" && (
                     <div className="space-y-2 sm:space-y-3">
-                      {(question.options as string[])?.map((cuisine: string, index: number) => (
+                      {(question.options as string[])?.map((cuisine, index) => (
                         <motion.div
                           key={cuisine}
                           initial={{ opacity: 0, x: -10 }}
@@ -442,7 +388,7 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
                           transition={{
                             duration: 0.2,
                             delay: index * 0.05,
-                            ease: [0.21, 0.47, 0.32, 0.98],
+                            ease: [0.21, 0.47, 0.32, 0.98] as any,
                           }}
                         >
                           <Label
@@ -472,20 +418,20 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
                       <Textarea
                         id={question.field}
                         placeholder={question.placeholder}
-                        value={answers[question.field]}
-                        onChange={(e) => handleChange(question.field, e.target.value)}
-                        disabled={answers[question.field] === "Няма"}
+                        value={answers[question.field as keyof FormAnswers] as string}
+                        onChange={(e) => handleChange(question.field as keyof FormAnswers, e.target.value)}
+                        disabled={answers[question.field as keyof FormAnswers] === FORM_TEXT.noHealthIssues}
                         className="bg-input border-border text-foreground placeholder:text-muted-foreground min-h-24 resize-none text-xs disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm"
                       />
                       <div className="flex items-center space-x-2">
                         <Checkbox
                           id={`${question.field}-none`}
-                          checked={answers[question.field] === "Няма"}
+                          checked={answers[question.field as keyof FormAnswers] === FORM_TEXT.noHealthIssues}
                           onCheckedChange={(checked) => {
                             if (checked) {
-                              handleChange(question.field, "Няма");
+                              handleChange(question.field as keyof FormAnswers, FORM_TEXT.noHealthIssues);
                             } else {
-                              handleChange(question.field, "");
+                              handleChange(question.field as keyof FormAnswers, "");
                             }
                           }}
                           className="h-4 w-4 flex-shrink-0"
@@ -494,7 +440,7 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
                           htmlFor={`${question.field}-none`}
                           className="text-foreground cursor-pointer text-xs font-normal sm:text-sm"
                         >
-                          Няма
+                          {FORM_TEXT.noHealthIssues}
                         </Label>
                       </div>
                     </motion.div>
@@ -513,10 +459,10 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
                         <motion.div
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.2, delay: 0.05, ease: [0.21, 0.47, 0.32, 0.98] }}
+                          transition={{ duration: 0.2, delay: 0.05, ease: [0.21, 0.47, 0.32, 0.98] as any }}
                         >
                           <Label htmlFor="calories" className="text-foreground mb-2 block text-xs sm:text-sm">
-                            Калории
+                            {FORM_TEXT.nutrients.calories}
                           </Label>
                           <div className="relative">
                             <Input
@@ -525,15 +471,7 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
                               inputMode="decimal"
                               placeholder="напр. 2000"
                               value={answers.calories}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (value === "" || /^\d{0,5}(\.\d{0,2})?$/.test(value)) {
-                                  const numericValue = parseFloat(value);
-                                  if (isNaN(numericValue) || numericValue <= 10000) {
-                                    handleChange("calories", value);
-                                  }
-                                }
-                              }}
+                              onChange={(e) => handleNumericInput("calories", e.target.value, "calories")}
                               className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-16 text-sm"
                             />
                             <span className="text-foreground absolute top-1/2 right-3 -translate-y-1/2 text-sm">
@@ -545,10 +483,10 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
                         <motion.div
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.2, delay: 0.1, ease: [0.21, 0.47, 0.32, 0.98] }}
+                          transition={{ duration: 0.2, delay: 0.1, ease: [0.21, 0.47, 0.32, 0.98] as any }}
                         >
                           <Label htmlFor="protein" className="text-foreground mb-2 block text-xs sm:text-sm">
-                            Протеини
+                            {FORM_TEXT.nutrients.protein}
                           </Label>
                           <div className="relative">
                             <Input
@@ -557,15 +495,7 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
                               inputMode="decimal"
                               placeholder="напр. 150"
                               value={answers.protein}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (value === "" || /^\d{0,4}(\.\d{0,2})?$/.test(value)) {
-                                  const numericValue = parseFloat(value);
-                                  if (isNaN(numericValue) || numericValue <= 600) {
-                                    handleChange("protein", value);
-                                  }
-                                }
-                              }}
+                              onChange={(e) => handleNumericInput("protein", e.target.value, "protein")}
                               className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-12 text-sm"
                             />
                             <span className="text-foreground absolute top-1/2 right-3 -translate-y-1/2 text-sm">g</span>
@@ -575,10 +505,10 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
                         <motion.div
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.2, delay: 0.15, ease: [0.21, 0.47, 0.32, 0.98] }}
+                          transition={{ duration: 0.2, delay: 0.15, ease: [0.21, 0.47, 0.32, 0.98] as any }}
                         >
                           <Label htmlFor="carbs" className="text-foreground mb-2 block text-xs sm:text-sm">
-                            Въглехидрати
+                            {FORM_TEXT.nutrients.carbs}
                           </Label>
                           <div className="relative">
                             <Input
@@ -587,15 +517,7 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
                               inputMode="decimal"
                               placeholder="напр. 200"
                               value={answers.carbs}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (value === "" || /^\d{0,4}(\.\d{0,2})?$/.test(value)) {
-                                  const numericValue = parseFloat(value);
-                                  if (isNaN(numericValue) || numericValue <= 1000) {
-                                    handleChange("carbs", value);
-                                  }
-                                }
-                              }}
+                              onChange={(e) => handleNumericInput("carbs", e.target.value, "carbs")}
                               className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-12 text-sm"
                             />
                             <span className="text-foreground absolute top-1/2 right-3 -translate-y-1/2 text-sm">g</span>
@@ -605,10 +527,10 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
                         <motion.div
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.2, delay: 0.2, ease: [0.21, 0.47, 0.32, 0.98] }}
+                          transition={{ duration: 0.2, delay: 0.2, ease: [0.21, 0.47, 0.32, 0.98] as any }}
                         >
                           <Label htmlFor="fats" className="text-foreground mb-2 block text-xs sm:text-sm">
-                            Мазнини
+                            {FORM_TEXT.nutrients.fats}
                           </Label>
                           <div className="relative">
                             <Input
@@ -617,15 +539,7 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
                               inputMode="decimal"
                               placeholder="напр. 65"
                               value={answers.fats}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (value === "" || /^\d{0,4}(\.\d{0,2})?$/.test(value)) {
-                                  const numericValue = parseFloat(value);
-                                  if (isNaN(numericValue) || numericValue <= 400) {
-                                    handleChange("fats", value);
-                                  }
-                                }
-                              }}
+                              onChange={(e) => handleNumericInput("fats", e.target.value, "fats")}
                               className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-12 text-sm"
                             />
                             <span className="text-foreground absolute top-1/2 right-3 -translate-y-1/2 text-sm">g</span>
@@ -651,7 +565,7 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
                   onClick={() => setCurrentQuestion(currentQuestion - 1)}
                   className="dark:text-foreground w-full cursor-pointer text-xs sm:flex-1 sm:text-sm"
                 >
-                  Назад
+                  {FORM_TEXT.buttons.back}
                 </Button>
               )}
               {!isLastQuestion ? (
@@ -661,7 +575,7 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
                   disabled={!isCurrentQuestionAnswered()}
                   className="bg-primary text-primary-foreground hover:bg-primary/90 w-full cursor-pointer text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:flex-1 sm:text-sm"
                 >
-                  Напред
+                  {FORM_TEXT.buttons.next}
                 </Button>
               ) : (
                 <Button
@@ -669,7 +583,7 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
                   disabled={!isCurrentQuestionAnswered()}
                   className="bg-primary text-primary-foreground hover:bg-primary/90 w-full cursor-pointer text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:flex-1 sm:text-sm"
                 >
-                  Получи моите препоръки
+                  {FORM_TEXT.buttons.submit}
                 </Button>
               )}
             </motion.div>

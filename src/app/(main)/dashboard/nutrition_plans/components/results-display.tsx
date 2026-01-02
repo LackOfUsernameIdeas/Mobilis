@@ -7,63 +7,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import MealModal from "./meal-modal";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/app/utils/supabase/client";
 import { Loader } from "../../_components/loader";
-import { Clock, Utensils, Flame, Activity } from "lucide-react";
-
-interface ResultsDisplayProps {
-  category: "nutrition";
-  answers: Record<string, any>;
-  userStats?: {
-    gender?: "male" | "female";
-    height?: number;
-    weight?: number;
-    age?: number;
-    bmi: string;
-    bodyFat: string;
-    bodyFatMass: string;
-    leanBodyMass: string;
-  };
-  onReset: () => void;
-}
-
-interface NutritionMeal {
-  meal_id: string;
-  name: string;
-  meal_type: string;
-  time: string;
-  description: string;
-  ingredients: Array<{
-    name: string;
-    quantity: number;
-    unit: string;
-  }>;
-  macros: {
-    calories: number;
-    protein: number;
-    carbs: number;
-    fats: number;
-  };
-  instructions: string[];
-  prep_time: number;
-  cooking_time: number;
-}
-
-interface DayPlan {
-  day: string;
-  total_macros: {
-    calories: number;
-    protein: number;
-    carbs: number;
-    fats: number;
-  };
-  meals: NutritionMeal[];
-}
-
-interface NutritionPlan {
-  weekly_plan: DayPlan[];
-  nutrition_tips: string[];
-}
+import { Clock, Utensils, Activity } from "lucide-react";
+import {
+  getAuthenticatedUser,
+  fetchNutritionPlan,
+  getMealIconName,
+  getMealBadgeBg as getMealBadgeBgHelper,
+} from "../helper_functions";
+import { MEAL_TYPE_TRANSLATIONS, ANIMATION_VARIANTS, FORM_TEXT, RESULTS_TEXT } from "../constants";
+import type { ResultsDisplayProps, NutritionPlan, DayPlan, NutritionMeal } from "../types";
 
 export default function ResultsDisplay({ category, answers, userStats, onReset }: ResultsDisplayProps) {
   const [recommendations, setRecommendations] = useState<NutritionPlan | null>(null);
@@ -80,36 +33,14 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
       setLoading(true);
 
       try {
-        const supabase = createClient();
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+        const user = await getAuthenticatedUser();
 
         if (!user) {
           console.error("User not authenticated");
           return;
         }
 
-        const response = await fetch("/api/get-model-response/nutrition-plans", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId: user.id,
-            category,
-            answers,
-            userStats,
-          }),
-        });
-
-        if (!response.ok) {
-          console.error("An error occurred while fetching recommendations");
-          return;
-        }
-
-        const responseJson = await response.json();
-        const nutritionPlan = JSON.parse(responseJson);
+        const nutritionPlan = await fetchNutritionPlan(user.id, category, answers, userStats);
         console.log("nutritionPlan: ", nutritionPlan);
 
         setRecommendations(nutritionPlan);
@@ -121,7 +52,7 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
     };
 
     fetchRecommendations();
-  }, []);
+  }, [category, answers, userStats]);
 
   const handleMealClick = (meal: NutritionMeal) => {
     setSelectedMeal(meal);
@@ -129,25 +60,15 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
   };
 
   const getMealIcon = (mealType: string) => {
-    if (mealType === "pre_workout_snack" || mealType === "post_workout_snack") {
+    const iconName = getMealIconName(mealType);
+    if (iconName === "Activity") {
       return <Activity className="h-4 w-4" />;
     }
     return <Utensils className="h-4 w-4" />;
   };
 
   const getMealBadgeBg = (mealType: string) => {
-    if (mealType === "pre_workout_snack" || mealType === "post_workout_snack") return "bg-primary";
-    return "bg-foreground";
-  };
-
-  const mealTypeTranslations: Record<string, string> = {
-    breakfast: "Закуска",
-    morning_snack: "Предиобедна закуска",
-    lunch: "Обяд",
-    afternoon_snack: "Следобедна закуска",
-    pre_workout_snack: "Предтренировъчно ястие",
-    post_workout_snack: "Следтренировъчно ястие",
-    dinner: "Вечеря",
+    return getMealBadgeBgHelper(mealType);
   };
 
   return (
@@ -162,7 +83,7 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
           animate={{ opacity: 1, y: 0 }}
           transition={{
             duration: 0.4,
-            ease: [0.21, 0.47, 0.32, 0.98],
+            ease: [0.21, 0.47, 0.32, 0.98] as any,
           }}
         >
           <Card className="border-border bg-card group relative overflow-hidden border-2 transition-all duration-300">
@@ -177,12 +98,12 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
                     transition={{
                       duration: 0.3,
                       delay: 0.1,
-                      ease: [0.21, 0.47, 0.32, 0.98],
+                      ease: [0.21, 0.47, 0.32, 0.98] as any,
                     }}
                     className="space-y-4"
                   >
                     <div className="flex items-center gap-2">
-                      <h1 className="text-foreground text-3xl font-semibold">Седмичен хранителен план</h1>
+                      <h1 className="text-foreground text-3xl font-semibold">{RESULTS_TEXT.weeklyPlanTitle}</h1>
                     </div>
 
                     <motion.div
@@ -191,28 +112,26 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
                       transition={{
                         duration: 0.3,
                         delay: 0.2,
-                        ease: [0.21, 0.47, 0.32, 0.98],
+                        ease: [0.21, 0.47, 0.32, 0.98] as any,
                       }}
                       className="border-primary/30 bg-primary/5 rounded-md border-l-3 p-4"
                     >
-                      <h3 className="text-foreground mb-3 text-lg font-semibold">
-                        Предпочетени стойности на макроси за ден:
-                      </h3>
+                      <h3 className="text-foreground mb-3 text-lg font-semibold">{RESULTS_TEXT.dailyMacrosTitle}</h3>
                       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                         <div className="bg-background/80 dark:bg-muted/50 rounded-lg p-3">
-                          <p className="text-muted-foreground text-xs">Калории</p>
+                          <p className="text-muted-foreground text-xs">{FORM_TEXT.nutrients.calories}</p>
                           <p className="text-foreground text-lg font-semibold">{answers.calories} kcal</p>
                         </div>
                         <div className="bg-background/80 dark:bg-muted/50 rounded-lg p-3">
-                          <p className="text-muted-foreground text-xs">Протеини</p>
+                          <p className="text-muted-foreground text-xs">{FORM_TEXT.nutrients.protein}</p>
                           <p className="text-foreground text-lg font-semibold">{answers.protein}g</p>
                         </div>
                         <div className="bg-background/80 dark:bg-muted/50 rounded-lg p-3">
-                          <p className="text-muted-foreground text-xs">Въглехидрати</p>
+                          <p className="text-muted-foreground text-xs">{FORM_TEXT.nutrients.carbs}</p>
                           <p className="text-foreground text-lg font-semibold">{answers.carbs}g</p>
                         </div>
                         <div className="bg-background/80 dark:bg-muted/50 rounded-lg p-3">
-                          <p className="text-muted-foreground text-xs">Мазнини</p>
+                          <p className="text-muted-foreground text-xs">{FORM_TEXT.nutrients.fats}</p>
                           <p className="text-foreground text-lg font-semibold">{answers.fats}g</p>
                         </div>
                       </div>
@@ -226,7 +145,7 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
                     transition={{
                       duration: 0.3,
                       delay: 0.3,
-                      ease: [0.21, 0.47, 0.32, 0.98],
+                      ease: [0.21, 0.47, 0.32, 0.98] as any,
                     }}
                     className="space-y-4"
                   >
@@ -251,7 +170,7 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
                             animate={{ opacity: 1, y: 0 }}
                             transition={{
                               duration: 0.3,
-                              ease: [0.21, 0.47, 0.32, 0.98],
+                              ease: [0.21, 0.47, 0.32, 0.98] as any,
                             }}
                           >
                             <Card className="border-border group relative overflow-hidden border-2 transition-all duration-300">
@@ -267,7 +186,7 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
                                       transition={{
                                         duration: 0.3,
                                         delay: 0.15 + mealIdx * 0.05,
-                                        ease: [0.21, 0.47, 0.32, 0.98],
+                                        ease: [0.21, 0.47, 0.32, 0.98] as any,
                                       }}
                                     >
                                       <Card
@@ -280,7 +199,7 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
                                               <div className="mb-1 flex items-center gap-2">
                                                 {getMealIcon(meal.meal_type)}
                                                 <CardTitle className="text-foreground text-sm">
-                                                  {mealTypeTranslations[meal.meal_type]}
+                                                  {MEAL_TYPE_TRANSLATIONS[meal.meal_type]}
                                                 </CardTitle>
                                               </div>
                                               <Badge
@@ -291,7 +210,9 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
                                                 <Clock className="h-3 w-3" />
                                                 {meal.time}
                                               </Badge>
-                                              <p className="text-muted-foreground mt-1 text-[10px]">*ориентировъчно</p>
+                                              <p className="text-muted-foreground mt-1 text-[10px]">
+                                                {RESULTS_TEXT.orientative}
+                                              </p>
                                             </div>
                                           </div>
                                         </CardHeader>
@@ -301,23 +222,31 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
                                           </p>
                                           <div className="bg-muted/50 grid grid-cols-2 gap-2 rounded p-2 text-xs">
                                             <div>
-                                              <span className="text-muted-foreground">Cal: </span>
+                                              <span className="text-muted-foreground">
+                                                {RESULTS_TEXT.macroLabels.cal}{" "}
+                                              </span>
                                               <span className="text-foreground font-medium">
                                                 {meal.macros.calories}
                                               </span>
                                             </div>
                                             <div>
-                                              <span className="text-muted-foreground">P: </span>
+                                              <span className="text-muted-foreground">
+                                                {RESULTS_TEXT.macroLabels.p}{" "}
+                                              </span>
                                               <span className="text-foreground font-medium">
                                                 {meal.macros.protein}g
                                               </span>
                                             </div>
                                             <div>
-                                              <span className="text-muted-foreground">C: </span>
+                                              <span className="text-muted-foreground">
+                                                {RESULTS_TEXT.macroLabels.c}{" "}
+                                              </span>
                                               <span className="text-foreground font-medium">{meal.macros.carbs}g</span>
                                             </div>
                                             <div>
-                                              <span className="text-muted-foreground">F: </span>
+                                              <span className="text-muted-foreground">
+                                                {RESULTS_TEXT.macroLabels.f}{" "}
+                                              </span>
                                               <span className="text-foreground font-medium">{meal.macros.fats}g</span>
                                             </div>
                                           </div>
@@ -333,28 +262,28 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
                                   transition={{
                                     duration: 0.3,
                                     delay: 0.1,
-                                    ease: [0.21, 0.47, 0.32, 0.98],
+                                    ease: [0.21, 0.47, 0.32, 0.98] as any,
                                   }}
                                   className="border-primary/30 bg-primary/5 rounded-md border-l-3 p-3"
                                 >
                                   <h3 className="text-foreground mb-2 font-semibold">
-                                    Общо стойности на макроси за деня:
+                                    {RESULTS_TEXT.totalMacrosTitle}
                                   </h3>
                                   <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                                     <div className="bg-background/80 dark:bg-muted/50 rounded-lg p-3">
-                                      <p className="text-muted-foreground text-xs">Калории</p>
+                                      <p className="text-muted-foreground text-xs">{FORM_TEXT.nutrients.calories}</p>
                                       <p className="text-foreground font-semibold">{day.total_macros.calories} kcal</p>
                                     </div>
                                     <div className="bg-background/80 dark:bg-muted/50 rounded-lg p-3">
-                                      <p className="text-muted-foreground text-xs">Протеини</p>
+                                      <p className="text-muted-foreground text-xs">{FORM_TEXT.nutrients.protein}</p>
                                       <p className="text-foreground font-semibold">{day.total_macros.protein}g</p>
                                     </div>
                                     <div className="bg-background/80 dark:bg-muted/50 rounded-lg p-3">
-                                      <p className="text-muted-foreground text-xs">Въглехидрати</p>
+                                      <p className="text-muted-foreground text-xs">{FORM_TEXT.nutrients.carbs}</p>
                                       <p className="text-foreground font-semibold">{day.total_macros.carbs}g</p>
                                     </div>
                                     <div className="bg-background/80 dark:bg-muted/50 rounded-lg p-3">
-                                      <p className="text-muted-foreground text-xs">Мазнини</p>
+                                      <p className="text-muted-foreground text-xs">{FORM_TEXT.nutrients.fats}</p>
                                       <p className="text-foreground font-semibold">{day.total_macros.fats}g</p>
                                     </div>
                                   </div>
@@ -374,11 +303,11 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
                       transition={{
                         duration: 0.3,
                         delay: 0.35,
-                        ease: [0.21, 0.47, 0.32, 0.98],
+                        ease: [0.21, 0.47, 0.32, 0.98] as any,
                       }}
                       className="border-primary/30 bg-primary/5 rounded-md border-l-3 p-4"
                     >
-                      <h3 className="text-foreground mb-2 font-semibold">💡 Хранителни съвети:</h3>
+                      <h3 className="text-foreground mb-2 font-semibold">{RESULTS_TEXT.nutritionTipsTitle}</h3>
                       <ul className="text-foreground/80 text-md space-y-1">
                         {recommendations.nutrition_tips.map((tip: string, idx: number) => (
                           <li key={idx} className="flex gap-2">
@@ -397,7 +326,7 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
                     transition={{
                       duration: 0.3,
                       delay: 0.4,
-                      ease: [0.21, 0.47, 0.32, 0.98],
+                      ease: [0.21, 0.47, 0.32, 0.98] as any,
                     }}
                     className="flex gap-2"
                   >
@@ -405,20 +334,20 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
                       onClick={onReset}
                       className="text-md hover:shadow-primary/20 w-full cursor-pointer hover:shadow-lg"
                     >
-                      Генерирайте отново
+                      {FORM_TEXT.buttons.reset}
                     </Button>
                   </motion.div>
                 </div>
               ) : (
                 <>
-                  <div className="text-foreground text-center">Нещо се обърка. Моля, опитайте отново.</div>
+                  <div className="text-foreground text-center">{RESULTS_TEXT.errorMessage}</div>
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
                       duration: 0.3,
                       delay: 0.1,
-                      ease: [0.21, 0.47, 0.32, 0.98],
+                      ease: [0.21, 0.47, 0.32, 0.98] as any,
                     }}
                     className="flex gap-2"
                   >
@@ -426,7 +355,7 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
                       onClick={onReset}
                       className="text-md hover:shadow-primary/20 w-full cursor-pointer hover:shadow-lg"
                     >
-                      Генерирайте отново
+                      {FORM_TEXT.buttons.reset}
                     </Button>
                   </motion.div>
                 </>

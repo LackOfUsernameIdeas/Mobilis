@@ -4,22 +4,18 @@ import { useEffect, useState } from "react";
 import NutritionForm from "./components/nutrition-form";
 import ResultsDisplay from "./components/results-display";
 import { Loader } from "../_components/loader";
-import { createClient } from "@/app/utils/supabase/client";
-
-type FormAnswers = Record<string, any>;
+import { getAuthenticatedUser, fetchUserHealthData } from "./helper_functions";
+import type { FormAnswers, UserStats } from "./types";
 
 export default function Page() {
   const [submittedAnswers, setSubmittedAnswers] = useState<FormAnswers | null>(null);
-  const [userStats, setUserStats] = useState<any>(null);
+  const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [pageLoading, setPageLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchHealthData() {
+    async function initializePage() {
       try {
-        const supabase = createClient();
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+        const user = await getAuthenticatedUser();
 
         if (!user) {
           console.error("User not authenticated");
@@ -27,47 +23,16 @@ export default function Page() {
           return;
         }
 
-        const [responseMetrics, responseMeasurements] = await Promise.all([
-          fetch(`/api/user-metrics?userId=${user.id}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }),
-          fetch(`/api/user-measurements?userId=${user.id}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }),
-        ]);
-
-        if (!responseMetrics.ok || !responseMeasurements.ok) {
-          throw new Error("Failed to fetch metrics or measurements data");
-        }
-
-        const [metrics, measurements] = await Promise.all([responseMetrics.json(), responseMeasurements.json()]);
-
-        setUserStats({
-          gender: measurements.gender,
-          height: measurements.height,
-          weight: measurements.weight,
-          age: measurements.age,
-          goal: metrics.goalData.goal,
-          activityLevel: measurements.activity_level,
-          bmi: metrics.bmiData.bmi,
-          bodyFat: metrics.bodyFatData.bodyFat,
-          bodyFatMass: metrics.bodyFatData.bodyFatMass,
-          leanBodyMass: metrics.bodyFatData.leanBodyMass,
-        });
+        const healthData = await fetchUserHealthData(user.id);
+        setUserStats(healthData);
       } catch (error) {
-        console.error("Error fetching health data:", error);
+        console.error("Error initializing page:", error);
       } finally {
         setPageLoading(false);
       }
     }
 
-    fetchHealthData();
+    initializePage();
   }, []);
 
   const handleFormSubmit = (answers: FormAnswers) => {
