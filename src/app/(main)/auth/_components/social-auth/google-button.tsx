@@ -29,7 +29,7 @@ export function GoogleButton({ className, ...props }: React.ComponentProps<typeo
   return (
     <Button variant="secondary" className={cn(className)} onClick={handleGoogleLogin} {...props}>
       <SimpleIcon icon={siGoogle} className="size-4" />
-      Continue with Google
+      Влезте с Google профил
     </Button>
   );
 }

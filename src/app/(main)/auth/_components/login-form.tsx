@@ -78,9 +78,15 @@ export function LoginForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email Address</FormLabel>
+              <FormLabel>Имейл адрес</FormLabel>
               <FormControl>
-                <Input id="email" type="email" placeholder="you@example.com" autoComplete="email" {...field} />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Въведете своя имейл адрес"
+                  autoComplete="email"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -91,12 +97,12 @@ export function LoginForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>Парола</FormLabel>
               <FormControl>
                 <Input
                   id="password"
                   type="password"
-                  placeholder="••••••••"
+                  placeholder="Въведете своята парола"
                   autoComplete="current-password"
                   {...field}
                 />
@@ -115,17 +121,20 @@ export function LoginForm() {
                   id="login-remember"
                   checked={field.value}
                   onCheckedChange={field.onChange}
-                  className="size-4"
+                  className="size-4 cursor-pointer"
                 />
               </FormControl>
-              <FormLabel htmlFor="login-remember" className="text-muted-foreground ml-1 text-sm font-medium">
-                Remember me for 30 days
+              <FormLabel
+                htmlFor="login-remember"
+                className="text-muted-foreground ml-1 cursor-pointer text-sm font-medium"
+              >
+                Запомни паролата ми
               </FormLabel>
             </FormItem>
           )}
         />
-        <Button className="w-full" type="submit" disabled={isLoading}>
-          {isLoading ? "Logging in..." : "Login"}
+        <Button className="w-full cursor-pointer" type="submit" disabled={isLoading}>
+          {isLoading ? "Влизане..." : "Влезте"}
         </Button>
       </form>
     </Form>
