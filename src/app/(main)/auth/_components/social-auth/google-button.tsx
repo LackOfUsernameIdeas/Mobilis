@@ -1,14 +1,14 @@
 import { siGoogle } from "simple-icons";
-import { createClient } from "@/app/utils/supabase/client";
 import { toast } from "sonner";
 
 import { SimpleIcon } from "@/components/simple-icon";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { translateAuthError } from "@/lib/translate-error";
+import { getBrowserClient } from "@/lib/db/clients/browser";
 
 export function GoogleButton({ className, ...props }: React.ComponentProps<typeof Button>) {
-  const supabase = createClient();
+  const supabase = getBrowserClient();
 
   const handleGoogleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({

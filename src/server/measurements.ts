@@ -1,10 +1,10 @@
 "use server";
 
+import { getServerClient } from "@/lib/db/clients/server";
 import { saveUserMeasurements, saveUserMetrics } from "@/server/saveFunctions";
-import { createClient } from "@/app/utils/supabase/server";
 
 export async function checkTodayMeasurements() {
-  const supabase = await createClient();
+  const supabase = await getServerClient();
 
   const {
     data: { user },
@@ -50,7 +50,7 @@ export async function saveMeasurementsAndCalculateMetrics(data: {
   hip?: number;
 }) {
   try {
-    const supabase = await createClient();
+    const supabase = await getServerClient();
     const {
       data: { user },
       error: authError,

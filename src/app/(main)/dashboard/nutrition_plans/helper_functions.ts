@@ -1,4 +1,4 @@
-import { createClient } from "@/app/utils/supabase/client";
+import { getBrowserClient } from "@/lib/db/clients/browser";
 import type { NutrientRecommendationParams, NutrientRecommendations } from "./types";
 
 /**
@@ -112,7 +112,7 @@ export const calculateWeightDifference = (targetWeight: number, currentWeight: n
  * Gets authenticated user from Supabase
  */
 export const getAuthenticatedUser = async () => {
-  const supabase = createClient();
+  const supabase = getBrowserClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

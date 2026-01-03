@@ -6,12 +6,12 @@ import { HealthProgressChart } from "@/app/(main)/dashboard/stats/components/hea
 import { HealthStatsCards } from "@/app/(main)/dashboard/stats/components/health-stats-cards";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { motion } from "framer-motion";
-import { createClient } from "@/app/utils/supabase/client";
 import { Loader } from "../_components/loader";
 import { BodyCompositionCard } from "@/app/(main)/dashboard/stats/components/body-composition-card";
 import { MeasurementsCard } from "@/app/(main)/dashboard/stats/components/measurements-card";
 import { TargetWeightCard } from "@/app/(main)/dashboard/stats/components/target-weight-card";
 import { NextWorkoutCard } from "@/app/(main)/dashboard/stats/components/next-workout-card";
+import { getBrowserClient } from "@/lib/db/clients/browser";
 
 // temp for visual stuff, listed below where to grab from supabase, just ain't done the logic yet
 const mockData = {
@@ -50,7 +50,7 @@ export default function HomePage() {
     async function fetchHealthData() {
       try {
         // Get the current user
-        const supabase = createClient();
+        const supabase = getBrowserClient();
         const {
           data: { user },
         } = await supabase.auth.getUser();

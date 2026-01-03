@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/app/utils/supabase/client";
 import { checkTodayMeasurements } from "@/server/measurements";
 import { useState } from "react";
 
@@ -14,6 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { translateAuthError } from "@/lib/translate-error";
+import { getBrowserClient } from "@/lib/db/clients/browser";
 
 const FormSchema = z.object({
   email: z.string().email({ message: "Моля, въведете валиден имейл адрес." }),
@@ -23,7 +23,7 @@ const FormSchema = z.object({
 
 export function LoginForm() {
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = getBrowserClient();
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof FormSchema>>({

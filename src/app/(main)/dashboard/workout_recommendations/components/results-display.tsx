@@ -5,12 +5,12 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/app/utils/supabase/client";
 import { Loader } from "../../_components/loader";
 import ExerciseCard from "./exercise-card";
 import ExerciseModal from "./exercise-modal";
 import { fetchWorkoutRecommendations } from "../helper_functions";
 import { Category, FormAnswers, UserStats, WorkoutRecommendations, Exercise } from "../types";
+import { getBrowserClient } from "@/lib/db/clients/browser";
 
 interface ResultsDisplayProps {
   category: Category;
@@ -35,7 +35,7 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
       setLoading(true);
 
       try {
-        const supabase = createClient();
+        const supabase = getBrowserClient();
         const {
           data: { user },
         } = await supabase.auth.getUser();

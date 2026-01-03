@@ -6,8 +6,8 @@ import GymCalisthenicsForm from "./components/gym-calisthenics-form";
 import YogaForm from "./components/yoga-form";
 import ResultsDisplay from "./components/results-display";
 import { Loader } from "../_components/loader";
-import { createClient } from "@/app/utils/supabase/client";
 import { Category, FormAnswers, UserStats } from "./types";
+import { getBrowserClient } from "@/lib/db/clients/browser";
 
 export default function Page() {
   const [selectedCategory, setSelectedCategory] = useState<Category>(null);
@@ -18,7 +18,7 @@ export default function Page() {
   useEffect(() => {
     async function fetchHealthData() {
       try {
-        const supabase = createClient();
+        const supabase = getBrowserClient();
         const {
           data: { user },
         } = await supabase.auth.getUser();

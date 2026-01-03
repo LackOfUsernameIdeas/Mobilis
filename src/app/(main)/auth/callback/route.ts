@@ -1,4 +1,4 @@
-import { createClient } from "@/app/utils/supabase/server";
+import { getServerClient } from "@/lib/db/clients/server";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
@@ -7,7 +7,7 @@ export async function GET(request: Request) {
   const next = searchParams.get("next") ?? "/dashboard/stats";
 
   if (code) {
-    const supabase = await createClient();
+    const supabase = await getServerClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
       return NextResponse.redirect(new URL(next, process.env.NEXT_PUBLIC_BASE_URL));

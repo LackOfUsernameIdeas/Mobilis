@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { createClient } from "@/app/utils/supabase/client";
 import { toast } from "sonner";
 
 import { LogOut } from "lucide-react";
@@ -15,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { getInitials } from "@/lib/utils";
 import { translateAuthError } from "@/lib/translate-error";
+import { getBrowserClient } from "@/lib/db/clients/browser";
 
 export function AccountSwitcher({
   user,
@@ -27,7 +27,7 @@ export function AccountSwitcher({
   } | null;
 }) {
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = getBrowserClient();
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
