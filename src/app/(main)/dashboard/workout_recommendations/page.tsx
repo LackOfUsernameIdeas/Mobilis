@@ -8,6 +8,7 @@ import ResultsDisplay from "./components/results-display";
 import { Loader } from "../_components/loader";
 import { Category, FormAnswers, UserStats } from "./types";
 import { getBrowserClient } from "@/lib/db/clients/browser";
+import { fetchUserHealthData } from "@/lib/db/clients/get";
 
 export default function Page() {
   const [selectedCategory, setSelectedCategory] = useState<Category>(null);
@@ -18,50 +19,11 @@ export default function Page() {
   useEffect(() => {
     async function fetchHealthData() {
       try {
-        const supabase = getBrowserClient();
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+        const healthData = await fetchUserHealthData();
 
-        if (!user) {
-          console.error("User not authenticated");
-          setPageLoading(false);
-          return;
-        }
-
-        const [responseMetrics, responseMeasurements] = await Promise.all([
-          fetch(`/api/user-metrics?userId=${user.id}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }),
-          fetch(`/api/user-measurements?userId=${user.id}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }),
-        ]);
-
-        if (!responseMetrics.ok || !responseMeasurements.ok) {
-          throw new Error("Failed to fetch metrics or measurements data");
-        }
-
-        const [metrics, measurements] = await Promise.all([responseMetrics.json(), responseMeasurements.json()]);
-
-        setUserStats({
-          gender: measurements.gender,
-          height: measurements.height,
-          weight: measurements.weight,
-          goal: metrics.goalData.goal,
-          bmi: metrics.bmiData.bmi,
-          bodyFat: metrics.bodyFatData.bodyFat,
-          bodyFatMass: metrics.bodyFatData.bodyFatMass,
-          leanBodyMass: metrics.bodyFatData.leanBodyMass,
-        });
+        setUserStats(healthData);
       } catch (error) {
-        console.error("[v0] Error fetching health data:", error);
+        console.error("Error initializing page:", error);
       } finally {
         setPageLoading(false);
       }

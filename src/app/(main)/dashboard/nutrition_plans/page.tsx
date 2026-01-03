@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import NutritionForm from "./components/nutrition-form";
 import ResultsDisplay from "./components/results-display";
 import { Loader } from "../_components/loader";
-import { fetchUserHealthData } from "./helper_functions";
-import { getAuthenticatedUser } from "@/lib/db/clients/get";
+import { fetchUserHealthData } from "@/lib/db/clients/get";
 import type { FormAnswers, UserStats } from "./types";
 
 export default function Page() {
@@ -14,17 +13,10 @@ export default function Page() {
   const [pageLoading, setPageLoading] = useState(true);
 
   useEffect(() => {
-    async function initializePage() {
+    async function fetchHealthData() {
       try {
-        const user = await getAuthenticatedUser();
+        const healthData = await fetchUserHealthData();
 
-        if (!user) {
-          console.error("User not authenticated");
-          setPageLoading(false);
-          return;
-        }
-
-        const healthData = await fetchUserHealthData(user.id);
         setUserStats(healthData);
       } catch (error) {
         console.error("Error initializing page:", error);
@@ -33,7 +25,7 @@ export default function Page() {
       }
     }
 
-    initializePage();
+    fetchHealthData();
   }, []);
 
   const handleFormSubmit = (answers: FormAnswers) => {
