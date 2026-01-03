@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -12,24 +11,48 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Scale } from "lucide-react";
+import { FormAnswers, Question, QuestionOption } from "../types";
+import {
+  MUSCLE_GROUP_OPTIONS,
+  GYM_GOAL_OPTIONS,
+  EXPERIENCE_OPTIONS,
+  FREQUENCY_OPTIONS,
+  YES_NO_OPTIONS,
+  GYM_FORM_TEXT,
+  ANIMATION_VARIANTS,
+  NO_PREFERENCE_OPTION,
+} from "../constants";
+import { calculateWeightDifference, handleExclusiveCheckbox } from "../helper_functions";
 
 interface GymCalisthenicsFormProps {
-  onSubmit: (answers: Record<string, any>) => void;
+  onSubmit: (answers: FormAnswers) => void;
   isCategoryGym: boolean;
-  usersWeight: number;
-  usersGoal: string;
+  usersWeight?: number;
+  usersGoal?: string;
   onBack: () => void;
+}
+
+interface GymCalisthenicsAnswers {
+  mainGoal: string;
+  experience: string;
+  frequency: number;
+  warmupCooldown: string;
+  muscleGroups: string[];
+  targetWeight: string;
+  targetWeightValue: string;
+  healthIssues: string;
+  specificExercises: string;
 }
 
 export default function GymCalisthenicsForm({
   onSubmit,
   isCategoryGym,
-  usersWeight,
-  usersGoal,
+  usersWeight = 0,
+  usersGoal = "",
   onBack,
 }: GymCalisthenicsFormProps) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, any>>({
+  const [answers, setAnswers] = useState<GymCalisthenicsAnswers>({
     mainGoal: usersGoal,
     experience: "",
     frequency: 0,
@@ -41,109 +64,36 @@ export default function GymCalisthenicsForm({
     specificExercises: "",
   });
 
-  const muscleGroupOptions = ["Гърди", "Гръб", "Рамене", "Ръце", "Корем", "Крака", "Нямам предпочитания"];
-
-  const questions = [
+  const questions: Question[] = [
     {
       field: "mainGoal",
       title: "Каква е вашата основна цел?",
       type: "radio",
-      options: [
-        {
-          value: "cut",
-          label: "Cut (Загуба на мазнини)",
-          description: "Тренировки, насочени към изгаряне на телесните мазнини",
-        },
-        {
-          value: "aggressive_cut",
-          label: "Aggressive Cut (Екстремна загуба на мазнини)",
-          description: "Интензивни тренировки за бързо изгаряне на телесните мазнини",
-        },
-        {
-          value: "lean_bulk",
-          label: "Lean Bulk (Покачване на мускулна маса)",
-          description: "Тренировки, насочени към постепенно и контролирано покачване на мускулна маса",
-        },
-        {
-          value: "dirty_bulk",
-          label: "Dirty Bulk (Интензивно покачване на маса)",
-          description: "Интензивни тренировки за бързо набавяне на маса - мускулна и мастна",
-        },
-        {
-          value: "recomposition",
-          label: "Recomposition (Телесна рекомпозиция)",
-          description:
-            "Тренировки, насочени към едновременното изгаряне на телесните мазнини и покачване на мускулна маса",
-        },
-        {
-          value: "maintenance",
-          label: "Maintenance (Поддържане на текущата форма)",
-          description: "Тренировки за запазване на текущото тегло и форма",
-        },
-        {
-          value: "aesthetic",
-          label: "Aesthetic (Естетика и пропорции)",
-          description: "Тренировки, насочени към постигане на естетичен външен вид и балансирани пропорции",
-        },
-        {
-          value: "strength",
-          label: "Strength (Максимална сила)",
-          description: "Тренировки с фокус върху максимална сила и силови показатели",
-        },
-      ],
+      options: GYM_GOAL_OPTIONS,
     },
     {
       field: "experience",
       title: "Какво е вашето ниво на опит в тренировките?",
       type: "radio",
-      options: [
-        {
-          value: "beginner",
-          label: "Начинаещ",
-          description: "Тренирате от кратко време",
-        },
-        {
-          value: "basic",
-          label: "Базово ниво",
-          description: "Изпълнявате основни упражнения правилно",
-        },
-        {
-          value: "intermediate",
-          label: "Средно ниво",
-          description: "Познавате силните и слабите си страни",
-        },
-        {
-          value: "advanced",
-          label: "Напреднал",
-          description: "Работите с по-сложни програми",
-        },
-        {
-          value: "expert",
-          label: "Експерт",
-          description: "Имате дългогодишна практика",
-        },
-      ],
+      options: EXPERIENCE_OPTIONS,
     },
     {
       field: "frequency",
       title: "Колко често бихте имали възможност да тренирате?",
       type: "radio-grid",
-      options: [2, 3, 4, 5, 6, 7],
+      options: FREQUENCY_OPTIONS,
     },
     {
       field: "warmupCooldown",
       title: "Желаете ли програмата да включва препоръки за загряване преди тренировка и разтягане след нея?",
       type: "radio-horizontal",
-      options: [
-        { value: "yes", label: "Да" },
-        { value: "no", label: "Не" },
-      ],
+      options: YES_NO_OPTIONS,
     },
     {
       field: "muscleGroups",
       title: "Има ли конкретна мускулна група, върху която желаете да се фокусирате предимно?",
       type: "checkbox",
-      options: muscleGroupOptions,
+      options: MUSCLE_GROUP_OPTIONS,
     },
     {
       field: "targetWeight",
@@ -155,24 +105,23 @@ export default function GymCalisthenicsForm({
       field: "healthIssues",
       title: "Съществуват ли някакви здравословни проблеми, контузии или ограничения?",
       type: "textarea",
-      placeholder: "напр. болки в кръста, проблеми със ставите, сърдечни заболявания",
+      placeholder: GYM_FORM_TEXT.healthIssuesPlaceholder,
     },
     {
       field: "specificExercises",
       title: "Има ли конкретни упражнения, които желаете да бъдат включени в програмата?",
       type: "textarea",
-      placeholder: "напр. Bench Press, Deadlift, Squats, Pull-ups",
+      placeholder: GYM_FORM_TEXT.specificExercisesPlaceholder,
     },
   ];
 
   const handleChange = (field: string, value: any) => {
     setAnswers((prev) => {
-      // If changing targetWeight to "no", clear the targetWeightValue
       if (field === "targetWeight" && value === "no") {
         return {
           ...prev,
           [field]: value,
-          targetWeightValue: null,
+          targetWeightValue: "",
         };
       }
       return {
@@ -183,39 +132,29 @@ export default function GymCalisthenicsForm({
   };
 
   const handleMuscleGroupChange = (group: string, checked: boolean) => {
-    setAnswers((prev) => {
-      // If "Нямам предпочитания" is being checked, clear all others
-      if (group === "Нямам предпочитания" && checked) {
-        return {
-          ...prev,
-          muscleGroups: ["Нямам предпочитания"],
-        };
-      }
+    setAnswers((prev) => ({
+      ...prev,
+      muscleGroups: handleExclusiveCheckbox(prev.muscleGroups, group, checked, NO_PREFERENCE_OPTION),
+    }));
+  };
 
-      // If any other group is being checked, remove "Нямам предпочитания"
-      if (checked && prev.muscleGroups.includes("Нямам предпочитания")) {
-        return {
-          ...prev,
-          muscleGroups: [group],
-        };
+  const handleNumericInput = (value: string) => {
+    if (value === "" || /^\d{0,3}(\.\d{0,2})?$/.test(value)) {
+      const numericValue = parseFloat(value);
+      if (isNaN(numericValue) || numericValue <= 200) {
+        handleChange("targetWeightValue", value);
       }
-
-      // Normal checkbox behavior
-      return {
-        ...prev,
-        muscleGroups: checked ? [...prev.muscleGroups, group] : prev.muscleGroups.filter((g: string) => g !== group),
-      };
-    });
+    }
   };
 
   const isCurrentQuestionAnswered = (): boolean => {
     const currentField = questions[currentQuestion].field;
-    const answer = answers[currentField];
+    const answer = answers[currentField as keyof GymCalisthenicsAnswers];
 
     if (currentField === "targetWeight") {
       if (answer === "no") return true;
       if (answer === "yes") {
-        return answers.targetWeightValue && answers.targetWeightValue.trim() !== "";
+        return !!(answers.targetWeightValue && answers.targetWeightValue.trim() !== "");
       }
       return false;
     }
@@ -245,11 +184,7 @@ export default function GymCalisthenicsForm({
   const isLastQuestion = currentQuestion === questions.length - 1;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.21, 0.47, 0.32, 0.98] }}
-    >
+    <motion.div {...ANIMATION_VARIANTS.fadeIn}>
       <Card className="border-border bg-card">
         <CardHeader className="border-border bg-card/50 border-b">
           <div className="space-y-2 sm:space-y-3">
@@ -263,7 +198,7 @@ export default function GymCalisthenicsForm({
                   ←
                 </button>
                 <CardTitle className="text-foreground text-xl sm:text-2xl">
-                  Въпросник за {isCategoryGym ? "фитнес" : "калистенични"} препоръки
+                  {GYM_FORM_TEXT.title(isCategoryGym)}
                 </CardTitle>
               </div>
               <span className="text-foreground text-xs sm:text-sm">
@@ -273,36 +208,29 @@ export default function GymCalisthenicsForm({
             <motion.div className="bg-muted h-2 w-full overflow-hidden rounded-full">
               <motion.div
                 className="bg-primary h-2 rounded-full"
-                initial={{ width: 0 }}
+                {...ANIMATION_VARIANTS.progressBar}
                 animate={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
-                transition={{ duration: 0.3, ease: [0.21, 0.47, 0.32, 0.98] }}
               />
             </motion.div>
             <CardDescription className="text-foreground text-xs sm:text-sm">
-              Отговорете на няколко въпроса, за да получите персонализирани препоръки
+              {GYM_FORM_TEXT.description}
             </CardDescription>
           </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
             <AnimatePresence mode="wait">
-              <motion.div
-                key={currentQuestion}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3, ease: [0.21, 0.47, 0.32, 0.98] }}
-              >
+              <motion.div key={currentQuestion} {...ANIMATION_VARIANTS.slideIn}>
                 <fieldset className="space-y-3 sm:space-y-4">
                   <Label className="text-foreground text-sm font-semibold sm:text-base">{question.title}</Label>
 
                   {question.type === "radio" && (
                     <RadioGroup
-                      value={answers[question.field]}
+                      value={answers[question.field as keyof GymCalisthenicsAnswers] as string}
                       onValueChange={(value) => handleChange(question.field, value)}
                     >
                       <div className="space-y-2 sm:space-y-3">
-                        {question.options?.map((option: any, index: number) => {
+                        {(question.options as QuestionOption[])?.map((option, index) => {
                           const isRecommended = question.field === "mainGoal" && option.value === usersGoal;
                           return (
                             <motion.div
@@ -332,7 +260,7 @@ export default function GymCalisthenicsForm({
                                   </div>
                                   {isRecommended && (
                                     <span className="bg-primary text-primary-foreground flex-shrink-0 rounded-full px-2 py-0.5 text-xs font-medium">
-                                      Препоръчителна цел
+                                      {GYM_FORM_TEXT.recommendedBadge}
                                     </span>
                                   )}
                                 </div>
@@ -349,7 +277,7 @@ export default function GymCalisthenicsForm({
 
                   {question.type === "radio-grid" && (
                     <RadioGroup
-                      value={answers[question.field]?.toString()}
+                      value={answers[question.field as keyof GymCalisthenicsAnswers]?.toString()}
                       onValueChange={(value) => handleChange(question.field, Number(value))}
                     >
                       <div className="grid grid-cols-2 gap-2 sm:gap-3">
@@ -385,11 +313,11 @@ export default function GymCalisthenicsForm({
 
                   {question.type === "radio-horizontal" && (
                     <RadioGroup
-                      value={answers[question.field]?.toString()}
+                      value={answers[question.field as keyof GymCalisthenicsAnswers]?.toString()}
                       onValueChange={(value) => handleChange(question.field, value)}
                     >
                       <div className="flex flex-col gap-3 sm:flex-row sm:gap-6">
-                        {question.options?.map((option: any, index: number) => (
+                        {(question.options as QuestionOption[])?.map((option, index) => (
                           <motion.div
                             key={option.value}
                             initial={{ opacity: 0, x: -10 }}
@@ -419,7 +347,6 @@ export default function GymCalisthenicsForm({
 
                   {question.type === "target-weight" && (
                     <div className="space-y-4">
-                      {/* Current Weight Display */}
                       <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -432,22 +359,25 @@ export default function GymCalisthenicsForm({
                               <Scale className="text-primary h-5 w-5" />
                             </div>
                             <div>
-                              <p className="text-muted-foreground text-xs">Текущо тегло</p>
-                              <p className="text-foreground text-lg font-semibold">{usersWeight} кг</p>
+                              <p className="text-muted-foreground text-xs">
+                                {GYM_FORM_TEXT.targetWeight.currentWeight}
+                              </p>
+                              <p className="text-foreground text-lg font-semibold">
+                                {usersWeight} {GYM_FORM_TEXT.targetWeight.unit}
+                              </p>
                             </div>
                           </div>
                         </div>
                       </motion.div>
 
-                      {/* Radio Options */}
                       <RadioGroup
                         value={answers.targetWeight}
                         onValueChange={(value) => handleChange("targetWeight", value)}
                       >
                         <div className="space-y-3">
                           {[
-                            { value: "yes", label: "Да, имам целево тегло" },
-                            { value: "no", label: "Не, нямам конкретно целево тегло" },
+                            { value: "yes", label: GYM_FORM_TEXT.targetWeight.yes },
+                            { value: "no", label: GYM_FORM_TEXT.targetWeight.no },
                           ].map((option, index) => (
                             <motion.div
                               key={option.value}
@@ -475,7 +405,6 @@ export default function GymCalisthenicsForm({
                         </div>
                       </RadioGroup>
 
-                      {/* Target Weight Input */}
                       <AnimatePresence>
                         {answers.targetWeight === "yes" && (
                           <motion.div
@@ -486,36 +415,25 @@ export default function GymCalisthenicsForm({
                             className="space-y-2"
                           >
                             <Label htmlFor="target-weight-value" className="text-foreground text-xs">
-                              Въведете целевото си тегло
+                              {GYM_FORM_TEXT.targetWeight.inputLabel}
                             </Label>
                             <div className="relative">
                               <Input
                                 id="target-weight-value"
                                 type="text"
                                 inputMode="decimal"
-                                placeholder="напр. 75.5"
+                                placeholder={GYM_FORM_TEXT.targetWeight.inputPlaceholder}
                                 value={answers.targetWeightValue || ""}
-                                onChange={(e) => {
-                                  const value = e.target.value;
-                                  // Allow only numbers and one dot, max 3 digits before decimal, max 2 after
-                                  if (value === "" || /^\d{0,3}(\.\d{0,2})?$/.test(value)) {
-                                    const numericValue = parseFloat(value);
-                                    if (isNaN(numericValue) || numericValue <= 200) {
-                                      handleChange("targetWeightValue", value);
-                                    }
-                                  }
-                                }}
+                                onChange={(e) => handleNumericInput(e.target.value)}
                                 className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-12 text-sm"
                               />
                               <span className="text-foreground absolute top-1/2 right-3 -translate-y-1/2 text-sm">
-                                кг
+                                {GYM_FORM_TEXT.targetWeight.unit}
                               </span>
                             </div>
                             {answers.targetWeightValue && (
                               <p className="text-muted-foreground text-xs">
-                                {parseFloat(answers.targetWeightValue) > usersWeight
-                                  ? `+${(parseFloat(answers.targetWeightValue) - usersWeight).toFixed(1)} кг от текущото тегло`
-                                  : `${(parseFloat(answers.targetWeightValue) - usersWeight).toFixed(1)} кг от текущото тегло`}
+                                {calculateWeightDifference(parseFloat(answers.targetWeightValue), usersWeight)}
                               </p>
                             )}
                           </motion.div>
@@ -544,7 +462,7 @@ export default function GymCalisthenicsForm({
                             <Checkbox
                               id={`muscle-${group}`}
                               checked={answers.muscleGroups.includes(group)}
-                              onCheckedChange={(checked) => handleMuscleGroupChange(group, checked as boolean)}
+                              onCheckedChange={(checked) => handleMuscleGroupChange(group, !!checked)}
                               className="h-4 w-4 flex-shrink-0"
                             />
                             <span className="text-foreground flex-1 text-xs font-normal sm:text-sm">{group}</span>
@@ -564,18 +482,18 @@ export default function GymCalisthenicsForm({
                       <Textarea
                         id={question.field}
                         placeholder={question.placeholder}
-                        value={answers[question.field]}
+                        value={answers[question.field as keyof GymCalisthenicsAnswers] as string}
                         onChange={(e) => handleChange(question.field, e.target.value)}
-                        disabled={answers[question.field] === "Няма"}
+                        disabled={answers[question.field as keyof GymCalisthenicsAnswers] === GYM_FORM_TEXT.noIssues}
                         className="bg-input border-border text-foreground placeholder:text-muted-foreground min-h-24 resize-none text-xs disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm"
                       />
                       <div className="flex items-center space-x-2">
                         <Checkbox
                           id={`${question.field}-none`}
-                          checked={answers[question.field] === "Няма"}
+                          checked={answers[question.field as keyof GymCalisthenicsAnswers] === GYM_FORM_TEXT.noIssues}
                           onCheckedChange={(checked) => {
-                            if (checked) {
-                              handleChange(question.field, "Няма");
+                            if (!!checked) {
+                              handleChange(question.field, GYM_FORM_TEXT.noIssues);
                             } else {
                               handleChange(question.field, "");
                             }
@@ -586,7 +504,7 @@ export default function GymCalisthenicsForm({
                           htmlFor={`${question.field}-none`}
                           className="text-foreground cursor-pointer text-xs font-normal sm:text-sm"
                         >
-                          Няма
+                          {GYM_FORM_TEXT.noIssues}
                         </Label>
                       </div>
                     </motion.div>
@@ -608,7 +526,7 @@ export default function GymCalisthenicsForm({
                   onClick={() => setCurrentQuestion(currentQuestion - 1)}
                   className="dark:text-foreground w-full cursor-pointer text-xs sm:flex-1 sm:text-sm"
                 >
-                  Назад
+                  {GYM_FORM_TEXT.buttons.back}
                 </Button>
               )}
               {!isLastQuestion ? (
@@ -618,7 +536,7 @@ export default function GymCalisthenicsForm({
                   disabled={!isCurrentQuestionAnswered()}
                   className="bg-primary text-primary-foreground hover:bg-primary/90 w-full cursor-pointer text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:flex-1 sm:text-sm"
                 >
-                  Напред
+                  {GYM_FORM_TEXT.buttons.next}
                 </Button>
               ) : (
                 <Button
@@ -626,7 +544,7 @@ export default function GymCalisthenicsForm({
                   disabled={!isCurrentQuestionAnswered()}
                   className="bg-primary text-primary-foreground hover:bg-primary/90 w-full cursor-pointer text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:flex-1 sm:text-sm"
                 >
-                  Получи моите препоръки
+                  {GYM_FORM_TEXT.buttons.submit}
                 </Button>
               )}
             </motion.div>

@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -10,15 +9,29 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
+import { FormAnswers, Question, QuestionOption } from "../types";
+import { ANIMATION_VARIANTS, YOGA_FORM_TEXT, EASE_CURVE, NO_PREFERENCE_OPTION, YOGA_QUESTIONS } from "../constants";
+import { handleExclusiveCheckbox } from "../helper_functions";
 
 interface YogaFormProps {
-  onSubmit: (answers: Record<string, any>) => void;
+  onSubmit: (answers: FormAnswers) => void;
   onBack: () => void;
+}
+
+interface YogaAnswers {
+  mainGoal: string;
+  yogaStyle: string;
+  experience: string;
+  frequency: number;
+  warmupSavasana: string;
+  focusAreas: string[];
+  healthIssues: string;
+  specificExercises: string;
 }
 
 export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, any>>({
+  const [answers, setAnswers] = useState<YogaAnswers>({
     mainGoal: "",
     yogaStyle: "",
     experience: "",
@@ -29,114 +42,6 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
     specificExercises: "",
   });
 
-  const focusAreaOptions = [
-    "Гръбначен стълб и гръб",
-    "Тазобедрени стави",
-    "Рамене и врат",
-    "Коремна мускулатура",
-    "Крака и баланс",
-    "Дишане и пранаяма",
-    "Нямам предпочитания",
-  ];
-
-  const questions = [
-    {
-      field: "mainGoal",
-      title: "Каква е вашата основна цел?",
-      type: "radio",
-      options: [
-        {
-          value: "flexibility_balance",
-          label: "Гъвкавост и баланс",
-          description: "Практики, насочени към подобряване на гъвкавостта и баланса на тялото",
-        },
-        {
-          value: "stress_relief",
-          label: "Намаляване на стреса и релаксация",
-          description: "Упражнения за успокояване на ума и намаляване на стреса",
-        },
-        {
-          value: "strength_endurance",
-          label: "Сила и издръжливост",
-          description: "Динамични практики за изграждане на физическа сила и издръжливост",
-        },
-        {
-          value: "mindfulness",
-          label: "Осъзнатост и медитация",
-          description: "Фокус върху дишането, медитацията и вътрешната осъзнатост",
-        },
-        {
-          value: "posture",
-          label: "Подобряване на стойката",
-          description: "Работа върху коригиране и подобряване на телесната стойка",
-        },
-        {
-          value: "energy_boost",
-          label: "Повишаване на енергията",
-          description: "Енергизиращи практики за повишаване на жизнеността и тонуса",
-        },
-      ],
-    },
-    {
-      field: "yogaStyle",
-      title: "Какъв стил йога предпочитате?",
-      type: "radio",
-      options: [
-        { value: "hatha", label: "Hatha (по-бавно темпо, работа върху точната подредба на тялото)" },
-        { value: "vinyasa", label: "Vinyasa (пози в последователност с плавни преходи и по-висока активност)" },
-        { value: "yin", label: "Yin (дълго задържане на пози за по-дълбоко разтягане)" },
-        { value: "power_yoga", label: "Power Yoga (по-динамична практика с акцент върху сила и контрол)" },
-        { value: "restorative", label: "Restorative (леки пози с опора за по-добро отпускане)" },
-        { value: "no_preference", label: "Нямам предпочитания" },
-      ],
-    },
-    {
-      field: "experience",
-      title: "Какво е вашето ниво на опит в йогата?",
-      type: "radio",
-      options: [
-        { value: "beginner", label: "Начинаещ - Тренирате от кратко време" },
-        { value: "basic", label: "Базово ниво - Изпълнявате основни упражнения правилно" },
-        { value: "intermediate", label: "Средно ниво - Познавате силните и слабите си страни" },
-        { value: "advanced", label: "Напреднал - Работите с по-сложни програми" },
-        { value: "expert", label: "Експерт - Имате дългогодишна практика" },
-      ],
-    },
-    {
-      field: "frequency",
-      title: "Колко често бихте имали възможност да практикувате йога?",
-      type: "radio-grid",
-      options: [2, 3, 4, 5, 6, 7],
-    },
-    {
-      field: "warmupSavasana",
-      title: "Желаете ли програмата да включва препоръки за загряване преди практика и Shavasana (медитация) след нея?",
-      type: "radio-horizontal",
-      options: [
-        { value: "yes", label: "Да" },
-        { value: "no", label: "Не" },
-      ],
-    },
-    {
-      field: "focusAreas",
-      title: "Има ли конкретна област на тялото или аспект, върху които желаете да се фокусирате предимно?",
-      type: "checkbox",
-      options: focusAreaOptions,
-    },
-    {
-      field: "healthIssues",
-      title: "Съществуват ли някакви здравословни проблеми, контузии или ограничения?",
-      type: "textarea",
-      placeholder: "напр. болки в кръста, проблеми със ставите, високо кръвно налягане",
-    },
-    {
-      field: "specificExercises",
-      title: "Има ли конкретни йога пози, които желаете да бъдат включени в програмата?",
-      type: "textarea",
-      placeholder: "напр. Downward Dog, Warrior poses, Tree Pose, Headstand",
-    },
-  ];
-
   const handleChange = (field: string, value: any) => {
     setAnswers((prev) => ({
       ...prev,
@@ -145,34 +50,15 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
   };
 
   const handleFocusAreaChange = (area: string, checked: boolean) => {
-    setAnswers((prev) => {
-      // If "Нямам предпочитания" is being checked, clear all others
-      if (area === "Нямам предпочитания" && checked) {
-        return {
-          ...prev,
-          focusAreas: ["Нямам предпочитания"],
-        };
-      }
-
-      // If any other area is being checked, remove "Нямам предпочитания"
-      if (checked && prev.focusAreas.includes("Нямам предпочитания")) {
-        return {
-          ...prev,
-          focusAreas: [area],
-        };
-      }
-
-      // Normal checkbox behavior
-      return {
-        ...prev,
-        focusAreas: checked ? [...prev.focusAreas, area] : prev.focusAreas.filter((a: string) => a !== area),
-      };
-    });
+    setAnswers((prev) => ({
+      ...prev,
+      focusAreas: handleExclusiveCheckbox(prev.focusAreas, area, checked, NO_PREFERENCE_OPTION),
+    }));
   };
 
   const isCurrentQuestionAnswered = (): boolean => {
-    const currentField = questions[currentQuestion].field;
-    const answer = answers[currentField];
+    const currentField = YOGA_QUESTIONS[currentQuestion].field;
+    const answer = answers[currentField as keyof YogaAnswers];
 
     if (typeof answer === "string") return answer.trim() !== "";
     if (typeof answer === "number") return answer > 0;
@@ -181,10 +67,8 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
   };
 
   const moveToNextQuestion = () => {
-    if (isCurrentQuestionAnswered()) {
-      if (currentQuestion < questions.length - 1) {
-        setCurrentQuestion(currentQuestion + 1);
-      }
+    if (isCurrentQuestionAnswered() && currentQuestion < YOGA_QUESTIONS.length - 1) {
+      setCurrentQuestion(currentQuestion + 1);
     }
   };
 
@@ -195,15 +79,12 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
     }
   };
 
-  const question = questions[currentQuestion];
-  const isLastQuestion = currentQuestion === questions.length - 1;
+  const question = YOGA_QUESTIONS[currentQuestion];
+  const isLastQuestion = currentQuestion === YOGA_QUESTIONS.length - 1;
+  const progressPercentage = ((currentQuestion + 1) / YOGA_QUESTIONS.length) * 100;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.21, 0.47, 0.32, 0.98] }}
-    >
+    <motion.div {...ANIMATION_VARIANTS.fadeIn}>
       <Card className="border-border bg-card">
         <CardHeader className="border-border bg-card/50 border-b">
           <div className="space-y-2 sm:space-y-3">
@@ -212,58 +93,47 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
                 <button
                   onClick={onBack}
                   className="text-foreground cursor-pointer text-xl transition-colors sm:text-2xl"
-                  aria-label="Назад"
+                  aria-label={YOGA_FORM_TEXT.buttons.back}
                 >
                   ←
                 </button>
-                <CardTitle className="text-foreground text-xl sm:text-2xl">Въпросник за йога препоръки</CardTitle>
+                <CardTitle className="text-foreground text-xl sm:text-2xl">{YOGA_FORM_TEXT.title}</CardTitle>
               </div>
               <span className="text-foreground text-xs sm:text-sm">
-                Въпрос {currentQuestion + 1} от {questions.length}
+                Въпрос {currentQuestion + 1} от {YOGA_QUESTIONS.length}
               </span>
             </div>
             <motion.div className="bg-muted h-2 w-full overflow-hidden rounded-full">
               <motion.div
                 className="bg-primary h-2 rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
-                transition={{ duration: 0.3, ease: [0.21, 0.47, 0.32, 0.98] }}
+                {...ANIMATION_VARIANTS.progressBar}
+                animate={{ width: `${progressPercentage}%` }}
               />
             </motion.div>
             <CardDescription className="text-foreground text-xs sm:text-sm">
-              Отговорете на няколко въпроса, за да получите персонализирани препоръки
+              {YOGA_FORM_TEXT.description}
             </CardDescription>
           </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
             <AnimatePresence mode="wait">
-              <motion.div
-                key={currentQuestion}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3, ease: [0.21, 0.47, 0.32, 0.98] }}
-              >
+              <motion.div key={currentQuestion} {...ANIMATION_VARIANTS.slideIn}>
                 <fieldset className="space-y-3 sm:space-y-4">
                   <Label className="text-foreground text-sm font-semibold sm:text-base">{question.title}</Label>
 
                   {question.type === "radio" && (
                     <RadioGroup
-                      value={answers[question.field]}
+                      value={answers[question.field as keyof YogaAnswers] as string}
                       onValueChange={(value) => handleChange(question.field, value)}
                     >
                       <div className="space-y-2 sm:space-y-3">
-                        {question.options?.map((option: any, index: number) => (
+                        {(question.options as QuestionOption[])?.map((option, index) => (
                           <motion.div
                             key={option.value}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{
-                              duration: 0.2,
-                              delay: index * 0.05,
-                              ease: [0.21, 0.47, 0.32, 0.98],
-                            }}
+                            transition={{ duration: 0.2, delay: index * 0.05, ease: EASE_CURVE }}
                           >
                             <Label
                               htmlFor={option.value}
@@ -289,7 +159,7 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
 
                   {question.type === "radio-grid" && (
                     <RadioGroup
-                      value={answers[question.field]?.toString()}
+                      value={answers[question.field as keyof YogaAnswers]?.toString()}
                       onValueChange={(value) => handleChange(question.field, Number(value))}
                     >
                       <div className="grid grid-cols-2 gap-2 sm:gap-3">
@@ -298,11 +168,7 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
                             key={day}
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            transition={{
-                              duration: 0.2,
-                              delay: index * 0.05,
-                              ease: [0.21, 0.47, 0.32, 0.98],
-                            }}
+                            transition={{ duration: 0.2, delay: index * 0.05, ease: EASE_CURVE }}
                           >
                             <Label
                               htmlFor={`yoga-freq-${day}`}
@@ -325,20 +191,16 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
 
                   {question.type === "radio-horizontal" && (
                     <RadioGroup
-                      value={answers[question.field]}
+                      value={answers[question.field as keyof YogaAnswers] as string}
                       onValueChange={(value) => handleChange(question.field, value)}
                     >
                       <div className="flex flex-col gap-3 sm:flex-row sm:gap-6">
-                        {question.options?.map((option: any, index: number) => (
+                        {(question.options as QuestionOption[])?.map((option, index) => (
                           <motion.div
                             key={option.value}
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
-                            transition={{
-                              duration: 0.2,
-                              delay: index * 0.1,
-                              ease: [0.21, 0.47, 0.32, 0.98],
-                            }}
+                            transition={{ duration: 0.2, delay: index * 0.1, ease: EASE_CURVE }}
                           >
                             <Label
                               htmlFor={`${question.field}-${option.value}`}
@@ -364,11 +226,7 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
                           key={area}
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
-                          transition={{
-                            duration: 0.2,
-                            delay: index * 0.05,
-                            ease: [0.21, 0.47, 0.32, 0.98],
-                          }}
+                          transition={{ duration: 0.2, delay: index * 0.05, ease: EASE_CURVE }}
                         >
                           <Label
                             htmlFor={`focus-${area}`}
@@ -377,7 +235,7 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
                             <Checkbox
                               id={`focus-${area}`}
                               checked={answers.focusAreas.includes(area)}
-                              onCheckedChange={(checked) => handleFocusAreaChange(area, checked as boolean)}
+                              onCheckedChange={(checked) => handleFocusAreaChange(area, !!checked)}
                               className="h-4 w-4 flex-shrink-0"
                             />
                             <span className="text-foreground flex-1 text-xs font-normal sm:text-sm">{area}</span>
@@ -391,27 +249,23 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, ease: [0.21, 0.47, 0.32, 0.98] }}
+                      transition={{ duration: 0.3, ease: EASE_CURVE }}
                       className="space-y-3"
                     >
                       <Textarea
                         id={question.field}
                         placeholder={question.placeholder}
-                        value={answers[question.field]}
+                        value={answers[question.field as keyof YogaAnswers] as string}
                         onChange={(e) => handleChange(question.field, e.target.value)}
-                        disabled={answers[question.field] === "Няма"}
+                        disabled={answers[question.field as keyof YogaAnswers] === YOGA_FORM_TEXT.noIssues}
                         className="bg-input border-border text-foreground placeholder:text-muted-foreground min-h-24 resize-none text-xs disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm"
                       />
                       <div className="flex items-center space-x-2">
                         <Checkbox
                           id={`${question.field}-none`}
-                          checked={answers[question.field] === "Няма"}
+                          checked={answers[question.field as keyof YogaAnswers] === YOGA_FORM_TEXT.noIssues}
                           onCheckedChange={(checked) => {
-                            if (checked) {
-                              handleChange(question.field, "Няма");
-                            } else {
-                              handleChange(question.field, "");
-                            }
+                            handleChange(question.field, !!checked ? YOGA_FORM_TEXT.noIssues : "");
                           }}
                           className="h-4 w-4 flex-shrink-0"
                         />
@@ -419,7 +273,7 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
                           htmlFor={`${question.field}-none`}
                           className="text-foreground cursor-pointer text-xs font-normal sm:text-sm"
                         >
-                          Няма
+                          {YOGA_FORM_TEXT.noIssues}
                         </Label>
                       </div>
                     </motion.div>
@@ -431,7 +285,7 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.2, ease: [0.21, 0.47, 0.32, 0.98] }}
+              transition={{ duration: 0.3, delay: 0.2, ease: EASE_CURVE }}
               className="mt-6 flex flex-col gap-2 sm:mt-8 sm:flex-row sm:gap-3"
             >
               {currentQuestion > 0 && (
@@ -441,7 +295,7 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
                   onClick={() => setCurrentQuestion(currentQuestion - 1)}
                   className="dark:text-foreground w-full cursor-pointer text-xs sm:flex-1 sm:text-sm"
                 >
-                  Назад
+                  {YOGA_FORM_TEXT.buttons.back}
                 </Button>
               )}
               {!isLastQuestion ? (
@@ -451,7 +305,7 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
                   disabled={!isCurrentQuestionAnswered()}
                   className="bg-primary text-primary-foreground hover:bg-primary/90 w-full cursor-pointer text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:flex-1 sm:text-sm"
                 >
-                  Напред
+                  {YOGA_FORM_TEXT.buttons.next}
                 </Button>
               ) : (
                 <Button
@@ -459,7 +313,7 @@ export default function YogaForm({ onSubmit, onBack }: YogaFormProps) {
                   disabled={!isCurrentQuestionAnswered()}
                   className="bg-primary text-primary-foreground hover:bg-primary/90 w-full cursor-pointer text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:flex-1 sm:text-sm"
                 >
-                  Получи моите препоръки
+                  {YOGA_FORM_TEXT.buttons.submit}
                 </Button>
               )}
             </motion.div>

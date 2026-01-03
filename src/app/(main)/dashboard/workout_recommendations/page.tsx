@@ -7,20 +7,17 @@ import YogaForm from "./components/yoga-form";
 import ResultsDisplay from "./components/results-display";
 import { Loader } from "../_components/loader";
 import { createClient } from "@/app/utils/supabase/client";
-
-type Category = "gym" | "calisthenics" | "yoga" | null;
-type FormAnswers = Record<string, any>;
+import { Category, FormAnswers, UserStats } from "./types";
 
 export default function Page() {
   const [selectedCategory, setSelectedCategory] = useState<Category>(null);
   const [submittedAnswers, setSubmittedAnswers] = useState<FormAnswers | null>(null);
-  const [userStats, setUserStats] = useState<any>(null);
+  const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [pageLoading, setPageLoading] = useState(true);
 
   useEffect(() => {
     async function fetchHealthData() {
       try {
-        // Get the current user
         const supabase = createClient();
         const {
           data: { user },
@@ -32,7 +29,6 @@ export default function Page() {
           return;
         }
 
-        // Fetch from your API endpoint that queries the database
         const [responseMetrics, responseMeasurements] = await Promise.all([
           fetch(`/api/user-metrics?userId=${user.id}`, {
             method: "GET",
