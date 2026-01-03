@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   try {
-    // Get user ID from query parameters
+    // Извличане на потребителско ID от параметрите на заявката
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get("userId");
 
@@ -11,10 +11,10 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "User ID is required" }, { status: 400 });
     }
 
-    // Initialize Supabase client
+    // Инициализиране на Supabase клиент
     const supabase = getServiceClient();
 
-    // Fetch latest user measurements
+    // Извличане на най-новите потребителски измервания
     const { data, error } = await supabase
       .from("user_measurements")
       .select("*")

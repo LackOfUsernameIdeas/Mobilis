@@ -1,10 +1,12 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+// Обединява Tailwind CSS класове с clsx и twMerge
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+// Извлича инициалите от низ (например "Иван Петров" -> "ИП")
 export const getInitials = (str: string): string => {
   if (typeof str !== "string" || !str.trim()) return "?";
 
@@ -19,6 +21,7 @@ export const getInitials = (str: string): string => {
   );
 };
 
+// Форматира число като валута с опции за локализация
 export function formatCurrency(
   amount: number,
   opts?: {

@@ -1,4 +1,3 @@
-// User and Stats Types
 export interface UserStats {
   gender?: "male" | "female";
   height?: number;
@@ -12,7 +11,6 @@ export interface UserStats {
   leanBodyMass: string;
 }
 
-// Form Types
 export interface FormAnswers {
   mainGoal: string;
   trainingTime: string;
@@ -42,7 +40,6 @@ export interface FormQuestion {
   currentWeight?: number;
 }
 
-// Nutrition Plan Types
 export interface MacroNutrients {
   calories: number;
   protein: number;
@@ -80,7 +77,6 @@ export interface NutritionPlan {
   nutrition_tips: string[];
 }
 
-// Component Props Types
 export interface NutritionFormProps {
   onSubmit: (answers: FormAnswers) => void;
   usersStats: UserStats | null;
@@ -99,7 +95,6 @@ export interface MealModalProps {
   meal: NutritionMeal | null;
 }
 
-// API Types
 export interface NutrientRecommendationParams {
   height: number;
   weight: number;

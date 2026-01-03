@@ -2,7 +2,7 @@ import { getBrowserClient } from "@/lib/db/clients/browser";
 import type { NutrientRecommendationParams, NutrientRecommendations } from "./types";
 
 /**
- * Fetches YouTube video embed URL for a given query
+ * Извлича URL за вграждане на YouTube видео за дадена заявка
  */
 export const fetchYouTubeEmbed = async (query: string): Promise<string | null> => {
   try {
@@ -16,7 +16,7 @@ export const fetchYouTubeEmbed = async (query: string): Promise<string | null> =
 };
 
 /**
- * Fetches nutrient recommendations based on user parameters
+ * Извлича препоръки за хранителни вещества въз основа на потребителски параметри
  */
 export const fetchNutrientRecommendations = async (
   params: NutrientRecommendationParams,
@@ -43,7 +43,7 @@ export const fetchNutrientRecommendations = async (
 };
 
 /**
- * Fetches user health data (metrics and measurements)
+ * Извлича здравни данни на потребителя (метрики и измервания)
  */
 export const fetchUserHealthData = async (userId: string) => {
   try {
@@ -87,7 +87,7 @@ export const fetchUserHealthData = async (userId: string) => {
 };
 
 /**
- * Validates numeric input based on pattern and max value
+ * Валидира числов вход въз основа на шаблон и максимална стойност
  */
 export const validateNumericInput = (value: string, pattern: RegExp, max: number): boolean => {
   if (value === "" || pattern.test(value)) {
@@ -100,7 +100,7 @@ export const validateNumericInput = (value: string, pattern: RegExp, max: number
 };
 
 /**
- * Calculates weight difference from current weight
+ * Изчислява разликата в теглото от текущото тегло
  */
 export const calculateWeightDifference = (targetWeight: number, currentWeight: number): string => {
   const diff = targetWeight - currentWeight;
@@ -109,7 +109,7 @@ export const calculateWeightDifference = (targetWeight: number, currentWeight: n
 };
 
 /**
- * Gets authenticated user from Supabase
+ * Получава удостоверен потребител от Supabase
  */
 export const getAuthenticatedUser = async () => {
   const supabase = getBrowserClient();
@@ -120,7 +120,7 @@ export const getAuthenticatedUser = async () => {
 };
 
 /**
- * Fetches nutrition plan recommendations from API
+ * Извлича препоръки за хранителен план от API
  */
 export const fetchNutritionPlan = async (
   userId: string,
@@ -155,7 +155,7 @@ export const fetchNutritionPlan = async (
 };
 
 /**
- * Gets meal icon based on meal type
+ * Получава икона на ястие въз основа на типа ястие
  */
 export const getMealIconName = (mealType: string): string => {
   if (mealType === "pre_workout_snack" || mealType === "post_workout_snack") {
@@ -165,7 +165,7 @@ export const getMealIconName = (mealType: string): string => {
 };
 
 /**
- * Gets meal badge background class based on meal type
+ * Получава класа за фон на значката на ястието въз основа на типа ястие
  */
 export const getMealBadgeBg = (mealType: string): string => {
   if (mealType === "pre_workout_snack" || mealType === "post_workout_snack") {

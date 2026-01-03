@@ -1,9 +1,7 @@
 import type { QuestionOption } from "./types";
 
-// Cuisine Options
 export const CUISINE_OPTIONS = ["Българска", "Испанска", "Италианска", "Френска", "Нямам предпочитания"] as const;
 
-// Goal Options
 export const GOAL_OPTIONS: QuestionOption[] = [
   {
     value: "cut",
@@ -48,7 +46,6 @@ export const GOAL_OPTIONS: QuestionOption[] = [
   },
 ];
 
-// Training Time Options
 export const TRAINING_TIME_OPTIONS: QuestionOption[] = [
   { value: "morning", label: "Сутрин", description: "06:00-09:00" },
   { value: "before-noon", label: "Предиобед", description: "09:00-12:00" },
@@ -57,7 +54,6 @@ export const TRAINING_TIME_OPTIONS: QuestionOption[] = [
   { value: "evening", label: "Вечер", description: "17:00-21:00" },
 ];
 
-// Meal Type Translations
 export const MEAL_TYPE_TRANSLATIONS: Record<string, string> = {
   breakfast: "Закуска",
   morning_snack: "Предиобедна закуска",
@@ -68,7 +64,6 @@ export const MEAL_TYPE_TRANSLATIONS: Record<string, string> = {
   dinner: "Вечеря",
 };
 
-// Input Validation Limits
 export const INPUT_LIMITS = {
   targetWeight: {
     max: 200,
@@ -92,7 +87,6 @@ export const INPUT_LIMITS = {
   },
 } as const;
 
-// Animation Variants
 export const ANIMATION_VARIANTS = {
   fadeIn: {
     initial: { opacity: 0, y: 20 },
@@ -116,7 +110,6 @@ export const ANIMATION_VARIANTS = {
   }),
 } as const;
 
-// Form Text Constants
 export const FORM_TEXT = {
   title: "Въпросник за хранителни препоръки",
   description: "Отговорете на няколко въпроса, за да получите персонализирани хранителни препоръки",
@@ -148,7 +141,6 @@ export const FORM_TEXT = {
   },
 } as const;
 
-// Results Display Text
 export const RESULTS_TEXT = {
   weeklyPlanTitle: "Седмичен хранителен план",
   dailyMacrosTitle: "Препочетени стойности на макроси за ден:",

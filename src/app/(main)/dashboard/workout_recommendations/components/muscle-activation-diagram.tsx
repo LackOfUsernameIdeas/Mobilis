@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import FrontMuscleScheme from "./muscle-scheme-front";
 import BackMuscleScheme from "./muscle-scheme-back";
 

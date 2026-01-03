@@ -2,9 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertTriangle, Activity } from "lucide-react";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Activity } from "lucide-react";
 import ExerciseDetailsModal from "./components/exercise-details-modal";
 import ExerciseCard from "./components/exercise-card";
 import AboutSection from "./components/about-section";

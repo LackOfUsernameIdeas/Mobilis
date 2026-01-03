@@ -60,11 +60,11 @@ const BODY_FAT_CATEGORIES = {
 function getBodyFatCategory(bodyFat: number, gender: "male" | "female"): BodyFatCategory {
   const cats = BODY_FAT_CATEGORIES[gender];
 
-  // Below minimum essential fat (2% for men, 10% for women)
+  // Под минималната съществена мазнина (2% за мъже, 10% за жени)
   const minEssential = gender === "male" ? 2 : 10;
   if (bodyFat < minEssential) return "critical";
 
-  // Check each category
+  // Проверка на всяка категория
   for (const [category, range] of Object.entries(cats)) {
     if (bodyFat >= range.min && bodyFat <= range.max) {
       return category as BodyFatCategory;

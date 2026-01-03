@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
-import { FormAnswers, Question, QuestionOption } from "../types";
+import { FormAnswers, QuestionOption } from "../types";
 import { ANIMATION_VARIANTS, YOGA_FORM_TEXT, EASE_CURVE, NO_PREFERENCE_OPTION, YOGA_QUESTIONS } from "../constants";
 import { handleExclusiveCheckbox } from "../helper_functions";
 

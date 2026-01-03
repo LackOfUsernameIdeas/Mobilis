@@ -3,6 +3,9 @@
 import { getServerClient } from "@/lib/db/clients/server";
 import { saveUserMeasurements, saveUserMetrics } from "@/server/saveFunctions";
 
+/**
+ * Проверява дали има измервания за днес
+ */
 export async function checkTodayMeasurements() {
   const supabase = await getServerClient();
 
@@ -18,6 +21,7 @@ export async function checkTodayMeasurements() {
     };
   }
 
+  // Получаване на днешната дата в ISO формат
   const today = new Date().toISOString().split("T")[0];
 
   const { data, error } = await supabase
@@ -39,6 +43,9 @@ export async function checkTodayMeasurements() {
   };
 }
 
+/**
+ * Запазва измерванията и изчислява здравните метрики
+ */
 export async function saveMeasurementsAndCalculateMetrics(data: {
   height: number;
   weight: number;
@@ -64,10 +71,10 @@ export async function saveMeasurementsAndCalculateMetrics(data: {
       };
     }
 
-    // Get the base URL for API calls
+    // Получаване на базовия URL за API извиквания
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-    // Call all three endpoints in parallel
+    // Извикване на трите крайни точки паралелно
     const [bmiResponse, bodyFatResponse, goalResponse] = await Promise.all([
       fetch(`${baseUrl}/api/health/bmi`, {
         method: "POST",
@@ -100,19 +107,19 @@ export async function saveMeasurementsAndCalculateMetrics(data: {
       }),
     ]);
 
-    // Check if all requests were successful
+    // Проверка дали всички заявки са успешни
     if (!bmiResponse.ok || !bodyFatResponse.ok || !goalResponse.ok) {
       throw new Error("Failed to calculate health metrics");
     }
 
-    // Parse the responses
+    // Парсване на отговорите
     const [bmiData, bodyFatData, goalData] = await Promise.all([
       bmiResponse.json(),
       bodyFatResponse.json(),
       goalResponse.json(),
     ]);
 
-    // Now calculate nutrients with the goal data
+    // Изчисляване на хранителни вещества с данните за целта
     const nutrientsResponse = await fetch(`${baseUrl}/api/calculate-nutrients`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -132,13 +139,13 @@ export async function saveMeasurementsAndCalculateMetrics(data: {
 
     const nutrientsData = await nutrientsResponse.json();
 
-    // Save measurements with calculated metrics
+    // Запазване на измерванията с изчислените метрики
     const measurementResult = await saveUserMeasurements(user.id, data);
 
-    // Then save metrics with reference to the measurement
+    // След това запазване на метриките с препратка към измерването
     await saveUserMetrics(
       user.id,
-      measurementResult.id, // Link to the measurement
+      measurementResult.id, // Връзка към измерването
       {
         bmi: bmiData.bmi,
         health: bmiData.health,

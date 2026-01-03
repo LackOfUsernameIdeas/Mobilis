@@ -2,26 +2,32 @@ import { createServerClient } from "@supabase/ssr";
 import { NextRequest, NextResponse } from "next/server";
 import { checkTodayMeasurements } from "./server/measurements";
 
+// Middleware функция за обработка на заявки и проверка на автентикация
 export async function middleware(req: NextRequest) {
+  // Създава отговор, който ще бъде модифициран при нужда
   let response = NextResponse.next({
     request: {
       headers: req.headers,
     },
   });
 
+  // Проверява дали са налични необходимите environment променливи за Supabase
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     console.error("Missing Supabase environment variables");
     return NextResponse.redirect(new URL("/auth/login", req.url));
   }
 
+  // Създава Supabase клиент за сървърна употреба
   const supabase = await createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
+        // Взима всички cookies от заявката
         getAll() {
           return req.cookies.getAll();
         },
+        // Задава cookies в отговора
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) => {
             response.cookies.set(name, value, options);
@@ -31,38 +37,41 @@ export async function middleware(req: NextRequest) {
     },
   );
 
+  // Взима текущия потребител от Supabase
   const {
     data: { user },
   } = await supabase.auth.getUser();
   const { pathname } = req.nextUrl;
 
-  // Redirect to login if not authenticated and trying to access dashboard
+  // Пренасочва към login страницата, ако потребителят не е автентикиран и се опитва да достъпи dashboard
   if (!user && pathname.startsWith("/dashboard")) {
     return NextResponse.redirect(new URL("/auth/login", req.url));
   }
 
+  // Пренасочва автентикирани потребители от login/register към measurements страницата
   if (user && (pathname === "/auth/login" || pathname === "/auth/register")) {
     return NextResponse.redirect(new URL("/dashboard/measurements", req.url));
   }
 
-  // Check for today's measurements if user is authenticated and not on measurements page
+  // Проверява дали има измервания за днес, ако потребителят е автентикиран и не е на measurements страницата
   if (user && pathname.startsWith("/dashboard") && pathname !== "/dashboard/measurements") {
     try {
       const result = await checkTodayMeasurements();
 
-      // If no measurement for today, redirect to measurements page
+      // Ако няма измерване за днес, пренасочва към measurements страницата
       if (result.success && !result.hasTodayMeasurement) {
         return NextResponse.redirect(new URL("/dashboard/measurements", req.url));
       }
     } catch (error) {
       console.error("Error checking today's measurements:", error);
-      // On error, allow access but log the issue
+      // При грешка позволява достъп, но записва проблема в лога
     }
   }
 
   return response;
 }
 
+// Конфигурация за кои пътища middleware-ът да се прилага
 export const config = {
   matcher: ["/dashboard/:path*", "/auth/login", "/auth/register"],
 };

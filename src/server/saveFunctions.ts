@@ -2,6 +2,7 @@ import { getServiceClient } from "@/lib/db/clients/supabase";
 
 const supabase = getServiceClient();
 
+// Интерфейс за потребителските предпочитания
 interface UserPreferences {
   user_id: string;
   category: string;
@@ -9,22 +10,23 @@ interface UserPreferences {
   experience: string;
   frequency: number;
 
-  // Gym/Calisthenics specific (nullable for yoga)
+  // Специфични полета за фитнес зала/калистеника (nullable за йога)
   warmupCooldown?: string;
   muscleGroups?: string[];
   targetWeight?: string;
   targetWeightValue?: string;
 
-  // Yoga specific (nullable for gym/calisthenics)
+  // Специфични полета за йога (nullable за фитнес/калистеника)
   yogaStyle?: string;
   focusAreas?: string[];
   warmupSavasana?: string;
 
-  // Common fields
+  // Общи полета
   healthIssues: string;
   specificExercises: string;
 }
 
+// Интерфейс за препоръка за тренировъчен ден
 interface WorkoutDayRecommendation {
   day: string;
   generation_id: number;
@@ -40,6 +42,7 @@ interface WorkoutDayRecommendation {
   };
 }
 
+// Интерфейс за упражнение
 interface WorkoutExercise {
   exercise_name: string;
   exercise_id: string;
@@ -50,6 +53,7 @@ interface WorkoutExercise {
   muscle_activation?: MuscleActivation;
 }
 
+// Интерфейс за мускулна активация
 interface MuscleActivation {
   chest: boolean;
   front_delts: boolean;
@@ -70,19 +74,22 @@ interface MuscleActivation {
   adductors: boolean;
 }
 
+// Интерфейс за отговор с тренировъчни препоръки
 interface WorkoutRecommendationsResponse {
   weekly_schedule: WorkoutDayRecommendation[];
   safety_considerations: string[];
 }
 
+// Запазва потребителските предпочитания в базата данни
 export const saveUserPreferences = async (userId: string, category: string, answers: Record<string, any>) => {
   try {
+    // Проверява дали категорията изисква запазване на предпочитания
     if (category !== "gym" && category !== "calisthenics" && category !== "yoga" && category !== "nutrition") {
       console.log(`Category ${category} does not require preference saving`);
       return { success: true, message: "Category does not require saving" };
     }
 
-    // Handle nutrition separately since it uses a different table
+    // Обработва хранителния режим отделно, тъй като използва различна таблица
     if (category === "nutrition") {
       const nutritionPreferences = {
         user_id: userId,
@@ -112,7 +119,7 @@ export const saveUserPreferences = async (userId: string, category: string, answ
       return { success: true, data };
     }
 
-    // Handle workout categories (gym, calisthenics, yoga)
+    // Обработва категориите за тренировки (фитнес зала, калистеника, йога)
     const preferences: UserPreferences = {
       user_id: userId,
       category: category,
@@ -123,7 +130,7 @@ export const saveUserPreferences = async (userId: string, category: string, answ
       specificExercises: answers.specificExercises || "",
     };
 
-    // Add gym/calisthenics specific fields
+    // Добавя специфични полета за фитнес зала/калистеника
     if (category === "gym" || category === "calisthenics") {
       preferences.warmupCooldown = answers.warmupCooldown || "";
       preferences.muscleGroups = Array.isArray(answers.muscleGroups) ? answers.muscleGroups : [];
@@ -131,7 +138,7 @@ export const saveUserPreferences = async (userId: string, category: string, answ
       preferences.targetWeightValue = answers.targetWeightValue || 0;
     }
 
-    // Add yoga specific fields
+    // Добавя специфични полета за йога
     if (category === "yoga") {
       preferences.yogaStyle = answers.yogaStyle || "";
       preferences.focusAreas = Array.isArray(answers.focusAreas) ? answers.focusAreas : [];
@@ -152,6 +159,7 @@ export const saveUserPreferences = async (userId: string, category: string, answ
   }
 };
 
+// Запазва тренировъчните препоръки в базата данни
 export const saveWorkoutRecommendations = async (
   userId: string,
   category: string,
@@ -164,7 +172,7 @@ export const saveWorkoutRecommendations = async (
       throw new Error("No workout schedule provided");
     }
 
-    // Step 1: Get the latest workout_user_preferences id for this user and category
+    // Стъпка 1: Взима последния workout_user_preferences id за този потребител и категория
     const { data: preferencesData, error: preferencesError } = await supabase
       .from("workout_user_preferences")
       .select("id")
@@ -182,7 +190,7 @@ export const saveWorkoutRecommendations = async (
     const preferencesId = preferencesData.id;
     console.log(`Using preferences ID: ${preferencesId}`);
 
-    // Step 2: Create a new generation entry and get the ID
+    // Стъпка 2: Създава нов запис за генериране и взима ID-то
     const { data: generationData, error: generationError } = await supabase
       .from("workout_generations")
       .insert({
@@ -201,7 +209,7 @@ export const saveWorkoutRecommendations = async (
     const generationId = generationData.id;
     console.log(`Created workout generation with ID: ${generationId}`);
 
-    // Step 3: Save in workout_day_recommendations
+    // Стъпка 3: Запазва в workout_day_recommendations
     const dayRecommendations = weekly_schedule.map((rec) => ({
       generation_id: generationId,
       day: rec.day,
@@ -224,7 +232,7 @@ export const saveWorkoutRecommendations = async (
 
     console.log(`Saved ${savedDays?.length} workout day recommendations`);
 
-    // Step 4: Collect all exercises and their muscle activations
+    // Стъпка 4: Събира всички упражнения и техните мускулни активации
     const allExercises: Array<WorkoutExercise & { day: string; exercise_id: string }> = [];
     weekly_schedule.forEach((rec) => {
       if (rec.workout && Array.isArray(rec.workout)) {
@@ -243,7 +251,7 @@ export const saveWorkoutRecommendations = async (
       };
     }
 
-    // Step 5: Save unique exercises to workout_exercises
+    // Стъпка 5: Запазва уникалните упражнения в workout_exercises
     const uniqueExercises = Array.from(
       new Map(
         allExercises
@@ -276,7 +284,7 @@ export const saveWorkoutRecommendations = async (
       console.log(`Saved/Updated ${workoutExercisesData?.length} workout exercises`);
     }
 
-    // Step 6: Save workout_day_exercises
+    // Стъпка 6: Запазва workout_day_exercises
     const dayExercises = allExercises.map((ex) => ({
       generation_id: generationId,
       day: ex.day,
@@ -311,6 +319,7 @@ export const saveWorkoutRecommendations = async (
   }
 };
 
+// Интерфейс за хранително ядене
 interface NutritionMeal {
   meal_id: string;
   name: string;
@@ -333,6 +342,7 @@ interface NutritionMeal {
   cooking_time: number;
 }
 
+// Интерфейс за дневен план
 interface DayPlan {
   day: string;
   total_macros: {
@@ -344,11 +354,13 @@ interface DayPlan {
   meals: NutritionMeal[];
 }
 
+// Интерфейс за отговор с хранителни препоръки
 interface NutritionRecommendationsResponse {
   weekly_plan: DayPlan[];
   nutrition_tips: string[];
 }
 
+// Запазва хранителните препоръки в базата данни
 export const saveNutritionRecommendations = async (
   userId: string,
   recommendations: NutritionRecommendationsResponse,
@@ -360,7 +372,7 @@ export const saveNutritionRecommendations = async (
       throw new Error("No nutrition plan provided");
     }
 
-    // Step 1: Get the latest nutrition_user_preferences id for this user
+    // Стъпка 1: Взима последния nutrition_user_preferences id за този потребител
     const { data: preferencesData, error: preferencesError } = await supabase
       .from("nutrition_user_preferences")
       .select("id")
@@ -377,7 +389,7 @@ export const saveNutritionRecommendations = async (
     const preferencesId = preferencesData.id;
     console.log(`Using nutrition preferences ID: ${preferencesId}`);
 
-    // Step 2: Create a new generation entry
+    // Стъпка 2: Създава нов запис за генериране
     const { data: generationData, error: generationError } = await supabase
       .from("nutrition_generations")
       .insert({
@@ -396,7 +408,7 @@ export const saveNutritionRecommendations = async (
     const generationId = generationData.id;
     console.log(`Created nutrition generation with ID: ${generationId}`);
 
-    // Step 3: Save day recommendations with total macros
+    // Стъпка 3: Запазва дневните препоръки с общите макроси
     const dayRecommendations = weekly_plan.map((dayPlan) => ({
       generation_id: generationId,
       day: dayPlan.day,
@@ -418,7 +430,7 @@ export const saveNutritionRecommendations = async (
 
     console.log(`Saved ${savedDays?.length} nutrition day recommendations`);
 
-    // Step 4: Collect all unique meals from all days
+    // Стъпка 4: Събира всички уникални ядения от всички дни
     const allMeals: Array<NutritionMeal & { day: string }> = [];
     weekly_plan.forEach((dayPlan) => {
       dayPlan.meals.forEach((meal) => {
@@ -435,7 +447,7 @@ export const saveNutritionRecommendations = async (
       };
     }
 
-    // Step 5: Save unique meals to nutrition_meals table
+    // Стъпка 5: Запазва уникалните ядения в таблицата nutrition_meals
     const uniqueMeals = Array.from(
       new Map(
         allMeals.map((meal) => [
@@ -473,7 +485,7 @@ export const saveNutritionRecommendations = async (
       console.log(`Saved/Updated ${mealsData?.length} nutrition meals`);
     }
 
-    // Step 6: Save nutrition_day_meals (linking meals to specific days)
+    // Стъпка 6: Запазва nutrition_day_meals (свързва яденията с конкретните дни)
     const dayMeals = allMeals.map((meal) => ({
       generation_id: generationId,
       meal_id: meal.meal_id,
@@ -509,6 +521,7 @@ export const saveNutritionRecommendations = async (
   }
 };
 
+// Запазва измерванията на потребителя в базата данни
 export const saveUserMeasurements = async (
   userId: string,
   data: {
@@ -533,7 +546,7 @@ export const saveUserMeasurements = async (
       gender: data.gender,
       neck: Math.round(data.neck),
       waist: Math.round(data.waist),
-      hip: data.hip ? Math.round(data.hip) : 0, // Default to 0 if not provided (for males)
+      hip: data.hip ? Math.round(data.hip) : 0, // По подразбиране 0, ако не е предоставено (за мъже)
     })
     .select()
     .single();
@@ -545,6 +558,7 @@ export const saveUserMeasurements = async (
   return result;
 };
 
+// Запазва метриките на потребителя в базата данни
 export const saveUserMetrics = async (
   userId: string,
   measurementId: string,
@@ -574,24 +588,24 @@ export const saveUserMetrics = async (
       user_id: userId,
       measurement_id: measurementId,
 
-      // BMI data
+      // BMI данни
       bmi: parseFloat(data.bmi),
       health: data.health,
       healthy_bmi_range: data.healthy_bmi_range,
 
-      // Body fat data
+      // Данни за телесни мазнини
       bodyFat: data.bodyFat,
       bodyFatMass: data.bodyFatMass,
       leanBodyMass: data.leanBodyMass,
       bodyFatCategory: data.bodyFatCategory,
 
-      // Goal data
+      // Данни за цел
       goal: data.goal,
       goalName: data.goalName,
       bmiCategory: data.bmiCategory,
       reasoning: data.reasoning,
 
-      // Nutrients data
+      // Данни за хранителни вещества
       bmr: data.bmr,
       tdee: data.tdee,
       calories: data.calories,
