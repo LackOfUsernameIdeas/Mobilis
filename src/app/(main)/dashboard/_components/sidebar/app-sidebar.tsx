@@ -12,9 +12,11 @@ import {
 } from "@/components/ui/sidebar";
 import { APP_CONFIG } from "@/config/app-config";
 import { sidebarItems } from "@/navigation/sidebar/sidebar-items";
-
+import SidebarMeasurements from "@/app/(main)/dashboard/_components/sidebar/measurements";
 import { NavMain } from "./nav-main";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { fetchUserMeasurements } from "@/lib/db/clients/get";
 
 export function AppSidebar({
   user,
@@ -27,6 +29,22 @@ export function AppSidebar({
     avatar: string;
   } | null;
 }) {
+  const [measurements, setMeasurements] = useState<any>(null);
+
+  useEffect(() => {
+    async function loadMeasurements() {
+      try {
+        const measurements = await fetchUserMeasurements();
+
+        setMeasurements(measurements);
+      } catch (error) {
+        console.error("error fetching measurements:", error);
+      }
+    }
+
+    loadMeasurements();
+  }, []);
+
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -60,8 +78,10 @@ export function AppSidebar({
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="flex flex-col overflow-hidden">
         <NavMain items={sidebarItems} />
+
+        <div className="mt-auto mb-2">{measurements && <SidebarMeasurements measurements={measurements} />}</div>
       </SidebarContent>
     </Sidebar>
   );

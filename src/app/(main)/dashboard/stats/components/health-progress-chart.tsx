@@ -9,20 +9,15 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion } from "framer-motion";
 
-const chartData = [
-  { date: "2024-06-01", weight: 82.3, bodyFat: 22.1 },
-  { date: "2024-06-08", weight: 81.8, bodyFat: 21.7 },
-  { date: "2024-06-15", weight: 81.2, bodyFat: 21.3 },
-  { date: "2024-06-22", weight: 80.9, bodyFat: 20.9 },
-  { date: "2024-06-29", weight: 80.3, bodyFat: 20.6 },
-  { date: "2024-07-06", weight: 79.9, bodyFat: 20.3 },
-  { date: "2024-07-13", weight: 79.7, bodyFat: 20.1 },
-  { date: "2024-07-20", weight: 79.3, bodyFat: 19.7 },
-  { date: "2024-07-27", weight: 79.1, bodyFat: 19.4 },
-  { date: "2024-08-03", weight: 78.6, bodyFat: 19.1 },
-  { date: "2024-08-10", weight: 78.4, bodyFat: 18.8 },
-  { date: "2024-08-17", weight: 78.0, bodyFat: 18.5 },
-];
+interface BodyFatWeightEntry {
+  createdAt: string;
+  bodyFat: number | null;
+  weight: number | null;
+}
+
+interface HealthProgressChartProps {
+  chartData: BodyFatWeightEntry[];
+}
 
 const chartConfig = {
   weight: {
@@ -31,27 +26,31 @@ const chartConfig = {
   },
   bodyFat: {
     label: "Телесни мазнини (%)",
-    color: "var(--chart-2)",
+    color: "var(--chart-4)",
   },
 } satisfies ChartConfig;
 
-export function HealthProgressChart() {
+export function HealthProgressChart({ chartData }: HealthProgressChartProps) {
   const isMobile = useIsMobile();
   const [timeRange, setTimeRange] = React.useState("90d");
 
-  const filteredData = chartData.filter((item) => {
-    const date = new Date(item.date);
-    const referenceDate = new Date("2024-08-17");
-    let daysToSubtract = 90;
-    if (timeRange === "30d") {
-      daysToSubtract = 30;
-    } else if (timeRange === "7d") {
-      daysToSubtract = 7;
-    }
-    const startDate = new Date(referenceDate);
-    startDate.setDate(startDate.getDate() - daysToSubtract);
-    return date >= startDate;
-  });
+  const filteredData = chartData
+    .filter((item) => {
+      const date = new Date(item.createdAt);
+      const referenceDate = new Date();
+      let daysToSubtract = 90;
+      if (timeRange === "30d") daysToSubtract = 30;
+      else if (timeRange === "7d") daysToSubtract = 7;
+
+      const startDate = new Date(referenceDate);
+      startDate.setDate(startDate.getDate() - daysToSubtract);
+      return date >= startDate;
+    })
+    .map((item) => ({
+      date: item.createdAt,
+      weight: item.weight,
+      bodyFat: item.bodyFat,
+    }));
 
   return (
     <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}>
@@ -70,9 +69,15 @@ export function HealthProgressChart() {
               variant="outline"
               className="hidden *:data-[slot=toggle-group-item]:!px-4 @[767px]/card:flex"
             >
-              <ToggleGroupItem value="90d">Последни 3 месеца</ToggleGroupItem>
-              <ToggleGroupItem value="30d">Последни 30 дни</ToggleGroupItem>
-              <ToggleGroupItem value="7d">Последни 7 дни</ToggleGroupItem>
+              <ToggleGroupItem value="90d" className="hover:bg-muted-foreground/25">
+                Последни 3 месеца
+              </ToggleGroupItem>
+              <ToggleGroupItem value="30d" className="hover:bg-muted-foreground/25">
+                Последни 30 дни
+              </ToggleGroupItem>
+              <ToggleGroupItem value="7d" className="hover:bg-muted-foreground/25">
+                Последни 7 дни
+              </ToggleGroupItem>
             </ToggleGroup>
             <Select value={timeRange} onValueChange={setTimeRange}>
               <SelectTrigger

@@ -47,6 +47,14 @@ export async function GET(request: Request) {
         bodyFatCategory: data[0].bodyFatCategory,
         reasoning: data[0].reasoning,
       },
+      nutrientData: {
+        bmr: data[0].bmr,
+        tdee: data[0].tdee,
+        calories: data[0].calories,
+        protein: data[0].protein,
+        fats: data[0].fats,
+        carbs: data[0].carbs,
+      },
     };
 
     return NextResponse.json(response);

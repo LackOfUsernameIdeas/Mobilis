@@ -32,15 +32,6 @@ interface HealthStatsCardsProps {
   goalData: GoalRecommendation;
 }
 
-const BODY_FAT_CATEGORY_BG: Record<string, string> = {
-  critical: "Критично ниски",
-  essential: "Основни",
-  athletes: "Атлетични",
-  fitness: "Фитнес",
-  average: "Нормални",
-  obese: "Затлъстяване",
-};
-
 const TOTAL_STEPS = 3;
 
 export function HealthStatsCards({ bmiData, bodyFatData, goalData }: HealthStatsCardsProps) {
@@ -55,10 +46,13 @@ export function HealthStatsCards({ bmiData, bodyFatData, goalData }: HealthStats
     return "secondary";
   };
 
-  const getBodyFatVariant = (category: string) => {
-    if (category === "fitness" || category === "athletes") return "default";
-    if (category === "critical" || category === "obese") return "destructive";
-    return "secondary";
+  const GOAL_TO_BG: Record<string, string> = {
+    dirty_bulk: "БЪРЗО КАЧВАНЕ",
+    lean_bulk: "ЧИСТО КАЧВАНЕ",
+    aggressive_cut: "АГРЕСИВНО ИЗГАРЯНЕ",
+    cut: "ИЗГАРЯНЕ НА МАЗНИНИ",
+    recomposition: "РЕКОМПОЗИЦИЯ",
+    maintenance: "ПОДДЪРЖАНЕ",
   };
 
   const getBMIDescription = (category: string) => {
@@ -114,7 +108,11 @@ export function HealthStatsCards({ bmiData, bodyFatData, goalData }: HealthStats
                 </Badge>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="ghost" size="icon" className="hover:bg-muted-foreground/25 h-6 w-6">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="hover:bg-muted-foreground/25 hover:text-popover-foreground/75 h-6 w-6"
+                    >
                       <Info className="h-4 w-4" />
                     </Button>
                   </PopoverTrigger>
@@ -142,7 +140,7 @@ export function HealthStatsCards({ bmiData, bodyFatData, goalData }: HealthStats
                 </Popover>
               </div>
             </div>
-            <CardTitle className="text-3xl font-semibold tabular-nums @[250px]/card:text-4xl">{bmiData.bmi}</CardTitle>
+            <CardTitle className="text-3xl font-semibold tabular-nums @[250px]/card:text-5xl">{bmiData.bmi}</CardTitle>
           </CardHeader>
           <CardFooter className="flex-col items-start gap-1.5 text-sm">
             <div className="line-clamp-1 flex gap-2 font-medium">
@@ -166,19 +164,13 @@ export function HealthStatsCards({ bmiData, bodyFatData, goalData }: HealthStats
                 Телесни мазнини
               </CardDescription>
               <div className="flex items-center gap-2">
-                <Badge
-                  variant="outline"
-                  className={
-                    getBodyFatVariant(goalData.bodyFatCategory) === "destructive"
-                      ? "border-destructive text-destructive"
-                      : ""
-                  }
-                >
-                  {BODY_FAT_CATEGORY_BG[goalData.bodyFatCategory] ?? goalData.bodyFatCategory}
-                </Badge>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="ghost" size="icon" className="hover:bg-muted-foreground/25 h-6 w-6">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="hover:bg-muted-foreground/25 hover:text-popover-foreground/75 h-6 w-6"
+                    >
                       <Info className="h-4 w-4" />
                     </Button>
                   </PopoverTrigger>
@@ -261,9 +253,7 @@ export function HealthStatsCards({ bmiData, bodyFatData, goalData }: HealthStats
                       </div>
 
                       <div className="space-y-2 border-t pt-4">
-                        <p className="text-sm font-medium">
-                          Вашата категория: {BODY_FAT_CATEGORY_BG[goalData.bodyFatCategory] ?? goalData.bodyFatCategory}
-                        </p>
+                        <p className="text-sm font-medium">Вашето състояние:</p>
                         <p className="text-muted-foreground text-sm">
                           {getBodyFatDescription(goalData.bodyFatCategory)}
                         </p>
@@ -279,7 +269,7 @@ export function HealthStatsCards({ bmiData, bodyFatData, goalData }: HealthStats
                 </Popover>
               </div>
             </div>
-            <CardTitle className="text-3xl font-semibold tabular-nums @[250px]/card:text-4xl">
+            <CardTitle className="text-3xl font-semibold tabular-nums @[250px]/card:text-5xl">
               {bodyFatData.bodyFat}%
             </CardTitle>
           </CardHeader>
@@ -304,11 +294,15 @@ export function HealthStatsCards({ bmiData, bodyFatData, goalData }: HealthStats
               </CardDescription>
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className="border-chart-1 text-chart-1">
-                  {goalData.goal.replace("_", " ").toUpperCase()}
+                  {GOAL_TO_BG[goalData.goal]}
                 </Badge>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="ghost" size="icon" className="hover:bg-muted-foreground/25 h-6 w-6">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="hover:bg-muted-foreground/25 hover:text-popover-foreground/75 h-6 w-6"
+                    >
                       <Info className="h-4 w-4" />
                     </Button>
                   </PopoverTrigger>
