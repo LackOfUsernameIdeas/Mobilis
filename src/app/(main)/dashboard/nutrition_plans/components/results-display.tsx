@@ -9,14 +9,10 @@ import MealModal from "./meal-modal";
 import { Button } from "@/components/ui/button";
 import { Loader } from "../../_components/loader";
 import { Clock, Utensils, Activity } from "lucide-react";
-import {
-  getAuthenticatedUser,
-  fetchNutritionPlan,
-  getMealIconName,
-  getMealBadgeBg as getMealBadgeBgHelper,
-} from "../helper_functions";
+import { fetchNutritionPlan, getMealIconName, getMealBadgeBg as getMealBadgeBgHelper } from "../helper_functions";
 import { MEAL_TYPE_TRANSLATIONS, FORM_TEXT, RESULTS_TEXT } from "../constants";
 import type { ResultsDisplayProps, NutritionPlan, DayPlan, NutritionMeal } from "../types";
+import { getAuthenticatedUser } from "@/lib/db/clients/get";
 
 export default function ResultsDisplay({ category, answers, userStats, onReset }: ResultsDisplayProps) {
   const [recommendations, setRecommendations] = useState<NutritionPlan | null>(null);

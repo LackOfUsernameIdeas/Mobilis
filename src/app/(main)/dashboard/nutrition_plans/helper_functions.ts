@@ -109,17 +109,6 @@ export const calculateWeightDifference = (targetWeight: number, currentWeight: n
 };
 
 /**
- * Получава удостоверен потребител от Supabase
- */
-export const getAuthenticatedUser = async () => {
-  const supabase = getBrowserClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return user;
-};
-
-/**
  * Извлича препоръки за хранителен план от API
  */
 export const fetchNutritionPlan = async (

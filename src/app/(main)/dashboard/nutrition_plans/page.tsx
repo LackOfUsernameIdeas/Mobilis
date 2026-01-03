@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import NutritionForm from "./components/nutrition-form";
 import ResultsDisplay from "./components/results-display";
 import { Loader } from "../_components/loader";
-import { getAuthenticatedUser, fetchUserHealthData } from "./helper_functions";
+import { fetchUserHealthData } from "./helper_functions";
+import { getAuthenticatedUser } from "@/lib/db/clients/get";
 import type { FormAnswers, UserStats } from "./types";
 
 export default function Page() {
