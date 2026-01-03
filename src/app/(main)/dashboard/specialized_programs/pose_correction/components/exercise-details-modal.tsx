@@ -3,7 +3,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 
-interface ExerciseDetailModalProps {
+interface ExerciseDetailsModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   exercise: {
@@ -26,7 +26,7 @@ const difficultyMap: Record<Difficulty, string> = {
   Трудно: "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-200",
 };
 
-export default function ExerciseDetailModal({ open, onOpenChange, exercise }: ExerciseDetailModalProps) {
+export default function ExerciseDetailsModal({ open, onOpenChange, exercise }: ExerciseDetailsModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
