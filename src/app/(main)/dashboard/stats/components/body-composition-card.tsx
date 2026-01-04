@@ -2,16 +2,16 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Droplets, BicepsFlexed } from "lucide-react";
+import type { BodyFatData } from "../types";
 
 interface BodyCompositionCardProps {
-  bodyFatMass: number;
-  leanBodyMass: number;
+  bodyFatData: BodyFatData;
 }
 
-export function BodyCompositionCard({ bodyFatMass, leanBodyMass }: BodyCompositionCardProps) {
-  const total = bodyFatMass + leanBodyMass;
-  const fatPercentage = (bodyFatMass / total) * 100;
-  const leanPercentage = (leanBodyMass / total) * 100;
+export function BodyCompositionCard({ bodyFatData }: BodyCompositionCardProps) {
+  const total = bodyFatData.bodyFatMass + bodyFatData.leanBodyMass;
+  const fatPercentage = (bodyFatData.bodyFatMass / total) * 100;
+  const leanPercentage = (bodyFatData.leanBodyMass / total) * 100;
 
   return (
     <Card className="h-full">
@@ -31,7 +31,7 @@ export function BodyCompositionCard({ bodyFatMass, leanBodyMass }: BodyCompositi
               <Droplets className="text-chart-1 h-4 w-4" />
               <span>Мазнини</span>
             </div>
-            <p className="text-2xl font-bold">{bodyFatMass.toFixed(2)} кг</p>
+            <p className="text-2xl font-bold">{bodyFatData.bodyFatMass.toFixed(2)} кг</p>
           </div>
 
           <div className="space-y-1">
@@ -39,7 +39,7 @@ export function BodyCompositionCard({ bodyFatMass, leanBodyMass }: BodyCompositi
               <BicepsFlexed className="text-chart-2 h-4 w-4" />
               <span>Мускули</span>
             </div>
-            <p className="text-2xl font-bold">{leanBodyMass.toFixed(2)} кг</p>
+            <p className="text-2xl font-bold">{bodyFatData.leanBodyMass.toFixed(2)} кг</p>
           </div>
         </div>
       </CardContent>

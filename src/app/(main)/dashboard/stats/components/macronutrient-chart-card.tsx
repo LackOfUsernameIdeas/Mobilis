@@ -2,18 +2,17 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Beef, Droplets, Wheat } from "lucide-react";
+import type { NutrientData } from "../types";
 
 interface MacronutrientChartCardProps {
-  protein: number;
-  fats: number;
-  carbs: number;
+  nutrientData: NutrientData;
 }
 
-export function MacronutrientChartCard({ protein, fats, carbs }: MacronutrientChartCardProps) {
-  const total = protein + fats + carbs;
-  const proteinPercentage = (protein / total) * 100;
-  const fatsPercentage = (fats / total) * 100;
-  const carbsPercentage = (carbs / total) * 100;
+export function MacronutrientChartCard({ nutrientData }: MacronutrientChartCardProps) {
+  const total = nutrientData.protein + nutrientData.fats + nutrientData.carbs;
+  const proteinPercentage = (nutrientData.protein / total) * 100;
+  const fatsPercentage = (nutrientData.fats / total) * 100;
+  const carbsPercentage = (nutrientData.carbs / total) * 100;
 
   return (
     <Card>
@@ -46,7 +45,7 @@ export function MacronutrientChartCard({ protein, fats, carbs }: MacronutrientCh
               <Beef className="text-chart-2 h-4 w-4" />
               <span>Протеини</span>
             </div>
-            <p className="text-2xl font-bold">{protein}г</p>
+            <p className="text-2xl font-bold">{nutrientData.protein}г</p>
             <p className="text-muted-foreground text-xs">{proteinPercentage.toFixed(0)}%</p>
           </div>
 
@@ -55,7 +54,7 @@ export function MacronutrientChartCard({ protein, fats, carbs }: MacronutrientCh
               <Droplets className="text-chart-4 h-4 w-4" />
               <span>Мазнини</span>
             </div>
-            <p className="text-2xl font-bold">{fats}г</p>
+            <p className="text-2xl font-bold">{nutrientData.fats}г</p>
             <p className="text-muted-foreground text-xs">{fatsPercentage.toFixed(0)}%</p>
           </div>
 
@@ -64,7 +63,7 @@ export function MacronutrientChartCard({ protein, fats, carbs }: MacronutrientCh
               <Wheat className="text-chart-5 h-4 w-4" />
               <span>Въглехидрати</span>
             </div>
-            <p className="text-2xl font-bold">{carbs}г</p>
+            <p className="text-2xl font-bold">{nutrientData.carbs}г</p>
             <p className="text-muted-foreground text-xs">{carbsPercentage.toFixed(0)}%</p>
           </div>
         </div>

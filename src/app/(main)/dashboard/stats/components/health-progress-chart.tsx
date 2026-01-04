@@ -8,12 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion } from "framer-motion";
-
-interface BodyFatWeightEntry {
-  createdAt: string;
-  bodyFat: number | null;
-  weight: number | null;
-}
+import type { BodyFatWeightEntry } from "../types";
 
 interface HealthProgressChartProps {
   chartData: BodyFatWeightEntry[];

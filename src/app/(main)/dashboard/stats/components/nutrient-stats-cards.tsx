@@ -1,22 +1,16 @@
 "use client";
 
-import { Flame, TrendingUp, Apple, Beef, Droplets, Wheat, Info } from "lucide-react";
+import { Flame, TrendingUp, Apple, Info } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { BlockMath } from "react-katex";
+import type { NutrientData } from "../types";
 
 interface NutrientStatsCardProps {
-  nutrientData: {
-    bmr: number;
-    tdee: number;
-    calories: number;
-    protein: number;
-    fats: number;
-    carbs: number;
-  };
+  nutrientData: NutrientData;
 }
 
 export function NutrientStatsCard({ nutrientData }: NutrientStatsCardProps) {

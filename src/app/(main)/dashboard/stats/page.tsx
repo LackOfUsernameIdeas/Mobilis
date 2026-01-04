@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AlertTriangle, ChevronLeft, ChevronRight } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { HealthProgressChart } from "@/app/(main)/dashboard/stats/components/health-progress-chart";
 import { HealthStatsCards } from "@/app/(main)/dashboard/stats/components/health-stats-cards";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -17,16 +17,20 @@ import {
 import { WorkoutExercisesCard } from "@/app/(main)/dashboard/stats/components/workout-exercises-card";
 import { NutrientStatsCard } from "@/app/(main)/dashboard/stats/components/nutrient-stats-cards";
 import { MacronutrientChartCard } from "@/app/(main)/dashboard/stats/components/macronutrient-chart-card";
+import { PageNavigation } from "@/app/(main)/dashboard/stats/components/page-navigation";
+import { sortDaysByNumber, getCurrentDay } from "./helper_functions";
+import { COMPLETED_DAYS } from "./constants";
+import type { BMIData, BodyFatData, GoalData, NutrientData, WorkoutData, BodyFatWeightEntry } from "./types";
 
 export default function HomePage() {
-  const [uid, setUID] = useState<any>(null);
-  const [bmiData, setBmiData] = useState<any>(null);
-  const [bodyFatData, setBodyFatData] = useState<any>(null);
-  const [goalData, setGoalData] = useState<any>(null);
-  const [nutrientData, setNutrientData] = useState<any>(null);
+  const [uid, setUID] = useState<string | null>(null);
+  const [bmiData, setBmiData] = useState<BMIData | null>(null);
+  const [bodyFatData, setBodyFatData] = useState<BodyFatData | null>(null);
+  const [goalData, setGoalData] = useState<GoalData | null>(null);
+  const [nutrientData, setNutrientData] = useState<NutrientData | null>(null);
   const [measurements, setMeasurements] = useState<any>(null);
-  const [chartData, setChartData] = useState<any>(null);
-  const [workoutData, setWorkoutData] = useState<any>(null);
+  const [chartData, setChartData] = useState<BodyFatWeightEntry[] | null>(null);
+  const [workoutData, setWorkoutData] = useState<WorkoutData | null>(null);
   const [currentPage, setCurrentPage] = useState<1 | 2>(1);
   const [loading, setLoading] = useState(true);
 
@@ -68,35 +72,14 @@ export default function HomePage() {
     );
   }
 
-  // Временно proof of concept - сортиране на дните по номер
-  const sortedDays = [...workoutData.day_recommendations].sort((a: any, b: any) => {
-    const aNum = Number(a.day.replace("Ден ", ""));
-    const bNum = Number(b.day.replace("Ден ", ""));
-    return aNum - bNum;
-  });
+  // Сортиране на дните по номер
+  const sortedDays = sortDaysByNumber(workoutData.day_recommendations);
 
-  const completedDays = ["Ден 1"]; // потребителят е завършил ден 1
-
-  /**
-   * Намира текущия незавършен ден от списъка с дни
-   * @param sortedDays - Сортиран масив с дни
-   * @param completedDays - Масив със завършени дни
-   * @returns Текущ незавършен ден или последен ден ако всички са завършени
-   */
-  function getCurrentDay(sortedDays: any[], completedDays: string[]) {
-    for (const day of sortedDays) {
-      if (!completedDays.includes(day.day)) {
-        return day;
-      }
-    }
-
-    return sortedDays[sortedDays.length - 1];
-  }
-
-  const currentDay = getCurrentDay(sortedDays, completedDays);
+  // Намиране на текущия незавършен ден
+  const currentDay = getCurrentDay(sortedDays, COMPLETED_DAYS);
 
   // Филтриране на упражненията за текущия ден
-  const currentDayExercises = workoutData.day_exercises.filter((ex: any) => ex.day === currentDay.day);
+  const currentDayExercises = workoutData.day_exercises.filter((ex) => ex.day === currentDay.day);
 
   console.log("ts pmo: ", currentDay, currentDayExercises);
   console.log("mes: ", measurements);
@@ -117,28 +100,12 @@ export default function HomePage() {
           </p>
 
           {/* Страниране */}
-          <div className="ml-auto flex items-center gap-2">
-            {[1, 2].map((page) => (
-              <button
-                key={page}
-                onClick={() => setCurrentPage(page as 1 | 2)}
-                className={`flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium transition-all ${
-                  currentPage === page
-                    ? "bg-muted-foreground text-background shadow-sm"
-                    : "bg-muted/20 text-muted-foreground hover:bg-muted/40"
-                } `}
-              >
-                {page === 1 && <ChevronLeft className="h-4 w-4" />}
-                <span>Страница {page}</span>
-                {page === 2 && <ChevronRight className="h-4 w-4" />}
-              </button>
-            ))}
-          </div>
+          <PageNavigation currentPage={currentPage} onPageChange={setCurrentPage} />
         </div>
       </motion.div>
 
       {/* Страница 1 - Основни здравни показатели */}
-      {currentPage === 1 && bmiData && bodyFatData && goalData && (
+      {currentPage === 1 && bmiData && bodyFatData && goalData && uid && nutrientData && chartData && (
         <>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -161,13 +128,9 @@ export default function HomePage() {
               transition={{ duration: 0.5, delay: 0.15 }}
               className="grid gap-6 sm:grid-cols-1 lg:grid-cols-1"
             >
-              <BodyCompositionCard bodyFatMass={bodyFatData.bodyFatMass} leanBodyMass={bodyFatData.leanBodyMass} />
+              <BodyCompositionCard bodyFatData={bodyFatData} />
               <NutrientStatsCard nutrientData={nutrientData} />
-              <MacronutrientChartCard
-                protein={nutrientData.protein}
-                fats={nutrientData.fats}
-                carbs={nutrientData.carbs}
-              />
+              <MacronutrientChartCard nutrientData={nutrientData} />
             </motion.div>
             <WorkoutExercisesCard
               day={currentDay.day}
@@ -188,7 +151,7 @@ export default function HomePage() {
       )}
 
       {/* Страница 2 - Допълнителна информация */}
-      {currentPage === 2 && (
+      {currentPage === 2 && uid && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}

@@ -7,28 +7,8 @@ import ExerciseModal from "@/app/(main)/dashboard/workout_recommendations/compon
 import { useState, useEffect } from "react";
 import { getDayProgress } from "@/lib/db/clients/get";
 import { getOrCreateWorkoutSession, markExerciseProgress, moveToNextDay } from "@/lib/db/clients/post";
-
-interface Exercise {
-  id: number;
-  generation_id: number;
-  day: string;
-  exercise_id: number;
-  sets: number;
-  reps: string;
-  workout_exercises: {
-    category: string;
-    muscle_activation: any;
-  };
-}
-
-interface WorkoutExerciseProgress {
-  id: string;
-  session_id: string;
-  user_id: string;
-  day_exercise_id: number;
-  status: "completed" | "skipped";
-  completed_at: string;
-}
+import { DAY_LABELS, DAY_ORDER } from "../constants";
+import type { Exercise, ExerciseStatus, WorkoutExerciseProgress } from "../types";
 
 interface WorkoutExercisesCardProps {
   day: string;
@@ -38,28 +18,14 @@ interface WorkoutExercisesCardProps {
   onDayComplete?: (nextDay: string) => void;
 }
 
-const DAY_LABELS: Record<string, string> = {
-  monday: "Понеделник",
-  tuesday: "Вторник",
-  wednesday: "Сряда",
-  thursday: "Четвъртък",
-  friday: "Петък",
-  saturday: "Събота",
-  sunday: "Неделя",
-};
-
-const DAY_ORDER = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
-
-function format(exercise: any) {
+function format(exercise: Exercise) {
   return {
-    exercise_name: exercise.exercise_id,
+    exercise_name: String(exercise.exercise_id),
     sets: String(exercise.sets),
     reps: exercise.reps,
     muscle_activation: exercise.workout_exercises?.muscle_activation,
   };
 }
-
-type ExerciseStatus = "pending" | "completed" | "skipped";
 
 export function WorkoutExercisesCard({
   day,
@@ -73,6 +39,8 @@ export function WorkoutExercisesCard({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  console.log("Exercises:", selectedExercise);
 
   const [exerciseStatus, setExerciseStatus] = useState<Record<number, ExerciseStatus>>(() =>
     exercises.reduce((acc, ex) => ({ ...acc, [ex.id]: "pending" }), {}),

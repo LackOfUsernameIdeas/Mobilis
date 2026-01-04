@@ -3,7 +3,6 @@
 import { Scale, Percent, Crosshair, Info, ChevronRight, ChevronLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import type { GoalRecommendation } from "@/server/recommendedGoal";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,73 +16,28 @@ import {
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { BlockMath } from "react-katex";
+import { getBMIVariant, getBMIDescription, getBodyFatDescription } from "../helper_functions";
+import { GOAL_TO_BG } from "../constants";
+import type { BMIData, BodyFatData, GoalData } from "../types";
 
 interface HealthStatsCardsProps {
-  bmiData: {
-    bmi: number;
-    health: string;
-    healthy_bmi_range: string;
-  };
-  bodyFatData: {
-    bodyFat: number;
-    bodyFatMass: number;
-    leanBodyMass: number;
-  };
-  goalData: GoalRecommendation;
+  bmiData: BMIData;
+  bodyFatData: BodyFatData;
+  goalData: GoalData;
 }
 
 const TOTAL_STEPS = 3;
 
 export function HealthStatsCards({ bmiData, bodyFatData, goalData }: HealthStatsCardsProps) {
   const [step, setStep] = useState<number>(0);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const next = () => setStep((s) => Math.min(s + 1, TOTAL_STEPS - 1));
   const prev = () => setStep((s) => Math.max(s - 1, 0));
 
-  const getBMIVariant = (category: string) => {
-    if (category === "Normal") return "default";
-    if (category.includes("Thinness") || category.includes("Obesity")) return "destructive";
-    return "secondary";
-  };
-
-  const GOAL_TO_BG: Record<string, string> = {
-    dirty_bulk: "БЪРЗО КАЧВАНЕ",
-    lean_bulk: "ЧИСТО КАЧВАНЕ",
-    aggressive_cut: "АГРЕСИВНО ИЗГАРЯНЕ",
-    cut: "ИЗГАРЯНЕ НА МАЗНИНИ",
-    recomposition: "РЕКОМПОЗИЦИЯ",
-    maintenance: "ПОДДЪРЖАНЕ",
-  };
-
-  const getBMIDescription = (category: string) => {
-    const descriptions: Record<string, string> = {
-      "Сериозно недохранване": "Тежка слабост - критичен здравен риск, изискващ незабавна медицинска намеса.",
-      "Средно недохранване": "Умерена слабост - недостатъчно тегло, което трябва да се коригира.",
-      "Леко недохранване": "Лека слабост - леко под нормалния диапазон на теглото.",
-      Нормално: "Нормален диапазон на теглото, свързан с оптимални здравни резултати.",
-      "Наднормено тегло": "Наднормено тегло - може да увеличи здравните рискове при повишена мастна тъкан.",
-      "Затлъстяване I Клас": "Затлъстяване клас I - умерени здравни рискове.",
-      "Затлъстяване II Клас": "Затлъстяване клас II - сериозни здравни рискове.",
-      "Затлъстяване III Клас": "Затлъстяване клас III - много сериозни здравни рискове, изискващи медицинска намеса.",
-    };
-    return descriptions[category] || "Няма налична информация.";
-  };
-
-  const getBodyFatDescription = (category: string) => {
-    const descriptions: Record<string, string> = {
-      critical: "Критично ниско телесно мазнини - сериозни здравни рискове.",
-      essential: "Основни нива на телесно мазнини, необходими за базисна физиологична функция.",
-      athletes: "Атлетични нива на телесно мазнини, типични за състезателни спортисти.",
-      fitness: "Фитнес-ориентирани нива на телесно мазнини, свързани с добро здраве.",
-      average: "Средни нива на телесно мазнини в приемлив здравен диапазон.",
-      obese: "Повишени нива на телесно мазнини, свързани с увеличени здравни рискове.",
-    };
-    return descriptions[category] || "Няма налична информация.";
-  };
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
   return (
     <div className="grid grid-cols-1 gap-4 @xl/main:grid-cols-2 @5xl/main:grid-cols-3">
+      {/* BMI Card */}
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -127,9 +81,9 @@ export function HealthStatsCards({ bmiData, bodyFatData, goalData }: HealthStats
                         <p className="text-muted-foreground text-sm leading-relaxed">
                           Изчислява се по следната формула:
                         </p>
-                        <p className="text-muted-foreground text-sm leading-relaxed">
+                        <div className="text-muted-foreground text-sm leading-relaxed">
                           <BlockMath math="\mathit{ИТМ} = \frac{\mathit{тегло\ (kg)}}{\mathit{ръст}^2\ \mathit{(m}^2\mathit{)}}" />
-                        </p>
+                        </div>
                       </div>
                       <div className="border-t pt-2">
                         <p className="text-sm font-medium">Вашата категория: {bmiData.health}</p>
@@ -150,6 +104,7 @@ export function HealthStatsCards({ bmiData, bodyFatData, goalData }: HealthStats
         </Card>
       </motion.div>
 
+      {/* Body Fat Card */}
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -195,20 +150,18 @@ export function HealthStatsCards({ bmiData, bodyFatData, goalData }: HealthStats
                             Изчислява се по формулата на американските военноморски сили (ACE/Navy Method), която
                             използва обиколките на тялото:
                           </p>
-                          {/* Male formula */}
                           <p className="text-muted-foreground text-sm leading-relaxed font-medium">За мъже:</p>
-                          <p className="text-muted-foreground text-sm leading-relaxed">
+                          <div className="text-muted-foreground text-sm leading-relaxed">
                             <div className="max-w-full overflow-x-auto">
                               <BlockMath math="\mathit{BF\%} = 86.010 \cdot \log_{10}(\mathit{талия} - \mathit{врат}) - 70.041 \cdot \log_{10}(\mathit{височина}) + 36.76" />
                             </div>
-                          </p>
-                          {/* Female formula */}
+                          </div>
                           <p className="text-muted-foreground text-sm leading-relaxed font-medium">За жени:</p>
-                          <p className="text-muted-foreground text-sm leading-relaxed">
+                          <div className="text-muted-foreground text-sm leading-relaxed">
                             <div className="max-w-full overflow-x-auto">
                               <BlockMath math="\mathit{BF\%} = 163.205 \cdot \log_{10}(\mathit{талия} + \mathit{таз} - \mathit{врат}) - 97.684 \cdot \log_{10}(\mathit{височина}) - 78.387" />
                             </div>
-                          </p>
+                          </div>
                         </div>
                       )}
                       {step === 2 && (
@@ -216,16 +169,16 @@ export function HealthStatsCards({ bmiData, bodyFatData, goalData }: HealthStats
                           <p className="text-muted-foreground text-sm leading-relaxed">
                             След като се изчисли BF%, можем да определим:
                           </p>
-                          <p className="text-muted-foreground text-sm leading-relaxed">
+                          <div className="text-muted-foreground text-sm leading-relaxed">
                             <div className="max-w-full overflow-x-auto">
                               <BlockMath math="\mathit{Мазнинна\ маса\ (kg)} = \mathit{тегло\ (kg)} \times \frac{\mathit{BF\%}}{100}" />
                             </div>
-                          </p>
-                          <p className="text-muted-foreground text-sm leading-relaxed">
+                          </div>
+                          <div className="text-muted-foreground text-sm leading-relaxed">
                             <div className="max-w-full overflow-x-auto">
                               <BlockMath math="\mathit{Чиста\ маса\ (kg)} = \mathit{тегло\ (kg)} - \mathit{мазнинна\ маса\ (kg)}" />
                             </div>
-                          </p>
+                          </div>
                         </div>
                       )}
                       <div className="flex items-center justify-between py-2">
@@ -279,6 +232,7 @@ export function HealthStatsCards({ bmiData, bodyFatData, goalData }: HealthStats
         </Card>
       </motion.div>
 
+      {/* Goal Card */}
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
