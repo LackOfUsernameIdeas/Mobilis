@@ -4,8 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Dumbbell } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import ExerciseModal from "@/app/(main)/dashboard/workout_recommendations/components/exercise-modal";
-import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useState, useEffect } from "react";
+import { getDayProgress } from "@/lib/db/clients/get";
+import { getOrCreateWorkoutSession, markExerciseProgress, moveToNextDay } from "@/lib/db/clients/post";
 
 interface Exercise {
   id: number;
@@ -20,9 +21,21 @@ interface Exercise {
   };
 }
 
+interface WorkoutExerciseProgress {
+  id: string;
+  session_id: string;
+  user_id: string;
+  day_exercise_id: number;
+  status: "completed" | "skipped";
+  completed_at: string;
+}
+
 interface WorkoutExercisesCardProps {
   day: string;
   exercises: Exercise[];
+  userId: string;
+  generationId: number;
+  onDayComplete?: (nextDay: string) => void;
 }
 
 const DAY_LABELS: Record<string, string> = {
@@ -35,6 +48,8 @@ const DAY_LABELS: Record<string, string> = {
   sunday: "Неделя",
 };
 
+const DAY_ORDER = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+
 function format(exercise: any) {
   return {
     exercise_name: exercise.exercise_id,
@@ -46,23 +61,83 @@ function format(exercise: any) {
 
 type ExerciseStatus = "pending" | "completed" | "skipped";
 
-export function WorkoutExercisesCard({ day, exercises }: WorkoutExercisesCardProps) {
+export function WorkoutExercisesCard({
+  day,
+  exercises,
+  userId,
+  generationId,
+  onDayComplete,
+}: WorkoutExercisesCardProps) {
   const totalSets = exercises.reduce((sum, ex) => sum + ex.sets, 0);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Track status for each exercise
   const [exerciseStatus, setExerciseStatus] = useState<Record<number, ExerciseStatus>>(() =>
     exercises.reduce((acc, ex) => ({ ...acc, [ex.id]: "pending" }), {}),
   );
+
+  useEffect(() => {
+    const loadProgress = async () => {
+      try {
+        const session = await getOrCreateWorkoutSession(userId, generationId, day);
+        setSessionId(session.id);
+
+        const dayExerciseIds = exercises.map((ex) => ex.id);
+        const progress: WorkoutExerciseProgress[] = await getDayProgress(session.id, dayExerciseIds);
+
+        const statusMap: Record<number, ExerciseStatus> = {};
+        exercises.forEach((ex) => {
+          const progressEntry = progress.find((p) => p.day_exercise_id === ex.id);
+          statusMap[ex.id] = progressEntry ? progressEntry.status : "pending";
+        });
+
+        setExerciseStatus(statusMap);
+      } catch (error) {
+        console.error("Error loading progress:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadProgress();
+  }, [userId, generationId, day, exercises]);
 
   const handleExerciseClick = (exercise: Exercise) => {
     setSelectedExercise(exercise);
     setIsModalOpen(true);
   };
 
-  const handleStatusChange = (exerciseId: number, status: ExerciseStatus) => {
-    setExerciseStatus((prev) => ({ ...prev, [exerciseId]: status }));
+  const handleStatusChange = async (exerciseId: number, status: ExerciseStatus) => {
+    if (!sessionId || status === "pending") return;
+
+    try {
+      setExerciseStatus((prev) => ({ ...prev, [exerciseId]: status }));
+
+      await markExerciseProgress(sessionId, userId, exerciseId, status);
+    } catch (error) {
+      console.error("Error updating exercise status:", error);
+      setExerciseStatus((prev) => ({ ...prev, [exerciseId]: "pending" }));
+    }
+  };
+
+  const handleNextDay = async () => {
+    if (!sessionId || !allCompleted) return;
+
+    try {
+      const currentDayIndex = DAY_ORDER.indexOf(day.toLowerCase());
+      const nextDayIndex = (currentDayIndex + 1) % DAY_ORDER.length;
+      const nextDay = DAY_ORDER[nextDayIndex];
+
+      await moveToNextDay(sessionId, nextDay);
+
+      if (onDayComplete) {
+        onDayComplete(nextDay);
+      }
+    } catch (error) {
+      console.error("Error moving to next day:", error);
+    }
   };
 
   const getCardStyles = (status: ExerciseStatus) => {
@@ -76,7 +151,17 @@ export function WorkoutExercisesCard({ day, exercises }: WorkoutExercisesCardPro
     }
   };
 
-  const allCompleted = Object.values(exerciseStatus).every((status) => status === "completed");
+  const allCompleted = Object.values(exerciseStatus).every((status) => status === "completed" || status === "skipped");
+
+  if (isLoading) {
+    return (
+      <Card className="h-full">
+        <CardContent className="flex items-center justify-center py-8">
+          <p className="text-muted-foreground">Зареждане...</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="h-full">
@@ -114,7 +199,6 @@ export function WorkoutExercisesCard({ day, exercises }: WorkoutExercisesCardPro
                       {exercise.workout_exercises.category}
                     </Badge>
 
-                    {/* Status buttons */}
                     <div className="flex gap-1">
                       <button
                         onClick={() => handleStatusChange(exercise.id, "completed")}
@@ -142,7 +226,7 @@ export function WorkoutExercisesCard({ day, exercises }: WorkoutExercisesCardPro
         <div className="mt-4 flex justify-end">
           <button
             disabled={!allCompleted}
-            onClick={() => allCompleted && console.log("Go to next day")}
+            onClick={handleNextDay}
             className={`rounded-lg px-4 py-2 text-sm transition ${
               allCompleted
                 ? "bg-primary hover:bg-chart-4 text-white"

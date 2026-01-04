@@ -19,6 +19,7 @@ import { NutrientStatsCard } from "@/app/(main)/dashboard/stats/components/nutri
 import { MacronutrientChartCard } from "@/app/(main)/dashboard/stats/components/macronutrient-chart-card";
 
 export default function HomePage() {
+  const [uid, setUID] = useState<any>(null);
   const [bmiData, setBmiData] = useState<any>(null);
   const [bodyFatData, setBodyFatData] = useState<any>(null);
   const [goalData, setGoalData] = useState<any>(null);
@@ -32,11 +33,12 @@ export default function HomePage() {
   useEffect(() => {
     async function loadHealthData() {
       try {
-        const metrics = await fetchUserMetrics();
+        const metrics = await fetchUserMetrics(true);
         const measurements = await fetchUserMeasurements();
         const chartData = await fetchBodyFatWeightHistory();
         const workout = await fetchUserWorkoutOverview();
 
+        setUID(metrics.userId);
         setBmiData(metrics.bmiData);
         setBodyFatData(metrics.bodyFatData);
         setGoalData(metrics.goalData);
@@ -153,7 +155,12 @@ export default function HomePage() {
                 carbs={nutrientData.carbs}
               />
             </motion.div>
-            <WorkoutExercisesCard day={currentDay.day} exercises={currentDayExercises} />
+            <WorkoutExercisesCard
+              day={currentDay.day}
+              exercises={currentDayExercises}
+              userId={uid}
+              generationId={currentDay.generation_id}
+            />
           </motion.div>
 
           <motion.div
@@ -176,7 +183,12 @@ export default function HomePage() {
           {/* Add whatever you want here for the second page */}
           {/*<TargetWeightCard currentWeight={measurements?.weight} targetWeight={mockData.targetWeight.target} />*/}
           {/*<MeasurementsCard measurements={measurements} />*/}
-          <WorkoutExercisesCard day={currentDay.day} exercises={currentDayExercises} />
+          <WorkoutExercisesCard
+            day={currentDay.day}
+            exercises={currentDayExercises}
+            userId={uid}
+            generationId={currentDay.generation_id}
+          />
           {/*<NextWorkoutCard*/}
           {/*  day={mockData.nextWorkout.day}*/}
           {/*  focus={mockData.nextWorkout.focus}*/}

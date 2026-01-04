@@ -1,4 +1,3 @@
-import { createClient } from "@supabase/supabase-js";
 import { getBrowserClient } from "@/lib/db/clients/browser";
 
 export async function getAuthenticatedUser() {
@@ -14,7 +13,7 @@ export async function getAuthenticatedUser() {
   return user;
 }
 
-export async function fetchUserMetrics() {
+export async function fetchUserMetrics(u?: boolean) {
   const user = await getAuthenticatedUser();
 
   const response = await fetch(`/api/user-metrics?userId=${user.id}`, {
@@ -28,7 +27,13 @@ export async function fetchUserMetrics() {
     throw new Error("Failed to fetch user metrics");
   }
 
-  return response.json();
+  const data = await response.json();
+
+  if (u) {
+    return { ...data, userId: user.id };
+  }
+
+  return data;
 }
 
 export async function fetchUserMeasurements() {
@@ -124,3 +129,53 @@ export async function fetchUserWorkoutOverview() {
 
   return response.json();
 }
+
+export const getDayProgress = async (sessionId: string, dayExerciseIds: number[]) => {
+  const user = await getAuthenticatedUser();
+
+  const response = await fetch(
+    `/api/day-progress?userId=${user.id}&sessionId=${sessionId}&dayExerciseIds=${dayExerciseIds.join(",")}`,
+  );
+
+  if (!response.ok) {
+    throw new Error("Error fetching day progress.");
+  }
+
+  return response.json();
+};
+
+export const getCompletedExercises = async (userId: string, sessionId?: string) => {
+  const user = await getAuthenticatedUser();
+
+  const response = await fetch(`/api/completed-exercises?userId=${user.id}&sessionId=${sessionId}`);
+
+  if (!response.ok) {
+    throw new Error("Error fetching day progress.");
+  }
+
+  return response.json();
+};
+
+export const getSkippedExercises = async (userId: string, sessionId?: string) => {
+  const user = await getAuthenticatedUser();
+
+  const response = await fetch(`/api/skipped-exercises?userId=${user.id}&sessionId=${sessionId}`);
+
+  if (!response.ok) {
+    throw new Error("Error fetching day progress.");
+  }
+
+  return response.json();
+};
+
+export const getWorkoutStats = async (sessionId: string) => {
+  const user = await getAuthenticatedUser();
+
+  const response = await fetch(`/api/workout-stats?sessionId=${sessionId}`);
+
+  if (!response.ok) {
+    throw new Error("Error fetching day progress.");
+  }
+
+  return response.json();
+};

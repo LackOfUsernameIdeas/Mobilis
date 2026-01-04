@@ -7,7 +7,6 @@ import YogaForm from "./components/yoga-form";
 import ResultsDisplay from "./components/results-display";
 import { Loader } from "../_components/loader";
 import { Category, FormAnswers, UserStats } from "./types";
-import { getBrowserClient } from "@/lib/db/clients/browser";
 import { fetchUserHealthData } from "@/lib/db/clients/get";
 
 export default function Page() {
