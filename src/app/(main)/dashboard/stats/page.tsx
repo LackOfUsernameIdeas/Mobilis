@@ -81,9 +81,6 @@ export default function HomePage() {
   // Филтриране на упражненията за текущия ден
   const currentDayExercises = workoutData.day_exercises.filter((ex) => ex.day === currentDay.day);
 
-  console.log("ts pmo: ", currentDay, currentDayExercises);
-  console.log("mes: ", measurements);
-
   return (
     <div className="bg-background @container/main flex min-h-screen flex-col gap-6 p-6 md:gap-8 md:p-10 lg:p-12">
       {/* Заглавие и описание с анимация */}
