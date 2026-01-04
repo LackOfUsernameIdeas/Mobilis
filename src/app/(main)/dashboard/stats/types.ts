@@ -66,7 +66,6 @@ export interface HealthData {
   workoutData: WorkoutData | null;
 }
 
-// Workout exercise progress types
 export type ExerciseStatus = "pending" | "completed" | "skipped";
 
 export interface WorkoutExerciseProgress {

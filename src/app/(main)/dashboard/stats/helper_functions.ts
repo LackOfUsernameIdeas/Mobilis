@@ -1,7 +1,7 @@
 import type { DayRecommendation } from "./types";
 
 /**
- * Sorts days by extracting the numeric value from "Ден X" format
+ * Сортира дни чрез извличане на числова стойност от формат "Ден X"
  */
 export function sortDaysByNumber(days: DayRecommendation[]): DayRecommendation[] {
   return [...days].sort((a, b) => {
@@ -12,10 +12,10 @@ export function sortDaysByNumber(days: DayRecommendation[]): DayRecommendation[]
 }
 
 /**
- * Finds the current incomplete day from the list
- * @param sortedDays - Sorted array of days
- * @param completedDays - Array of completed day names
- * @returns Current incomplete day or last day if all are completed
+ * Намира текущия незавършен ден от списъка
+ * @param sortedDays - Сортиран масив с дни
+ * @param completedDays - Масив със завършени имена на дни
+ * @returns Текущ незавършен ден или последен ден ако всички са завършени
  */
 export function getCurrentDay(sortedDays: DayRecommendation[], completedDays: string[]): DayRecommendation {
   for (const day of sortedDays) {

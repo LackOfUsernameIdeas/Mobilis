@@ -1,7 +1,7 @@
-// Currently completed workout days
+// Понастоящем завършени тренировъчни дни
 export const COMPLETED_DAYS = ["Ден 1"];
 
-// Mapping of English day names to Bulgarian
+// Съответствие между английски и български имена на дни
 export const DAY_LABELS: Record<string, string> = {
   monday: "Понеделник",
   tuesday: "Вторник",
@@ -12,10 +12,10 @@ export const DAY_LABELS: Record<string, string> = {
   sunday: "Неделя",
 };
 
-// Ordered list of days of the week
+// Подреден списък на дните от седмицата
 export const DAY_ORDER = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 
-// Mapping of goal keys to Bulgarian labels
+// Съответствие между ключове на цели и български етикети
 export const GOAL_TO_BG: Record<string, string> = {
   dirty_bulk: "БЪРЗО КАЧВАНЕ",
   lean_bulk: "ЧИСТО КАЧВАНЕ",
