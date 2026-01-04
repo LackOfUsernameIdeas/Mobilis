@@ -7,7 +7,7 @@ import { GoogleButton } from "../_components/social-auth/google-button";
 import Image from "next/image";
 import logoSmall from "../../../../../public/logoSmall.png";
 
-export default function RegisterV1() {
+export default function RegisterPage() {
   return (
     <div className="flex h-dvh">
       <div className="bg-background flex w-full items-center justify-center p-8 lg:w-2/3">

@@ -7,7 +7,7 @@ import { GoogleButton } from "../_components/social-auth/google-button";
 
 import logoSmall from "../../../../../public/logoSmall.png";
 
-export default function LoginV1() {
+export default function LoginPage() {
   return (
     <div className="flex h-dvh">
       <div className="bg-primary/90 hidden lg:block lg:w-1/3">

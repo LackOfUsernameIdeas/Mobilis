@@ -7,7 +7,7 @@ import { Loader } from "../_components/loader";
 import { fetchUserHealthData } from "@/lib/db/clients/get";
 import type { FormAnswers, UserStats } from "./types";
 
-export default function Page() {
+export default function NutritionPlansPage() {
   const [submittedAnswers, setSubmittedAnswers] = useState<FormAnswers | null>(null);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [pageLoading, setPageLoading] = useState(true);

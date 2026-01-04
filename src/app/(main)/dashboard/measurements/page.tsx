@@ -28,7 +28,7 @@ const initialFormData: FormData = {
   hip: "",
 };
 
-export default function HomePage() {
+export default function MeasurementsPage() {
   const router = useRouter();
 
   const [pageLoading, setPageLoading] = useState(true);

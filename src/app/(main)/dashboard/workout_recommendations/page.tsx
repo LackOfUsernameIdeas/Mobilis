@@ -9,7 +9,7 @@ import { Loader } from "../_components/loader";
 import { Category, FormAnswers, UserStats } from "./types";
 import { fetchUserHealthData } from "@/lib/db/clients/get";
 
-export default function Page() {
+export default function WorkoutRecommendationsPage() {
   const [selectedCategory, setSelectedCategory] = useState<Category>(null);
   const [submittedAnswers, setSubmittedAnswers] = useState<FormAnswers | null>(null);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
