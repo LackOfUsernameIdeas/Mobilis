@@ -289,6 +289,7 @@ export const saveWorkoutRecommendations = async (
       generation_id: generationId,
       day: ex.day,
       exercise_id: ex.exercise_id,
+      exercise_name: ex.exercise_name,
       sets: ex.sets,
       reps: ex.reps,
     }));

@@ -36,6 +36,7 @@ export interface Exercise {
   generation_id: number;
   day: string;
   exercise_id: number;
+  exercise_name: string;
   sets: number;
   reps: string;
   workout_exercises: {

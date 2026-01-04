@@ -20,7 +20,7 @@ interface WorkoutExercisesCardProps {
 
 function format(exercise: Exercise) {
   return {
-    exercise_name: String(exercise.exercise_id),
+    exercise_name: String(exercise.exercise_name),
     sets: String(exercise.sets),
     reps: exercise.reps,
     muscle_activation: exercise.workout_exercises?.muscle_activation,
@@ -39,8 +39,7 @@ export function WorkoutExercisesCard({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  console.log("Exercises:", selectedExercise);
+  const [videoCache, setVideoCache] = useState<Record<string, string>>({});
 
   const [exerciseStatus, setExerciseStatus] = useState<Record<number, ExerciseStatus>>(() =>
     exercises.reduce((acc, ex) => ({ ...acc, [ex.id]: "pending" }), {}),
@@ -75,6 +74,13 @@ export function WorkoutExercisesCard({
   const handleExerciseClick = (exercise: Exercise) => {
     setSelectedExercise(exercise);
     setIsModalOpen(true);
+  };
+
+  const handleVideoFetched = (exerciseName: string, url: string) => {
+    setVideoCache((prev) => ({
+      ...prev,
+      [exerciseName]: url,
+    }));
   };
 
   const handleStatusChange = async (exerciseId: number, status: ExerciseStatus) => {
@@ -154,7 +160,7 @@ export function WorkoutExercisesCard({
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1" onClick={() => handleExerciseClick(exercise)}>
-                    <p className="text-sm font-semibold">{exercise.exercise_id}</p>
+                    <p className="text-sm font-semibold">{exercise.exercise_name}</p>
                     <div className="mt-1 flex items-center gap-3">
                       <span className="text-muted-foreground text-xs">{exercise.sets} серии</span>
                       <span className="text-muted-foreground text-xs">×</span>
@@ -206,7 +212,13 @@ export function WorkoutExercisesCard({
         </div>
 
         {selectedExercise && (
-          <ExerciseModal exercise={format(selectedExercise)} open={isModalOpen} onOpenChange={setIsModalOpen} special />
+          <ExerciseModal
+            exercise={format(selectedExercise)}
+            open={isModalOpen}
+            onOpenChange={setIsModalOpen}
+            cachedVideoUrl={videoCache[selectedExercise.exercise_name]}
+            onVideoFetched={handleVideoFetched}
+          />
         )}
       </CardContent>
     </Card>

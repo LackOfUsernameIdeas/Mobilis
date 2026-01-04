@@ -20,8 +20,7 @@ interface ExerciseModalProps {
     muscle_activation?: Record<string, boolean>;
   };
   cachedVideoUrl?: string;
-  onVideoFetched?: (exerciseName: string, url: string) => void;
-  special?: boolean;
+  onVideoFetched: (exerciseName: string, url: string) => void;
 }
 
 const muscleLabels: Record<string, string> = {
@@ -70,7 +69,6 @@ export default function ExerciseModal({
   exercise,
   cachedVideoUrl,
   onVideoFetched,
-  special = false,
 }: ExerciseModalProps) {
   const [youtubeUrl, setYoutubeUrl] = useState<string | null>(null);
   const [loadingVideo, setLoadingVideo] = useState(false);
@@ -90,10 +88,7 @@ export default function ExerciseModal({
       const url = await fetchYouTubeEmbed(exercise.exercise_name);
       if (url) {
         setYoutubeUrl(url);
-        // Cache the URL in parent component
-        if (onVideoFetched) {
-          onVideoFetched(exercise.exercise_name, url);
-        }
+        onVideoFetched(exercise.exercise_name, url);
       } else {
         setVideoError(true);
       }
@@ -169,41 +164,39 @@ export default function ExerciseModal({
           )}
 
           {/* Video Section */}
-          {special != true && (
-            <div className="space-y-3">
-              <h4 className="text-foreground text-md font-semibold">🎥 Видео на упражнението</h4>
-              {!youtubeUrl && !videoError && (
-                <Button
-                  onClick={handleFetchVideo}
-                  disabled={loadingVideo}
-                  className="w-full cursor-pointer"
-                  variant="default"
-                >
-                  {loadingVideo ? "Зареждане на видео..." : "Зареди видео"}
-                </Button>
-              )}
+          <div className="space-y-3">
+            <h4 className="text-foreground text-md font-semibold">🎥 Видео на упражнението</h4>
+            {!youtubeUrl && !videoError && (
+              <Button
+                onClick={handleFetchVideo}
+                disabled={loadingVideo}
+                className="w-full cursor-pointer"
+                variant="default"
+              >
+                {loadingVideo ? "Зареждане на видео..." : "Зареди видео"}
+              </Button>
+            )}
 
-              {videoError && (
-                <div className="bg-destructive/10 border-destructive/30 rounded-lg border p-4">
-                  <p className="text-destructive text-md">
-                    Грешка при зареждане на видео. Моля, опитайте отново по-късно.
-                  </p>
-                </div>
-              )}
+            {videoError && (
+              <div className="bg-destructive/10 border-destructive/30 rounded-lg border p-4">
+                <p className="text-destructive text-md">
+                  Грешка при зареждане на видео. Моля, опитайте отново по-късно.
+                </p>
+              </div>
+            )}
 
-              {youtubeUrl && (
-                <div className="relative w-full overflow-hidden rounded-lg" style={{ paddingBottom: "56.25%" }}>
-                  <iframe
-                    src={youtubeUrl}
-                    title={`${exercise.exercise_name} video`}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    className="absolute top-0 left-0 h-full w-full border-0"
-                  />
-                </div>
-              )}
-            </div>
-          )}
+            {youtubeUrl && (
+              <div className="relative w-full overflow-hidden rounded-lg" style={{ paddingBottom: "56.25%" }}>
+                <iframe
+                  src={youtubeUrl}
+                  title={`${exercise.exercise_name} video`}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="absolute top-0 left-0 h-full w-full border-0"
+                />
+              </div>
+            )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
