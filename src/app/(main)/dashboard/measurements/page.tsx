@@ -4,7 +4,7 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { saveMeasurementsAndCalculateMetrics, checkTodayMeasurements } from "@/server/measurements";
+import { checkTodayMeasurements } from "@/server/measurements";
 import { Loader } from "../_components/loader";
 import { MeasurementModal } from "./components/MeasurementModal";
 import { LoadingOverlay } from "./components/LoadingOverlay";
@@ -103,7 +103,13 @@ export default function MeasurementsPage() {
 
       saveMeasurements(data);
 
-      const result = await saveMeasurementsAndCalculateMetrics(data);
+      const response = await fetch("/api/user-measurements", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
 
       if (!result?.success) {
         throw new Error(result?.error || "Failed to save measurements");
