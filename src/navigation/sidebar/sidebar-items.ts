@@ -1,4 +1,4 @@
-import { Utensils, ChartBar, Banknote, Layers, Activity, type LucideIcon } from "lucide-react";
+import { Utensils, ChartBar, Layers, Activity, type LucideIcon } from "lucide-react";
 
 export interface NavSubItem {
   title: string;

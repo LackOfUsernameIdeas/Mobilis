@@ -1,18 +1,28 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-// THIS VERSION RETURNS EVERYTHING
+/**
+ * GET endpoint за извличане на пълна информация за тренировъчен план на потребител
+ * Включва предпочитания, генерация, дневни препоръки и упражнения
+ * @param request - Request обект съдържащ userId като query параметър
+ * @returns JSON отговор с цялата информация за тренировъчния план
+ */
 export async function GET(request: Request) {
   try {
+    // Извличане на query параметър от URL адреса
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get("userId");
 
+    // Валидация на задължителния параметър
     if (!userId) {
+      console.log("Missing required parameter: userId");
       return NextResponse.json({ error: "User ID is required" }, { status: 400 });
     }
 
+    // Инициализиране на Supabase клиент със service role права
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 
+    // Извличане на най-новите потребителски предпочитания за тренировки
     const { data: preferences, error: prefError } = await supabase
       .from("workout_user_preferences")
       .select("*")
@@ -23,6 +33,7 @@ export async function GET(request: Request) {
 
     if (prefError) throw prefError;
 
+    // Извличане на най-новата генерация на тренировъчен план
     const { data: generation, error: genError } = await supabase
       .from("workout_generations")
       .select("*")
@@ -33,6 +44,7 @@ export async function GET(request: Request) {
 
     if (genError) throw genError;
 
+    // Извличане на дневните препоръки за текущата генерация
     const { data: days, error: daysError } = await supabase
       .from("workout_day_recommendations")
       .select("*")
@@ -41,6 +53,7 @@ export async function GET(request: Request) {
 
     if (daysError) throw daysError;
 
+    // Извличане на упражненията за всеки ден с JOIN към таблицата workout_exercises
     const { data: exercises, error: exError } = await supabase
       .from("workout_day_exercises")
       .select(
@@ -53,6 +66,9 @@ export async function GET(request: Request) {
 
     if (exError) throw exError;
 
+    console.log(`Successfully fetched complete workout plan for user ${userId}`);
+
+    // Връщане на комплексния обект с цялата информация
     return NextResponse.json({
       preferences,
       generation,
@@ -60,7 +76,7 @@ export async function GET(request: Request) {
       day_exercises: exercises,
     });
   } catch (error: any) {
-    console.error(error);
+    console.error("Error fetching workout plan:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

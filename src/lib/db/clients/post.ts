@@ -1,3 +1,10 @@
+/**
+ * Извлича съществуваща или създава нова тренировъчна сесия
+ * @param userId - ID на потребителя
+ * @param generationId - ID на генерацията на тренировъчния план
+ * @param startingDay - Начален ден на седмицата (по подразбиране "monday")
+ * @returns Обект със сесията
+ */
 export const getOrCreateWorkoutSession = async (
   userId: string,
   generationId: number,
@@ -18,6 +25,14 @@ export const getOrCreateWorkoutSession = async (
   return response.json();
 };
 
+/**
+ * Маркира прогреса на упражнение като завършено или пропуснато
+ * @param sessionId - ID на сесията
+ * @param userId - ID на потребителя
+ * @param dayExerciseId - ID на упражнението за деня
+ * @param status - Статус на упражнението ("completed" или "skipped")
+ * @returns Обект с актуализирания прогрес
+ */
 export const markExerciseProgress = async (
   sessionId: string,
   userId: string,
@@ -39,6 +54,12 @@ export const markExerciseProgress = async (
   return response.json();
 };
 
+/**
+ * Премества тренировъчната сесия към следващия ден
+ * @param sessionId - ID на сесията
+ * @param nextDay - Следващ ден на седмицата
+ * @returns Обект с актуализираната сесия
+ */
 export const moveToNextDay = async (sessionId: string, nextDay: string) => {
   const response = await fetch("/api/next-day", {
     method: "POST",

@@ -1,5 +1,10 @@
 import { getBrowserClient } from "@/lib/db/clients/browser";
 
+/**
+ * Извлича автентикирания потребител от Supabase
+ * @returns Обект с данни за потребителя
+ * @throws Грешка ако потребителят не е автентикиран
+ */
 export async function getAuthenticatedUser() {
   const supabase = getBrowserClient();
   const {
@@ -13,6 +18,11 @@ export async function getAuthenticatedUser() {
   return user;
 }
 
+/**
+ * Извлича метриките на потребителя
+ * @param u - Опционален флаг дали да се включи userId в резултата
+ * @returns Обект с метрики на потребителя
+ */
 export async function fetchUserMetrics(u?: boolean) {
   const user = await getAuthenticatedUser();
 
@@ -29,6 +39,7 @@ export async function fetchUserMetrics(u?: boolean) {
 
   const data = await response.json();
 
+  // Ако е зададен флаг u, добавяме userId към резултата
   if (u) {
     return { ...data, userId: user.id };
   }
@@ -36,6 +47,10 @@ export async function fetchUserMetrics(u?: boolean) {
   return data;
 }
 
+/**
+ * Извлича измерванията на потребителя
+ * @returns Обект с измервания на потребителя
+ */
 export async function fetchUserMeasurements() {
   const user = await getAuthenticatedUser();
 
@@ -53,6 +68,10 @@ export async function fetchUserMeasurements() {
   return response.json();
 }
 
+/**
+ * Извлича историята на телесните мазнини и теглото
+ * @returns Масив с исторически данни за телесни мазнини и тегло
+ */
 export async function fetchBodyFatWeightHistory() {
   const user = await getAuthenticatedUser();
 
@@ -70,10 +89,16 @@ export async function fetchBodyFatWeightHistory() {
   return response.json();
 }
 
+/**
+ * Извлича комплексни здравни данни на потребителя
+ * Обединява метрики и измервания в един обект
+ * @returns Обект със здравни показатели
+ */
 export async function fetchUserHealthData() {
   try {
     const user = await getAuthenticatedUser();
 
+    // Паралелно извличане на метрики и измервания за по-добра производителност
     const [responseMetrics, responseMeasurements] = await Promise.all([
       fetch(`/api/user-metrics?userId=${user.id}`, {
         method: "GET",
@@ -95,6 +120,7 @@ export async function fetchUserHealthData() {
 
     const [metrics, measurements] = await Promise.all([responseMetrics.json(), responseMeasurements.json()]);
 
+    // Връщане на обединени здравни данни
     return {
       gender: measurements.gender,
       height: measurements.height,
@@ -113,6 +139,10 @@ export async function fetchUserHealthData() {
   }
 }
 
+/**
+ * Извлича общ преглед на тренировките на потребителя
+ * @returns Обект с информация за тренировките
+ */
 export async function fetchUserWorkoutOverview() {
   const user = await getAuthenticatedUser();
 
@@ -130,6 +160,12 @@ export async function fetchUserWorkoutOverview() {
   return response.json();
 }
 
+/**
+ * Извлича прогреса за конкретен ден в тренировъчната сесия
+ * @param sessionId - ID на сесията
+ * @param dayExerciseIds - Масив с ID-та на упражненията за деня
+ * @returns Обект с прогрес на упражненията
+ */
 export const getDayProgress = async (sessionId: string, dayExerciseIds: number[]) => {
   const user = await getAuthenticatedUser();
 
@@ -144,6 +180,12 @@ export const getDayProgress = async (sessionId: string, dayExerciseIds: number[]
   return response.json();
 };
 
+/**
+ * Извлича завършените упражнения за потребителя
+ * @param userId - ID на потребителя
+ * @param sessionId - Опционално ID на сесията
+ * @returns Масив със завършени упражнения
+ */
 export const getCompletedExercises = async (userId: string, sessionId?: string) => {
   const user = await getAuthenticatedUser();
 
@@ -156,6 +198,12 @@ export const getCompletedExercises = async (userId: string, sessionId?: string) 
   return response.json();
 };
 
+/**
+ * Извлича пропуснатите упражнения за потребителя
+ * @param userId - ID на потребителя
+ * @param sessionId - Опционално ID на сесията
+ * @returns Масив с пропуснати упражнения
+ */
 export const getSkippedExercises = async (userId: string, sessionId?: string) => {
   const user = await getAuthenticatedUser();
 
@@ -168,6 +216,11 @@ export const getSkippedExercises = async (userId: string, sessionId?: string) =>
   return response.json();
 };
 
+/**
+ * Извлича статистика за тренировъчната сесия
+ * @param sessionId - ID на сесията
+ * @returns Обект със статистика (завършени, пропуснати, процент на завършване)
+ */
 export const getWorkoutStats = async (sessionId: string) => {
   const user = await getAuthenticatedUser();
 
