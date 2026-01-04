@@ -31,13 +31,16 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Зареждане на здравни данни при монтиране на компонента
     async function loadHealthData() {
       try {
+        // Паралелно извличане на всички необходими данни
         const metrics = await fetchUserMetrics(true);
         const measurements = await fetchUserMeasurements();
         const chartData = await fetchBodyFatWeightHistory();
         const workout = await fetchUserWorkoutOverview();
 
+        // Задаване на извлечените данни в state
         setUID(metrics.userId);
         setBmiData(metrics.bmiData);
         setBodyFatData(metrics.bodyFatData);
@@ -56,6 +59,7 @@ export default function HomePage() {
     loadHealthData();
   }, []);
 
+  // Показване на loader докато данните се зареждат
   if (loading || !workoutData) {
     return (
       <div className="flex min-h-[80vh] items-center justify-center">
@@ -64,15 +68,21 @@ export default function HomePage() {
     );
   }
 
-  // temp proof of concept
-  const sortedDays = [...workoutData.day_recommendations].sort((a, b) => {
+  // Временно proof of concept - сортиране на дните по номер
+  const sortedDays = [...workoutData.day_recommendations].sort((a: any, b: any) => {
     const aNum = Number(a.day.replace("Ден ", ""));
     const bNum = Number(b.day.replace("Ден ", ""));
     return aNum - bNum;
   });
 
-  const completedDays = ["Ден 1"]; // user finished day 1
+  const completedDays = ["Ден 1"]; // потребителят е завършил ден 1
 
+  /**
+   * Намира текущия незавършен ден от списъка с дни
+   * @param sortedDays - Сортиран масив с дни
+   * @param completedDays - Масив със завършени дни
+   * @returns Текущ незавършен ден или последен ден ако всички са завършени
+   */
   function getCurrentDay(sortedDays: any[], completedDays: string[]) {
     for (const day of sortedDays) {
       if (!completedDays.includes(day.day)) {
@@ -85,12 +95,15 @@ export default function HomePage() {
 
   const currentDay = getCurrentDay(sortedDays, completedDays);
 
-  const currentDayExercises = workoutData.day_exercises.filter((ex) => ex.day === currentDay.day);
+  // Филтриране на упражненията за текущия ден
+  const currentDayExercises = workoutData.day_exercises.filter((ex: any) => ex.day === currentDay.day);
 
   console.log("ts pmo: ", currentDay, currentDayExercises);
   console.log("mes: ", measurements);
+
   return (
     <div className="bg-background @container/main flex min-h-screen flex-col gap-6 p-6 md:gap-8 md:p-10 lg:p-12">
+      {/* Заглавие и описание с анимация */}
       <motion.div
         className="space-y-1"
         initial={{ opacity: 0, y: -20 }}
@@ -103,7 +116,7 @@ export default function HomePage() {
             Наблюдавайте телесния си състав и проследявайте фитнес напредъка си
           </p>
 
-          {/* PAGINATION INLINE */}
+          {/* Страниране */}
           <div className="ml-auto flex items-center gap-2">
             {[1, 2].map((page) => (
               <button
@@ -124,6 +137,7 @@ export default function HomePage() {
         </div>
       </motion.div>
 
+      {/* Страница 1 - Основни здравни показатели */}
       {currentPage === 1 && bmiData && bodyFatData && goalData && (
         <>
           <motion.div
@@ -173,6 +187,7 @@ export default function HomePage() {
         </>
       )}
 
+      {/* Страница 2 - Допълнителна информация */}
       {currentPage === 2 && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -180,23 +195,16 @@ export default function HomePage() {
           transition={{ duration: 0.5 }}
           className="grid gap-6"
         >
-          {/* Add whatever you want here for the second page */}
-          {/*<TargetWeightCard currentWeight={measurements?.weight} targetWeight={mockData.targetWeight.target} />*/}
-          {/*<MeasurementsCard measurements={measurements} />*/}
           <WorkoutExercisesCard
             day={currentDay.day}
             exercises={currentDayExercises}
             userId={uid}
             generationId={currentDay.generation_id}
           />
-          {/*<NextWorkoutCard*/}
-          {/*  day={mockData.nextWorkout.day}*/}
-          {/*  focus={mockData.nextWorkout.focus}*/}
-          {/*  exercises={mockData.nextWorkout.exercises}*/}
-          {/*/>*/}
         </motion.div>
       )}
 
+      {/* Предупреждение за медицинска консултация */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.3 }}>
         <Alert className="bg-destructive/10 group border-destructive/50 relative overflow-hidden rounded-lg border-2 p-4 transition-all duration-300">
           <AlertTriangle className="h-4 w-4" />
