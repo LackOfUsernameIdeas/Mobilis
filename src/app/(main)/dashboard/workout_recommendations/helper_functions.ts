@@ -16,9 +16,6 @@ export const fetchWorkoutRecommendations = async (
   userStats: any,
 ): Promise<any> => {
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 200000); // 200 seconds
-
     const response = await fetch("/api/get-model-response/workout-recommendations", {
       method: "POST",
       headers: {
@@ -30,10 +27,7 @@ export const fetchWorkoutRecommendations = async (
         answers,
         userStats,
       }),
-      signal: controller.signal,
     });
-
-    clearTimeout(timeoutId);
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ error: "Server error" }));
@@ -44,12 +38,6 @@ export const fetchWorkoutRecommendations = async (
     return JSON.parse(responseJson);
   } catch (error) {
     console.error("Error fetching workout recommendations:", error);
-
-    // Check if it's a timeout error
-    if (error instanceof Error && error.name === "AbortError") {
-      throw new Error("Request timed out after 3 minutes. Server may be overloaded. Please try again.");
-    }
-
     throw new Error(error instanceof Error ? error.message : "An error occurred while fetching recommendations");
   }
 };
