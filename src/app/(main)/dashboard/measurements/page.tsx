@@ -95,7 +95,6 @@ export default function MeasurementsPage() {
       const validationErrors = validateAllFields(data);
       if (validationErrors.length > 0) {
         setError(validationErrors.join(". "));
-        setSubmitLoading(false);
         return;
       }
 
@@ -103,22 +102,56 @@ export default function MeasurementsPage() {
 
       saveMeasurements(data);
 
+      // Add timeout to prevent hanging forever
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
       const response = await fetch("/api/user-measurements", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
+        signal: controller.signal,
       });
 
+      clearTimeout(timeoutId);
+
+      console.log("Response status:", response.status);
+      console.log("Response ok:", response.ok);
+
+      if (!response.ok) {
+        const result = await response.json().catch(() => ({ error: "Server error" }));
+        console.error("Server returned error:", result);
+        throw new Error(result?.error || `Server error: ${response.status}`);
+      }
+
       const result = await response.json();
+      console.log("Result:", result);
 
       if (!result?.success) {
         throw new Error(result?.error || "Failed to save measurements");
       }
 
-      router.push("/dashboard/stats");
+      console.log("Success! Redirecting...");
+
+      // Try multiple redirect approaches
+      setIsModalOpen(false);
+
+      // Force a hard navigation if soft navigation fails
+      if (typeof window !== "undefined") {
+        window.location.href = "/dashboard/stats";
+      } else {
+        router.push("/dashboard/stats");
+      }
     } catch (err) {
       console.error("Error saving measurements:", err);
-      setError(err instanceof Error ? err.message : "Failed to save measurements. Please try again.");
+
+      // Check if it's a timeout error
+      if (err instanceof Error && err.name === "AbortError") {
+        setError("Request timed out. Please check your connection and try again.");
+      } else {
+        setError(err instanceof Error ? err.message : "Failed to save measurements. Please try again.");
+      }
+    } finally {
       setSubmitLoading(false);
     }
   };
