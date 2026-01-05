@@ -15,30 +15,21 @@ export const fetchWorkoutRecommendations = async (
   answers: Record<string, any>,
   userStats: any,
 ): Promise<any> => {
-  try {
-    const response = await fetch("/api/get-model-response/workout-recommendations", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userId,
-        category,
-        answers,
-        userStats,
-      }),
-    });
+  const response = await fetch("/api/get-model-response/workout-recommendations", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      userId,
+      category,
+      answers,
+      userStats,
+    }),
+  });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ error: "Server error" }));
-      throw new Error(errorData?.error || `Failed to fetch workout recommendations: ${response.status}`);
-    }
-
-    const responseJson = await response.json();
-    return JSON.parse(responseJson);
-  } catch (error) {
-    console.error("Error fetching workout recommendations:", error);
-    throw new Error(error instanceof Error ? error.message : "An error occurred while fetching recommendations");
+  if (!response.ok) {
+    throw new Error("An error occurred while fetching recommendations");
   }
 
   const responseJson = await response.json();
