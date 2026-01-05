@@ -102,18 +102,11 @@ export default function MeasurementsPage() {
 
       saveMeasurements(data);
 
-      // Add timeout to prevent hanging forever
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
-
       const response = await fetch("/api/user-measurements", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
-        signal: controller.signal,
       });
-
-      clearTimeout(timeoutId);
 
       console.log("Response status:", response.status);
       console.log("Response ok:", response.ok);
@@ -133,7 +126,6 @@ export default function MeasurementsPage() {
 
       console.log("Success! Redirecting...");
 
-      // Try multiple redirect approaches
       setIsModalOpen(false);
 
       // Force a hard navigation if soft navigation fails
@@ -144,13 +136,6 @@ export default function MeasurementsPage() {
       }
     } catch (err) {
       console.error("Error saving measurements:", err);
-
-      // Check if it's a timeout error
-      if (err instanceof Error && err.name === "AbortError") {
-        setError("Request timed out. Please check your connection and try again.");
-      } else {
-        setError(err instanceof Error ? err.message : "Failed to save measurements. Please try again.");
-      }
     } finally {
       setSubmitLoading(false);
     }
