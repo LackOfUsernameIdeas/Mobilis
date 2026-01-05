@@ -40,6 +40,9 @@ export const fetchWorkoutRecommendations = async (
     console.error("Error fetching workout recommendations:", error);
     throw new Error(error instanceof Error ? error.message : "An error occurred while fetching recommendations");
   }
+
+  const responseJson = await response.json();
+  return JSON.parse(responseJson);
 };
 
 export const validateNumericInput = (value: string, pattern: RegExp, maxValue: number): boolean => {

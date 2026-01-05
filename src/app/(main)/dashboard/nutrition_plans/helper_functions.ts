@@ -88,8 +88,7 @@ export const fetchNutritionPlan = async (
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ error: "Server error" }));
-      throw new Error(errorData?.error || `Failed to fetch nutrition plan: ${response.status}`);
+      throw new Error("Failed to fetch nutrition plan");
     }
 
     const responseJson = await response.json();
