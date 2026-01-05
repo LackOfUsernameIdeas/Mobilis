@@ -74,10 +74,6 @@ export const fetchNutritionPlan = async (
   userStats: any,
 ) => {
   try {
-    // Add timeout to prevent hanging
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 200000);
-
     const response = await fetch("/api/get-model-response/nutrition-plans", {
       method: "POST",
       headers: {
@@ -89,26 +85,16 @@ export const fetchNutritionPlan = async (
         answers,
         userStats,
       }),
-      signal: controller.signal,
     });
 
-    clearTimeout(timeoutId);
-
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ error: "Server error" }));
-      throw new Error(errorData?.error || `Failed to fetch nutrition plan: ${response.status}`);
+      throw new Error("Failed to fetch nutrition plan");
     }
 
     const responseJson = await response.json();
     return JSON.parse(responseJson);
   } catch (error) {
     console.error("Error fetching nutrition plan:", error);
-
-    // Check if it's a timeout error
-    if (error instanceof Error && error.name === "AbortError") {
-      throw new Error("Request timed out. The server may be experiencing memory issues. Please try again.");
-    }
-
     throw error;
   }
 };
