@@ -73,7 +73,7 @@ export function NutrientStatsCard({ nutrientData }: NutrientStatsCardProps) {
                     <h4 className="font-semibold">Какво е BMR?</h4>
                     <div className="space-y-3">
                       <p className="text-muted-foreground text-sm leading-relaxed">
-                        Базален метаболизъм (BMR) е количеството калории, което тялото ви изгаря в пълен покой за
+                        Базов метаболизъм (BMR) е количеството калории, което тялото ви изгаря в пълен покой за
                         поддържане на жизненоважни функции.
                       </p>
                       <p className="text-muted-foreground text-sm leading-relaxed">
