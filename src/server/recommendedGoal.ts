@@ -221,7 +221,6 @@ function recommendGoal(bmi: number, bodyFat: number, gender: "male" | "female"):
             "Наднормено тегло с умерено ниво на телесни мазнини. Препоръчва се покачване на мускулна маса и леко намаляване на телесните мазнини.",
         };
       }
-      // Overweight with obese body fat category
       if (bfCat === "obese") {
         return {
           goal: "cut",
