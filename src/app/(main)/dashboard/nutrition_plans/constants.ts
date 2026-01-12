@@ -142,6 +142,7 @@ export const FORM_TEXT = {
 } as const;
 
 export const RESULTS_TEXT = {
+  loadingMessage: "Генериране на хранителен план. Моля, изчакайте 2/3 минути...",
   weeklyPlanTitle: "Седмичен хранителен план",
   dailyMacrosTitle: "Препочетени стойности на макроси за ден:",
   totalMacrosTitle: "Общо стойности на макроси за деня:",

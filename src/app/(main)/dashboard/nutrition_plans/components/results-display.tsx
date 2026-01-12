@@ -71,7 +71,7 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
     <div className="space-y-4 sm:space-y-6">
       {loading ? (
         <div className="flex min-h-[80vh] items-center justify-center">
-          <Loader />
+          <Loader text={RESULTS_TEXT.loadingMessage} />
         </div>
       ) : (
         <motion.div
