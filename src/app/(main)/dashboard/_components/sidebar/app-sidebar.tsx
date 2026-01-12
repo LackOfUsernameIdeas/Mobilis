@@ -81,7 +81,9 @@ export function AppSidebar({
       <SidebarContent className="flex flex-col overflow-hidden">
         <NavMain items={sidebarItems} />
 
-        <div className="mt-auto mb-2">{measurements && <SidebarMeasurements measurements={measurements} />}</div>
+        <div className="mt-auto mb-2 max-h-[40vh] overflow-x-hidden overflow-y-auto">
+          {measurements && <SidebarMeasurements measurements={measurements} />}
+        </div>
       </SidebarContent>
     </Sidebar>
   );
