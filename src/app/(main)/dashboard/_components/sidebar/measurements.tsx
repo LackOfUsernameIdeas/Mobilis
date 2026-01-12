@@ -90,6 +90,10 @@ function MeasurementRow({ icon: Icon, value, label }: { icon: React.ElementType;
   const { state, toggleSidebar } = useSidebar();
   const isCollapsed = state === "collapsed";
 
+  if (isCollapsed) {
+    return null;
+  }
+
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -103,14 +107,14 @@ function MeasurementRow({ icon: Icon, value, label }: { icon: React.ElementType;
           className={[
             "flex w-full items-center gap-2 rounded-md",
             "group-data-[collapsible=icon]:justify-center",
-            isCollapsed ? "cursor-pointer" : "cursor-default",
+            "cursor-pointer",
           ].join(" ")}
         >
           <Icon className="text-muted-foreground h-4 w-4 shrink-0" />
           <span className="group-data-[collapsible=icon]:hidden">{value}</span>
         </button>
       </TooltipTrigger>
-      <TooltipContent side="right" sideOffset={isCollapsed ? 0 : -130} align="center">
+      <TooltipContent side="right" sideOffset={-130} align="center">
         {label}
       </TooltipContent>
     </Tooltip>
