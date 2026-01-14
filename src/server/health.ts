@@ -19,11 +19,11 @@ export function getBMICategory(bmi: number): string {
     case bmi >= 25 && bmi < 30:
       return "Наднормено тегло"; // Overweight / Pre-obese (BMI 25–29.99)
     case bmi >= 30 && bmi < 35:
-      return "Затлъстяване I Клас"; // Obesity Class I (BMI 30–34.99)
+      return "Затлъстяване I клас"; // Obesity Class I (BMI 30–34.99)
     case bmi >= 35 && bmi < 40:
-      return "Затлъстяване II Клас"; // Obesity Class II (BMI 35–39.99)
+      return "Затлъстяване II клас"; // Obesity Class II (BMI 35–39.99)
     default:
-      return "Затлъстяване III Клас"; // Obesity Class III (BMI ≥ 40)
+      return "Затлъстяване III клас"; // Obesity Class III (BMI ≥ 40)
   }
 }
 
