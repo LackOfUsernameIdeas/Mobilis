@@ -110,15 +110,13 @@ def perform_calibration(nuitrack):
     left_leg = abs(avg_skeleton.get('LEFT_HIP', {}).get('y', 0) - avg_skeleton.get('LEFT_KNEE', {}).get('y', 0))
     right_leg = abs(avg_skeleton.get('RIGHT_HIP', {}).get('y', 0) - avg_skeleton.get('RIGHT_KNEE', {}).get('y', 0))
     leg_length = max(left_leg, right_leg) if left_leg or right_leg else 500  # Default if missing
-    standing_head_y = avg_skeleton.get('HEAD', {}).get('y', height * 0.8) - avg_skeleton.get('TORSO', {}).get('y', 0)
 
     globals.user_metrics = {
         "height": height,
         "arm_length": arm_length,
         "hip_width": hip_width,
         "shoulder_width": shoulder_width,
-        "leg_length": leg_length,
-        "standing_head_y": standing_head_y
+        "leg_length": leg_length
     }
 
     globals.calibration_completed = True
