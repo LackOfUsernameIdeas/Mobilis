@@ -1,77 +1,64 @@
 /**
- * Извлича съществуваща или създава нова тренировъчна сесия
+ * Извлича съществуваща или създава нова тренировъчна/хранителна сесия
+ * @param type - workout / meal
  * @param userId - ID на потребителя
  * @param generationId - ID на генерацията на тренировъчния план
- * @param startingDay - Начален ден на седмицата (по подразбиране "monday")
+ * @param startingDay - Начален ден на седмицата (по подразбиране "Ден 1")
  * @returns Обект със сесията
  */
-export const getOrCreateWorkoutSession = async (
+export const getOrCreateSession = async (
+  type: "workout" | "meal",
   userId: string,
   generationId: number,
-  startingDay: string = "monday",
+  startingDay = "Ден 1",
 ) => {
-  const response = await fetch("/api/workout-session", {
+  const res = await fetch("/api/progress-session", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ userId, generationId, startingDay }),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ type, userId, generationId, startingDay }),
   });
 
-  if (!response.ok) {
-    throw new Error("Failed to get or create workout session");
-  }
-
-  return response.json();
+  if (!res.ok) throw new Error("Session fetch failed");
+  return res.json();
 };
 
-/**
- * Маркира прогреса на упражнение като завършено или пропуснато
- * @param sessionId - ID на сесията
- * @param userId - ID на потребителя
- * @param dayExerciseId - ID на упражнението за деня
- * @param status - Статус на упражнението ("completed" или "skipped")
- * @returns Обект с актуализирания прогрес
- */
-export const markExerciseProgress = async (
+export const markItemProgress = async (
+  type: "workout" | "meal",
   sessionId: string,
   userId: string,
-  dayExerciseId: number,
+  dayItemId: number,
   status: "completed" | "skipped",
 ) => {
-  const response = await fetch("/api/exercise-progress", {
+  const res = await fetch("/api/mark-progress", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ sessionId, userId, dayExerciseId, status }),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ type, sessionId, userId, dayItemId, status }),
   });
 
-  if (!response.ok) {
-    throw new Error("Failed to mark exercise progress");
+  if (!res.ok) {
+    throw new Error("Failed to mark progress");
   }
 
-  return response.json();
+  return res.json();
 };
 
 /**
  * Премества тренировъчната сесия към следващия ден
+ * @param type - workout / meal
  * @param sessionId - ID на сесията
  * @param nextDay - Следващ ден на седмицата
  * @returns Обект с актуализираната сесия
  */
-export const moveToNextDay = async (sessionId: string, nextDay: string) => {
-  const response = await fetch("/api/next-day", {
+export const moveToNextDay = async (type: "workout" | "meal", sessionId: string, nextDay: string) => {
+  const res = await fetch("/api/next-day", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ sessionId, nextDay }),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ type, sessionId, nextDay }),
   });
 
-  if (!response.ok) {
+  if (!res.ok) {
     throw new Error("Failed to move to next day");
   }
 
-  return response.json();
+  return res.json();
 };

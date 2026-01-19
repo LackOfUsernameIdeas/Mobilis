@@ -26,9 +26,16 @@ export interface NutrientData {
   carbs: number;
 }
 
-export interface DayRecommendation {
-  day: string;
+export interface DayRecommendationWorkout {
+  id: number;
   generation_id: number;
+  day: string;
+  focus: string;
+  warmup_duration_minutes: number;
+  warmup_exercises: string[];
+  cooldown_duration_minutes: number;
+  cooldown_exercises: string[];
+  created_at: string;
 }
 
 export interface Exercise {
@@ -46,8 +53,82 @@ export interface Exercise {
 }
 
 export interface WorkoutData {
-  day_recommendations: DayRecommendation[];
+  day_recommendations: DayRecommendationWorkout[];
   day_exercises: Exercise[];
+}
+
+export interface NutritionData {
+  preferences: NutritionPreferences;
+  generation: NutritionGeneration;
+  day_recommendations: DayRecommendationNutrition[];
+  day_meals: Meal[];
+}
+
+export interface Meal {
+  id: number;
+  created_at: Date;
+  generation_id: number;
+  meal_id: string;
+  name: string;
+  meal_type: string;
+  day: string;
+  time: string;
+  nutrition_meals: NutritionMeals;
+}
+
+export interface NutritionMeals {
+  fats: number;
+  carbs: number;
+  meal_id: string;
+  protein: number;
+  calories: number;
+  prep_time: string;
+  created_at: Date;
+  description: string;
+  ingredients: Ingredient[];
+  cooking_time: string;
+  instructions: string[];
+}
+
+export interface Ingredient {
+  name: string;
+  unit: string;
+  quantity: number;
+}
+
+export interface DayRecommendationNutrition {
+  id: number;
+  generation_id: number;
+  day: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fats: number;
+  created_at: Date;
+}
+
+export interface NutritionGeneration {
+  id: number;
+  user_id: string;
+  preferences_id: number;
+  created_at: Date;
+  nutrition_tips: string[];
+}
+
+export interface NutritionPreferences {
+  id: number;
+  user_id: string;
+  mainGoal: string;
+  trainingTime: string;
+  targetWeight: string;
+  targetWeightValue: null;
+  healthIssues: string;
+  cuisinePreference: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fats: number;
+  created_at: Date;
 }
 
 export interface BodyFatWeightEntry {
@@ -56,24 +137,22 @@ export interface BodyFatWeightEntry {
   weight: number | null;
 }
 
-export interface HealthData {
-  uid: any;
-  bmiData: BMIData | null;
-  bodyFatData: BodyFatData | null;
-  goalData: GoalData | null;
-  nutrientData: NutrientData | null;
-  measurements: any;
-  chartData: BodyFatWeightEntry[] | null;
-  workoutData: WorkoutData | null;
-}
-
-export type ExerciseStatus = "pending" | "completed" | "skipped";
+export type Status = "pending" | "completed" | "skipped";
 
 export interface WorkoutExerciseProgress {
   id: string;
   session_id: string;
   user_id: string;
   day_exercise_id: number;
-  status: ExerciseStatus;
+  status: Status;
+  completed_at: string;
+}
+
+export interface MealItemProgress {
+  id: string;
+  session_id: string;
+  user_id: string;
+  day_meal_id: number;
+  status: Status;
   completed_at: string;
 }

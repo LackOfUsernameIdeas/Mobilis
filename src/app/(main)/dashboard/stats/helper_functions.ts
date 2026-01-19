@@ -1,9 +1,9 @@
-import type { DayRecommendation } from "./types";
+import { DayRecommendationNutrition, DayRecommendationWorkout, Exercise, Meal } from "./types";
 
 /**
  * Сортира дни чрез извличане на числова стойност от формат "Ден X"
  */
-export function sortDaysByNumber(days: DayRecommendation[]): DayRecommendation[] {
+export function sortDaysByNumber<T extends { day: string }>(days: T[]): T[] {
   return [...days].sort((a, b) => {
     const aNum = Number(a.day.replace("Ден ", ""));
     const bNum = Number(b.day.replace("Ден ", ""));
@@ -17,7 +17,7 @@ export function sortDaysByNumber(days: DayRecommendation[]): DayRecommendation[]
  * @param completedDays - Масив със завършени имена на дни
  * @returns Текущ незавършен ден или последен ден ако всички са завършени
  */
-export function getCurrentDay(sortedDays: DayRecommendation[], completedDays: string[]): DayRecommendation {
+export function getCurrentDay<T extends { day: string }>(sortedDays: T[], completedDays: string[]): T {
   for (const day of sortedDays) {
     if (!completedDays.includes(day.day)) {
       return day;
@@ -57,3 +57,40 @@ export const getBodyFatDescription = (category: string): string => {
   };
   return descriptions[category] || "Няма налична информация.";
 };
+
+export function formatExercise(exercise: Exercise) {
+  return {
+    exercise_name: String(exercise.exercise_name),
+    sets: String(exercise.sets),
+    reps: exercise.reps,
+    muscle_activation: exercise.workout_exercises?.muscle_activation,
+  };
+}
+
+export function formatMeal(meal: Meal) {
+  const nutrition = meal.nutrition_meals ?? {};
+
+  return {
+    id: meal.id,
+    name: meal.name,
+    meal_type: meal.meal_type,
+    day: meal.day,
+    time: meal.time,
+
+    description: nutrition.description,
+
+    prep_time: Number(nutrition.prep_time) || 0,
+    cooking_time: Number(nutrition.cooking_time) || 0,
+
+    macros: {
+      calories: nutrition.calories,
+      protein: nutrition.protein,
+      carbs: nutrition.carbs,
+      fats: nutrition.fats,
+    },
+
+    ingredients: nutrition.ingredients ?? [],
+
+    instructions: nutrition.instructions ?? [],
+  };
+}

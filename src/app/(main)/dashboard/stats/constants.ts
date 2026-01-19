@@ -24,3 +24,11 @@ export const GOAL_TO_BG: Record<string, string> = {
   recomposition: "РЕКОМПОЗИЦИЯ",
   maintenance: "ПОДДРЪЖКА",
 };
+
+export const MEAL_TYPE_LABELS: Record<string, string> = {
+  breakfast: "Закуска",
+  afternoon_snack: "Следобедна закуска",
+  pre_workout_snack: "Преди тренировка",
+  post_workout_snack: "След тренировка",
+  dinner: "Вечеря",
+};
