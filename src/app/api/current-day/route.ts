@@ -25,13 +25,14 @@ export async function GET(request: Request) {
       .select("current_day")
       .eq("user_id", userId)
       .eq("generation_id", Number(generationId))
-      .eq("is_active", true)
+      .order("created_at", { ascending: false })
+      .limit(1)
       .maybeSingle();
 
     if (error) throw error;
 
     return NextResponse.json({
-      currentDay: data?.current_day ?? 1,
+      currentDay: data?.current_day ?? "Ден 1",
     });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });

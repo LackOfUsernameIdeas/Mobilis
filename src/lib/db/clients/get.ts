@@ -258,9 +258,12 @@ export const getCompletedDays = async (
 
   if (!res.ok) throw new Error("Day progress fetch failed");
 
-  const data: { currentDay: number } = await res.json();
+  const data: { currentDay: string } = await res.json();
 
-  const completedDays = Array.from({ length: data.currentDay }, (_, i) => `Ден ${i + 1}`);
+  const match = data.currentDay.match(/Ден\s+(\d+)/);
+  const dayNumber = match ? Number(match[1]) : 1;
+
+  const completedDays = Array.from({ length: dayNumber }, (_, i) => `Ден ${i + 1}`);
 
   return { completedDays };
 };
