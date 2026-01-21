@@ -146,7 +146,7 @@ export async function fetchUserHealthData() {
 export async function fetchUserWorkoutOverview() {
   const user = await getAuthenticatedUser();
 
-  const response = await fetch(`/api/user-workout-overview?userId=74a29483-6511-4cf2-a18d-84a805376089`, {
+  const response = await fetch(`/api/user-workout-overview?userId=${user.id}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -160,24 +160,39 @@ export async function fetchUserWorkoutOverview() {
   return response.json();
 }
 
+export async function fetchUserNutritionOverview() {
+  const user = await getAuthenticatedUser();
+
+  const response = await fetch(`/api/user-nutrition-overview?userId=${user.id}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch user nutrition overview");
+  }
+
+  return response.json();
+}
+
 /**
- * Извлича прогреса за конкретен ден в тренировъчната сесия
+ * Извлича прогреса за конкретен ден в тренировъчната/хранителна сесия
+ * @param type - workout / meal
  * @param sessionId - ID на сесията
  * @param dayExerciseIds - Масив с ID-та на упражненията за деня
  * @returns Обект с прогрес на упражненията
  */
-export const getDayProgress = async (sessionId: string, dayExerciseIds: number[]) => {
+export const getDayProgress = async (type: "workout" | "meal", sessionId: string, itemIds: number[]) => {
   const user = await getAuthenticatedUser();
 
-  const response = await fetch(
-    `/api/day-progress?userId=${user.id}&sessionId=${sessionId}&dayExerciseIds=${dayExerciseIds.join(",")}`,
+  const res = await fetch(
+    `/api/day-progress?type=${type}&userId=${user.id}&sessionId=${sessionId}&itemIds=${itemIds.join(",")}`,
   );
 
-  if (!response.ok) {
-    throw new Error("Error fetching day progress.");
-  }
-
-  return response.json();
+  if (!res.ok) throw new Error("Day progress fetch failed");
+  return res.json();
 };
 
 /**
@@ -231,4 +246,21 @@ export const getWorkoutStats = async (sessionId: string) => {
   }
 
   return response.json();
+};
+
+export const getCompletedDays = async (
+  type: "workout" | "meal",
+  generationId: number,
+): Promise<{ completedDays: string[] }> => {
+  const user = await getAuthenticatedUser();
+
+  const res = await fetch(`/api/current-day?type=${type}&userId=${user.id}&generationId=${generationId}`);
+
+  if (!res.ok) throw new Error("Day progress fetch failed");
+
+  const data: { currentDay: number } = await res.json();
+
+  const completedDays = Array.from({ length: data.currentDay }, (_, i) => `Ден ${i + 1}`);
+
+  return { completedDays };
 };

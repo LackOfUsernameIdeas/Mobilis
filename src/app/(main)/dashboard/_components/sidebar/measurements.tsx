@@ -2,6 +2,31 @@ import { Ruler, Weight, Calendar, User, Activity } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 
+// Custom ruler dimension icon component
+const RulerDimension = ({ className }: { className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M10 15v-3" />
+    <path d="M14 15v-3" />
+    <path d="M18 15v-3" />
+    <path d="M2 8V4" />
+    <path d="M22 6H2" />
+    <path d="M22 8V4" />
+    <path d="M6 15v-3" />
+    <rect x="2" y="12" width="20" height="8" rx="2" />
+  </svg>
+);
+
 export default function SidebarMeasurements({
   measurements,
 }: {
@@ -10,6 +35,9 @@ export default function SidebarMeasurements({
     weight: number;
     age: number;
     gender: string;
+    neck: number;
+    waist: number;
+    hip: number;
     activity_level: string;
   };
 }) {
@@ -36,6 +64,9 @@ export default function SidebarMeasurements({
       value: activityLevelLabels[measurements.activity_level] ?? measurements.activity_level,
       label: "Ниво на активност",
     },
+    { icon: RulerDimension, value: `${measurements.neck} см`, label: "Врат" },
+    { icon: RulerDimension, value: `${measurements.waist} см`, label: "Талия" },
+    { icon: RulerDimension, value: `${measurements.hip} см`, label: "Таз" },
   ];
 
   return (
@@ -45,7 +76,7 @@ export default function SidebarMeasurements({
           Измервания
         </p>
 
-        <div className="space-y-2">
+        <div className="space-y-1 space-y-2 md:space-y-2">
           {rows.map((row) => (
             <MeasurementRow key={row.label} icon={row.icon} value={row.value} label={row.label} />
           ))}
@@ -58,6 +89,10 @@ export default function SidebarMeasurements({
 function MeasurementRow({ icon: Icon, value, label }: { icon: React.ElementType; value: string; label: string }) {
   const { state, toggleSidebar } = useSidebar();
   const isCollapsed = state === "collapsed";
+
+  if (isCollapsed) {
+    return null;
+  }
 
   return (
     <Tooltip>
@@ -72,14 +107,14 @@ function MeasurementRow({ icon: Icon, value, label }: { icon: React.ElementType;
           className={[
             "flex w-full items-center gap-2 rounded-md",
             "group-data-[collapsible=icon]:justify-center",
-            isCollapsed ? "cursor-pointer" : "cursor-default",
+            "cursor-pointer",
           ].join(" ")}
         >
           <Icon className="text-muted-foreground h-4 w-4 shrink-0" />
           <span className="group-data-[collapsible=icon]:hidden">{value}</span>
         </button>
       </TooltipTrigger>
-      <TooltipContent side="right" hidden={!isCollapsed}>
+      <TooltipContent side="right" sideOffset={-130} align="center">
         {label}
       </TooltipContent>
     </Tooltip>

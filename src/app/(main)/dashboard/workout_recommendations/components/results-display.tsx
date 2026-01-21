@@ -11,6 +11,7 @@ import ExerciseModal from "./exercise-modal";
 import { fetchWorkoutRecommendations } from "../helper_functions";
 import { Category, FormAnswers, UserStats, WorkoutRecommendations, Exercise } from "../types";
 import { getBrowserClient } from "@/lib/db/clients/browser";
+import { RESULTS_LOADING_TEXT } from "../constants";
 
 interface ResultsDisplayProps {
   category: Category;
@@ -74,7 +75,7 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
   if (loading) {
     return (
       <div className="flex min-h-[80vh] items-center justify-center">
-        <Loader />
+        <Loader text={RESULTS_LOADING_TEXT} />
       </div>
     );
   }

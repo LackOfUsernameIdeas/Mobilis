@@ -1,62 +1,58 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dumbbell } from "lucide-react";
+import { UtensilsCrossed, Clock, Flame } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import ExerciseModal from "@/app/(main)/dashboard/workout_recommendations/components/exercise-modal";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import MealModal from "@/app/(main)/dashboard/nutrition_plans/components/meal-modal";
 import { getDayProgress } from "@/lib/db/clients/get";
 import { getOrCreateSession, markItemProgress, moveToNextDay } from "@/lib/db/clients/post";
-import { DAY_LABELS, DAY_ORDER } from "../constants";
-import { DayRecommendationWorkout, Exercise, Status, WorkoutExerciseProgress } from "../types";
-import PrepSection from "@/app/(main)/dashboard/stats/components/prep";
-import { formatExercise } from "@/app/(main)/dashboard/stats/helper_functions";
+import { DayRecommendationNutrition, Status, Meal, MealItemProgress } from "@/app/(main)/dashboard/stats/types";
+import { DAY_LABELS, DAY_ORDER, MEAL_TYPE_LABELS } from "@/app/(main)/dashboard/stats/constants";
+import { formatMeal } from "@/app/(main)/dashboard/stats/helper_functions";
 
-interface WorkoutExercisesCardProps {
-  day: string;
-  exercises: Exercise[];
-  dayRecommendation?: DayRecommendationWorkout;
+interface MealPlanCardProps {
   userId: string;
   generationId: number;
+  day: string;
+  meals: Meal[];
+  dayRecommendation?: DayRecommendationNutrition;
   onDayComplete?: (nextDay: string) => void;
 }
 
-export function WorkoutExercisesCard({
-  day,
-  exercises,
-  dayRecommendation,
+export function MealPlanCard({
   userId,
   generationId,
+  day,
+  meals,
+  dayRecommendation,
   onDayComplete,
-}: WorkoutExercisesCardProps) {
-  const totalSets = exercises.reduce((sum, ex) => sum + ex.sets, 0);
-  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
+}: MealPlanCardProps) {
+  const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [videoCache, setVideoCache] = useState<Record<string, string>>({});
-  const [exerciseStatus, setExerciseStatus] = useState<Record<number, Status>>(() =>
-    exercises.reduce((acc, ex) => ({ ...acc, [ex.id]: "pending" }), {}),
+
+  const [mealStatus, setMealStatus] = useState<Record<number, Status>>(() =>
+    meals.reduce((acc, meal) => ({ ...acc, [meal.id]: "pending" }), {}),
   );
-  const { warmup_duration_minutes, warmup_exercises, cooldown_duration_minutes, cooldown_exercises } =
-    dayRecommendation ?? {};
 
   useEffect(() => {
     const loadProgress = async () => {
       try {
-        const session = await getOrCreateSession("workout", userId, generationId, day);
+        const session = await getOrCreateSession("meal", userId, generationId, day);
         setSessionId(session.id);
 
-        const dayExerciseIds = exercises.map((ex) => ex.id);
-        const progress: WorkoutExerciseProgress[] = await getDayProgress("workout", session.id, dayExerciseIds);
+        const dayExerciseIds = meals.map((m) => m.id);
+        const progress: MealItemProgress[] = await getDayProgress("meal", session.id, dayExerciseIds);
 
         const statusMap: Record<number, Status> = {};
-        exercises.forEach((ex) => {
-          const progressEntry = progress.find((p) => p.day_exercise_id === ex.id);
-          statusMap[ex.id] = progressEntry ? progressEntry.status : "pending";
+        meals.forEach((m) => {
+          const progressEntry = progress.find((p) => p.day_meal_id === m.id);
+          statusMap[m.id] = progressEntry ? progressEntry.status : "pending";
         });
 
-        setExerciseStatus(statusMap);
+        setMealStatus(statusMap);
       } catch (error) {
         console.error("Error loading progress:", error);
       } finally {
@@ -65,30 +61,25 @@ export function WorkoutExercisesCard({
     };
 
     loadProgress();
-  }, [userId, generationId, day, exercises]);
+  }, [userId, generationId, day, meals]);
 
-  const handleExerciseClick = (exercise: Exercise) => {
-    setSelectedExercise(exercise);
+  const totalCalories = meals.reduce((sum, meal) => sum + (meal.nutrition_meals?.calories || 0), 0);
+
+  const handleMealClick = (meal: Meal) => {
+    setSelectedMeal(meal);
     setIsModalOpen(true);
   };
 
-  const handleVideoFetched = (exerciseName: string, url: string) => {
-    setVideoCache((prev) => ({
-      ...prev,
-      [exerciseName]: url,
-    }));
-  };
-
-  const handleStatusChange = async (exerciseId: number, status: Status) => {
+  const handleStatusChange = async (mealId: number, status: Status) => {
     if (!sessionId || status === "pending") return;
 
     try {
-      setExerciseStatus((prev) => ({ ...prev, [exerciseId]: status }));
+      setMealStatus((prev) => ({ ...prev, [mealId]: status }));
 
-      await markItemProgress("workout", sessionId, userId, exerciseId, status);
+      await markItemProgress("meal", sessionId, userId, mealId, status);
     } catch (error) {
-      console.error("Error updating exercise status:", error);
-      setExerciseStatus((prev) => ({ ...prev, [exerciseId]: "pending" }));
+      console.error("Error updating meal status:", error);
+      setMealStatus((prev) => ({ ...prev, [mealId]: "pending" }));
     }
   };
 
@@ -100,7 +91,7 @@ export function WorkoutExercisesCard({
       const nextDayIndex = (currentDayIndex + 1) % DAY_ORDER.length;
       const nextDay = DAY_ORDER[nextDayIndex];
 
-      await moveToNextDay("workout", sessionId, nextDay);
+      await moveToNextDay("meal", sessionId, nextDay);
 
       if (onDayComplete) {
         onDayComplete(nextDay);
@@ -130,7 +121,7 @@ export function WorkoutExercisesCard({
     }
   };
 
-  const allCompleted = Object.values(exerciseStatus).every((status) => status === "completed" || status === "skipped");
+  const allCompleted = Object.values(mealStatus).every((status) => status === "completed" || status === "skipped");
 
   if (isLoading) {
     return (
@@ -141,47 +132,67 @@ export function WorkoutExercisesCard({
       </Card>
     );
   }
+
   return (
     <Card className="h-full">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Dumbbell className="text-muted-foreground h-5 w-5" />
-            <CardTitle className="text-base font-medium">{DAY_LABELS[day.toLowerCase()] || day} - Упражнения</CardTitle>
+            <UtensilsCrossed className="text-muted-foreground h-5 w-5" />
+            <CardTitle className="text-base font-medium">{DAY_LABELS[day.toLowerCase()] || day} - Хранене</CardTitle>
           </div>
-          <Badge variant="outline">{exercises.length} упражнения</Badge>
+          <Badge variant="outline">{meals.length} ястия</Badge>
         </div>
-        <CardDescription>{totalSets} общо серии</CardDescription>
+        <CardDescription className="flex items-center gap-1">
+          <Flame className="h-3 w-3" />
+          {totalCalories} kcal общо
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          <PrepSection title="Загрявка" duration={warmup_duration_minutes} items={warmup_exercises} />
+          {meals.map((meal, index) => {
+            const status = mealStatus[meal.id] || "pending";
+            const mealData = meal.nutrition_meals;
 
-          {exercises.map((exercise, index) => {
-            const status = exerciseStatus[exercise.id] || "pending";
             return (
               <div
                 key={index}
                 className={`cursor-pointer rounded-r-lg border-l-2 p-3 transition ${getCardStyles(status)}`}
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1" onClick={() => handleExerciseClick(exercise)}>
-                    <p className="text-sm font-semibold">{exercise.exercise_name}</p>
-                    <div className="mt-1 flex items-center gap-3">
-                      <span className="text-muted-foreground text-xs">{exercise.sets} серии</span>
-                      <span className="text-muted-foreground text-xs">×</span>
-                      <span className="text-muted-foreground text-xs">{exercise.reps} повторения</span>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1" onClick={() => handleMealClick(meal)}>
+                    <div className="mb-1 flex items-center gap-2">
+                      <p className="truncate text-sm font-semibold">{meal.name}</p>
+                    </div>
+                    <div className="text-muted-foreground flex flex-wrap items-center gap-2 text-xs">
+                      <span className="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {meal.time}
+                      </span>
+                      {mealData && (
+                        <>
+                          <span>•</span>
+                          <span>{mealData.calories} kcal</span>
+                          <span>•</span>
+                          <span>П: {mealData.protein}г</span>
+                          <span>В: {mealData.carbs}г</span>
+                          <span>М: {mealData.fats}г</span>
+                        </>
+                      )}
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex shrink-0 items-center gap-2">
                     <Badge variant="secondary" className="text-xs">
-                      {exercise.workout_exercises.category}
+                      {MEAL_TYPE_LABELS[meal.meal_type?.toLowerCase()] || meal.meal_type}
                     </Badge>
 
                     <div className="flex gap-1">
                       <button
-                        onClick={() => handleStatusChange(exercise.id, "completed")}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleStatusChange(meal.id, "completed");
+                        }}
                         className={`rounded-full px-2 py-0.5 text-xs transition ${
                           status === "completed"
                             ? "bg-green-500 text-white"
@@ -190,9 +201,11 @@ export function WorkoutExercisesCard({
                       >
                         ✔
                       </button>
-
                       <button
-                        onClick={() => handleStatusChange(exercise.id, "skipped")}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleStatusChange(meal.id, "skipped");
+                        }}
                         className={`rounded-full px-2 py-0.5 text-xs transition ${
                           status === "skipped"
                             ? "bg-red-500 text-white"
@@ -207,9 +220,8 @@ export function WorkoutExercisesCard({
               </div>
             );
           })}
-
-          <PrepSection title="Разпускане" duration={cooldown_duration_minutes} items={cooldown_exercises} />
         </div>
+
         <div className="mt-4 flex justify-end">
           <button
             disabled={!allCompleted}
@@ -224,15 +236,7 @@ export function WorkoutExercisesCard({
           </button>
         </div>
 
-        {selectedExercise && (
-          <ExerciseModal
-            exercise={formatExercise(selectedExercise)}
-            open={isModalOpen}
-            onOpenChange={setIsModalOpen}
-            cachedVideoUrl={videoCache[selectedExercise.exercise_name]}
-            onVideoFetched={handleVideoFetched}
-          />
-        )}
+        {selectedMeal && <MealModal open={isModalOpen} onOpenChange={setIsModalOpen} meal={formatMeal(selectedMeal)} />}
       </CardContent>
     </Card>
   );

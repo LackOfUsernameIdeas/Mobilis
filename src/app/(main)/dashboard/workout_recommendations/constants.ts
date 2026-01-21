@@ -76,17 +76,17 @@ export const YOGA_FOCUS_AREA_OPTIONS = [
 export const GYM_GOAL_OPTIONS = [
   {
     value: "cut",
-    label: "Cut (Загуба на мазнини)",
+    label: "Cut (Изгаряне на мазнини)",
     description: "Тренировки, насочени към изгаряне на телесните мазнини",
   },
   {
     value: "aggressive_cut",
-    label: "Aggressive Cut (Екстремна загуба на мазнини)",
+    label: "Aggressive Cut (Интензивно изгаряне на мазнини)",
     description: "Интензивни тренировки за бързо изгаряне на телесните мазнини",
   },
   {
     value: "lean_bulk",
-    label: "Lean Bulk (Покачване на мускулна маса)",
+    label: "Lean Bulk (Чисто покачване на маса)",
     description: "Тренировки, насочени към постепенно и контролирано покачване на мускулна маса",
   },
   {
@@ -286,6 +286,8 @@ export const YOGA_QUESTIONS = [
     placeholder: YOGA_FORM_TEXT.specificPosesPlaceholder,
   },
 ];
+
+export const RESULTS_LOADING_TEXT = "Генериране на тренировъчни препоръки. Моля, изчакайте 1/2 минути...";
 
 export const ANIMATION_VARIANTS = {
   fadeIn: {

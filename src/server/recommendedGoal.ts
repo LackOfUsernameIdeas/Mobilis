@@ -105,6 +105,19 @@ function recommendGoal(bmi: number, bodyFat: number, gender: "male" | "female"):
     };
   }
 
+  // Критични телесни мазнини
+  if (bfCat === "critical") {
+    return {
+      goal: "dirty_bulk",
+      goalName: "Бързо качване (Dirty Bulk)",
+      bmi,
+      bmiCategory: bmiCat,
+      bodyFatPercentage: bodyFat,
+      bodyFatCategory: bfCat,
+      reasoning: "Опасно ниско ниво на телесни мазнини. Препоръчва се качване на тегло и телесни мазнини.",
+    };
+  }
+
   // Агресивно сваляне за критично затлъстяване
   if (bmiCat === "obese_3" || bmiCat === "obese_2") {
     return {
@@ -119,7 +132,7 @@ function recommendGoal(bmi: number, bodyFat: number, gender: "male" | "female"):
     };
   }
 
-  // Обикновено сваляне за обесе клас 1
+  // Обикновено сваляне за затлъстяване клас 1
   if (bmiCat === "obese_1") {
     return {
       goal: "cut",
@@ -129,19 +142,6 @@ function recommendGoal(bmi: number, bodyFat: number, gender: "male" | "female"):
       bodyFatPercentage: bodyFat,
       bodyFatCategory: bfCat,
       reasoning: "Затлъстяване клас I. Препоръчва се сваляне на тегло и намаляване на телесните мазнини.",
-    };
-  }
-
-  // Критични телесни мазнини
-  if (bfCat === "critical") {
-    return {
-      goal: "dirty_bulk",
-      goalName: "Бързо качване (Dirty Bulk)",
-      bmi,
-      bmiCategory: bmiCat,
-      bodyFatPercentage: bodyFat,
-      bodyFatCategory: bfCat,
-      reasoning: "Опасно ниско ниво на телесни мазнини. Препоръчва се качване на тегло и телесни мазнини.",
     };
   }
 
@@ -221,7 +221,6 @@ function recommendGoal(bmi: number, bodyFat: number, gender: "male" | "female"):
             "Наднормено тегло с умерено ниво на телесни мазнини. Препоръчва се покачване на мускулна маса и леко намаляване на телесните мазнини.",
         };
       }
-      // Overweight with obese body fat category
       if (bfCat === "obese") {
         return {
           goal: "cut",

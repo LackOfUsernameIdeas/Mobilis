@@ -35,7 +35,7 @@ export interface CalorieGoalWithMacros {
 }
 
 export interface CalorieRecommendation {
-  bmr: number; // Базален метаболизъм
+  bmr: number; // Базов метаболизъм
   tdee: number; // Общ дневен разход на енергия
   goal: CalorieGoalWithMacros;
 }
