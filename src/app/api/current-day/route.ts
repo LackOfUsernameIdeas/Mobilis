@@ -31,7 +31,7 @@ export async function GET(request: Request) {
     if (error) throw error;
 
     return NextResponse.json({
-      currentDay: data?.current_day ?? "Ден 1",
+      currentDay: data?.current_day ?? 1,
     });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
