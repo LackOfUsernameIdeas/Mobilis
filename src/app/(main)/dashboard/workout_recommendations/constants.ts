@@ -43,7 +43,7 @@ export const MUSCLE_LABELS: Record<string, string> = {
 
 export const MUSCLE_COLORS: Record<string, string> = {
   chest: "#E63946",
-  front_delts: "#F1FA3C",
+  front_delts: "#C9B800",
   side_delts: "#FF9F1C",
   rear_delts: "#8AC926",
   biceps: "#1982C4",
