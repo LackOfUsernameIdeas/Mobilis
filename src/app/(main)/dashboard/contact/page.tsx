@@ -37,7 +37,6 @@ export default function ContactFormPage() {
     setSubmitted(true);
     setTimeout(() => {
       setSubmitted(false);
-      setFormData({ name: "", email: "", subject: "", message: "" });
     }, 3000);
   };
 
@@ -191,9 +190,11 @@ export default function ContactFormPage() {
       {/* Success Message */}
       {submitted && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-          <Alert className="border-green-200 bg-green-50 text-green-900 dark:border-green-900/50 dark:bg-green-950/50 dark:text-green-200">
+          <Alert className="border-green-200 bg-green-50 text-green-900 dark:border-green-900/50 dark:bg-green-950/50 dark:text-green-300">
             <CheckCircle2 className="h-4 w-4" />
-            <AlertDescription className="leading-relaxed">{PAGE_TEXT.success.message}</AlertDescription>
+            <AlertDescription className="leading-relaxed text-green-900 dark:text-green-300">
+              {PAGE_TEXT.success.message}
+            </AlertDescription>
           </Alert>
         </motion.div>
       )}
