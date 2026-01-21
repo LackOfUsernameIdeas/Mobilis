@@ -44,7 +44,7 @@ class ModernExerciseApp:
         except Exception as e:
             print(f"Could not load icon: {e}")
 
-        self.root.title("Персонален треньор за упражнения")
+        self.root.title("Програма за проследяване на изпълнението")
         self.root.configure(bg=self.theme.colors['background'])
         
     def auto_size_window(self, show_on_first_call=False):
