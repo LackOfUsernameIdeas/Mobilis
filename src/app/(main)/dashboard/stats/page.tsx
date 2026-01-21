@@ -115,7 +115,7 @@ export default function HomePage() {
         <h1 className="text-4xl font-bold tracking-tight text-balance md:text-5xl">Здравно табло</h1>
         <div className="flex flex-wrap items-center gap-4">
           <p className="text-muted-foreground text-lg text-pretty md:text-xl">
-            Наблюдавайте телесния си състав и проследявайте фитнес напредъка си
+            Разгледайте телесния си състав и проследявайте напредъка си
           </p>
 
           <PageNavigation currentPage={currentPage} onPageChange={setCurrentPage} />
