@@ -24,3 +24,20 @@ export const features: Feature[] = [
     description: "Изпълнявайте специализирани упражнения с Orbbec Astra+ камера и гласов асистент",
   },
 ];
+
+export const pages: string[] = ["Здравно табло", "Тренировъчни препоръки", "Хранителни режими", "Програми", "Контакти"];
+
+export const techStack: string[] = [
+  "React",
+  "Next.js",
+  "Tailwind CSS",
+  "Shadcn/ui",
+  "TypeScript",
+  "Python",
+  "Supabase",
+  "PostgreSQL",
+  "OpenAI API",
+  "YouTube API",
+  "Nuitrack SDK",
+  "OpenCV",
+];
