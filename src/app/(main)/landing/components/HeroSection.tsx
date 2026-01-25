@@ -1,16 +1,19 @@
-import React from "react";
+import React, { useRef } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { Activity, ChevronRight, Check } from "lucide-react";
+import { motion, useInView } from "framer-motion";
+import { Activity, ChevronRight } from "lucide-react";
 
 export default function HeroSection() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, amount: 0.3, margin: "0px 0px -200px 0px" });
+
   return (
-    <section className="container mx-auto px-4 py-16 md:px-6 md:py-24 lg:px-8">
+    <section ref={ref} className="container mx-auto px-4 py-16 md:px-6 md:py-24 lg:px-8">
       <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
+          initial={{ opacity: 0, y: 80 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 80 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
           className="flex flex-col justify-center space-y-6"
         >
           <div className="space-y-4">
@@ -35,9 +38,9 @@ export default function HeroSection() {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.4, delay: 0.2 }}
+          initial={{ opacity: 0, scale: 0.9, y: 80 }}
+          animate={isInView ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.9, y: 80 }}
+          transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
           className="relative"
         >
           <div className="border-border bg-card relative overflow-hidden rounded-2xl border-2 shadow-2xl">
