@@ -11,7 +11,7 @@ export default function FeaturesSection({ features }: FeaturesSectionProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2, margin: "0px 0px -200px 0px" });
   return (
-    <section ref={ref} id="features" className="bg-muted/30 border-t py-16 md:py-24">
+    <section ref={ref} id="features" className="bg-muted/30 dark:bg-muted/10 border-t py-16 md:py-24">
       <div className="container mx-auto px-4 md:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 60 }}

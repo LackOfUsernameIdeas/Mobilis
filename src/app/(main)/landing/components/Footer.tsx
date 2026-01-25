@@ -9,7 +9,7 @@ const Footer = () => {
 
   return (
     <Fragment>
-      <footer ref={ref} className="bg-card mt-auto border-t py-6">
+      <footer ref={ref} className="bg-card dark:bg-muted/20 mt-auto border-t py-6">
         <div className="container mx-auto px-4 md:px-6 lg:px-8">
           <div className="mb-10 grid grid-cols-1 gap-8 md:grid-cols-4">
             <motion.div
@@ -22,7 +22,7 @@ const Footer = () => {
               <div className="text-muted-foreground space-y-2 text-sm">
                 <p>Проект №734</p>
                 <Link className="hover:text-primary transition-colors" href="https://edusoft.fmi.uni-sofia.bg/">
-                  2026 НОИТ
+                  НОИТ 2026
                 </Link>
               </div>
               <div className="pt-2">
