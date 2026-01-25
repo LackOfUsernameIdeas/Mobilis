@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { ArrowLeft } from "lucide-react";
 import { LoginForm } from "../_components/login-form";
 import { GoogleButton } from "../_components/social-auth/google-button";
 
@@ -26,6 +27,14 @@ export default function LoginPage() {
 
       <div className="bg-background flex w-full items-center justify-center p-8 lg:w-2/3">
         <div className="w-full max-w-md space-y-7 py-24 lg:py-32">
+          <Link
+            href="/"
+            className="text-foreground hover:text-primary mb-6 inline-flex items-center gap-2 transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span className="text-sm">Обратно към главната страница</span>
+          </Link>
+
           <div className="space-y-2 text-center">
             <div className="font-medium tracking-tight">Влизане в профил</div>
             <div className="text-muted-foreground mx-auto max-w-xl">
