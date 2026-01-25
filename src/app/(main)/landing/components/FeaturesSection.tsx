@@ -20,7 +20,7 @@ export default function FeaturesSection({ features }: FeaturesSectionProps) {
           className="mb-12 text-center"
         >
           <h2 className="text-foreground mb-4 text-3xl font-bold md:text-4xl">Защо да ползвате Мобилис?</h2>
-          <p className="text-muted-foreground mx-auto max-w-7xl text-base leading-relaxed md:text-lg md:leading-relaxed">
+          <p className="text-muted-foreground max-w-8xl mx-auto text-base leading-relaxed md:text-lg md:leading-relaxed">
             Мобилис дава възможност за съставяне на персонализирани тренировъчни препоръки, чрез анализ и изчисляване на
             различни оптимални дневни показатели, които да се използват при съставянето на хранителен режим, съобразен с
             целите и нуждите на потребителите. Чрез използването на изкуствен интелект за генериране на съдържание и
