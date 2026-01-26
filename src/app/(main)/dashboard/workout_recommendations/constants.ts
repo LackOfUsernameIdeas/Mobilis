@@ -1,23 +1,26 @@
 import { CategoryOption } from "./types";
+import gym from "../../../../../public/gym.svg";
+import calisthenics from "../../../../../public/calisthenics.svg";
+import yoga from "../../../../../public/yoga.svg";
 
 export const CATEGORIES: CategoryOption[] = [
   {
     id: "gym",
     title: "Фитнес",
     description: "Получете персонализирани планове за тренировки в залата",
-    icon: "🏋️",
+    icon: gym,
   },
   {
     id: "calisthenics",
     title: "Калистеника",
     description: "Получете персонализирани планове за тренировки с калистеника",
-    icon: "🏃",
+    icon: calisthenics,
   },
   {
     id: "yoga",
     title: "Йога",
     description: "Намерете йога практики, които отговарят на вашите цели",
-    icon: "🧘",
+    icon: yoga,
   },
 ];
 
