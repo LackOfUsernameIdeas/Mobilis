@@ -1,12 +1,13 @@
 "use client";
 
-import { Flame, TrendingUp, Apple, Info } from "lucide-react";
+import { Flame, TrendingUp, Apple, Info, ChevronLeft, ChevronRight } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { BlockMath } from "react-katex";
+import { useState } from "react";
 import type { NutrientData } from "../types";
 
 interface NutrientStatsCardProps {
@@ -14,6 +15,11 @@ interface NutrientStatsCardProps {
 }
 
 export function NutrientStatsCard({ nutrientData }: NutrientStatsCardProps) {
+  const [bmrStep, setBmrStep] = useState(0);
+  const [tdeeStep, setTdeeStep] = useState(0);
+  const BMR_TOTAL_STEPS = 2;
+  const TDEE_TOTAL_STEPS = 2;
+
   const calorieDelta = nutrientData.calories - nutrientData.tdee;
 
   const calorieStatus =
@@ -63,33 +69,72 @@ export function NutrientStatsCard({ nutrientData }: NutrientStatsCardProps) {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="hover:bg-muted-foreground/25 hover:text-popover-foreground/75 h-6 w-6"
+                    className="hover:bg-muted-foreground/25 hover:text-popover-foreground/75 h-6 w-6 cursor-pointer"
                   >
                     <Info className="h-4 w-4" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-80">
-                  <div className="space-y-2">
+                  <div className="space-y-4">
                     <h4 className="font-semibold">Какво е BMR?</h4>
-                    <div className="space-y-3">
-                      <p className="text-muted-foreground text-sm leading-relaxed">
-                        Базов метаболизъм (BMR) е количеството калории, което тялото ви изгаря в пълен покой за
-                        поддържане на жизненоважни функции.
-                      </p>
-                      <p className="text-muted-foreground text-sm leading-relaxed">
-                        Изчислява се по формулата на Mifflin-St Jeor:
-                      </p>
-                      <p className="text-muted-foreground text-sm leading-relaxed">
-                        <div className="max-w-full overflow-x-auto">
-                          <BlockMath math="\mathit{BMR} = 10 \times \mathit{тегло} + 6.25 \times \mathit{ръст} - 5 \times \mathit{възраст} + 5" />
+                    {bmrStep === 0 && (
+                      <div className="space-y-3">
+                        <p className="text-muted-foreground text-sm leading-relaxed">
+                          BMR (Базов метаболизъм) е общото количество енергия, което е нужно на тялото, за да поддържа
+                          жизнените си функции.
+                        </p>
+                        <p className="text-muted-foreground text-sm leading-relaxed">
+                          Дори когато сме в покой, тялото ни работи неуморно и извършва множество различни процеси,
+                          които ни поддържат живи. Това са процесите на храносмилане, дишане, кръвообращение, поддържане
+                          на телесната температура, клетъчно делене и т.н. Всички тези процеси изискват определено
+                          количество енергия, за да могат да протичат оптимално.
+                        </p>
+                      </div>
+                    )}
+                    {bmrStep === 1 && (
+                      <div className="space-y-3">
+                        <p className="text-muted-foreground text-sm leading-relaxed">
+                          Базовият метаболизъм, подобно на BF%, се изчислява по различен начин за двата пола.
+                        </p>
+                        <p className="text-foreground text-sm leading-relaxed font-medium">За мъже:</p>
+                        <div className="text-foreground text-sm leading-relaxed">
+                          <div className="max-w-full overflow-x-auto">
+                            <BlockMath math="\mathit{BMR} = 10 \times \mathit{тегло\ (kg)} + 6.25 \times \mathit{височина\ (cm)} - 5 \times \mathit{възраст} + 5" />
+                          </div>
                         </div>
-                      </p>
+                        <p className="text-foreground text-sm leading-relaxed font-medium">За жени:</p>
+                        <div className="text-foreground text-sm leading-relaxed">
+                          <div className="max-w-full overflow-x-auto">
+                            <BlockMath math="\mathit{BMR} = 10 \times \mathit{тегло\ (kg)} + 6.25 \times \mathit{височина\ (cm)} - 5 \times \mathit{възраст} - 161" />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between py-2">
+                      <button
+                        className="text-foreground flex cursor-pointer items-center gap-1 text-sm disabled:opacity-50"
+                        onClick={() => setBmrStep(Math.max(0, bmrStep - 1))}
+                        disabled={bmrStep === 0}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                        Назад
+                      </button>
+
+                      <span className="text-muted-foreground text-xs">
+                        {bmrStep + 1} / {BMR_TOTAL_STEPS}
+                      </span>
+
+                      <button
+                        className="text-foreground flex cursor-pointer items-center gap-1 text-sm font-medium disabled:opacity-50"
+                        onClick={() => setBmrStep(Math.min(BMR_TOTAL_STEPS - 1, bmrStep + 1))}
+                        disabled={bmrStep === BMR_TOTAL_STEPS - 1}
+                      >
+                        Напред
+                        <ChevronRight className="h-4 w-4" />
+                      </button>
                     </div>
-                    <div className="border-t pt-2">
+                    <div className="space-y-2 border-t pt-4">
                       <p className="text-sm font-medium">Вашият BMR: {nutrientData.bmr} kcal</p>
-                      <p className="text-muted-foreground mt-1 text-sm">
-                        Това е базата, върху която се изчислява дневният ви разход.
-                      </p>
                     </div>
                   </div>
                 </PopoverContent>
@@ -110,31 +155,68 @@ export function NutrientStatsCard({ nutrientData }: NutrientStatsCardProps) {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="hover:bg-muted-foreground/25 hover:text-popover-foreground/75 h-6 w-6"
+                    className="hover:bg-muted-foreground/25 hover:text-popover-foreground/75 h-6 w-6 cursor-pointer"
                   >
                     <Info className="h-4 w-4" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-80">
-                  <div className="space-y-2">
+                  <div className="space-y-4">
                     <h4 className="font-semibold">Какво е TDEE?</h4>
-                    <div className="space-y-3">
-                      <p className="text-muted-foreground text-sm leading-relaxed">
-                        TDEE (Total Daily Energy Expenditure) е общият брой калории, които изгаряте за един ден,
-                        включително активност и тренировки.
-                      </p>
-                      <p className="text-muted-foreground text-sm leading-relaxed">Изчислява се чрез:</p>
-                      <p className="text-muted-foreground text-sm leading-relaxed">
-                        <div className="max-w-full overflow-x-auto">
-                          <BlockMath math="\mathit{TDEE} = \mathit{BMR} \times \mathit{коефициент\ на\ активност}" />
+                    {tdeeStep === 0 && (
+                      <div className="space-y-3">
+                        <p className="text-muted-foreground text-sm leading-relaxed">
+                          TDEE (Общ дневен енергиен разход) е количеството калории, от което човек има нужда в текущото
+                          си състояние и изразходва на ден, докато извършва всички дейности в ежедневието си.
+                        </p>
+                        <p className="text-muted-foreground text-sm leading-relaxed">
+                          Докато BMR посочва калориите, които тялото изгаря в пълен покой за жизненоважни функции и се
+                          счита за долна граница на прием, TDEE е резултат от:
+                        </p>
+                        <div className="text-foreground text-sm leading-relaxed">
+                          <div className="max-w-full overflow-x-auto">
+                            <BlockMath math="\mathit{TDEE} = \mathit{BMR} \times \mathit{степен\ на\ физическа\ активност}" />
+                          </div>
                         </div>
-                      </p>
+                      </div>
+                    )}
+                    {tdeeStep === 1 && (
+                      <div className="space-y-3">
+                        <p className="text-muted-foreground text-sm leading-relaxed">
+                          TDEE представлява точката на поддръжка - калориите, при които телесното тегло остава стабилно.
+                        </p>
+                        <p className="text-muted-foreground text-sm leading-relaxed">
+                          За да постигнем желаните промени в композицията на тялото, е необходимо да се придържаме към
+                          целенасочено отклонение от това равновесие - калориен дефицит или калориен суфицит. Величината
+                          и посоката на отклонението определят естеството на промяната.
+                        </p>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between py-2">
+                      <button
+                        className="text-foreground flex cursor-pointer items-center gap-1 text-sm disabled:opacity-50"
+                        onClick={() => setTdeeStep(Math.max(0, tdeeStep - 1))}
+                        disabled={tdeeStep === 0}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                        Назад
+                      </button>
+
+                      <span className="text-muted-foreground text-xs">
+                        {tdeeStep + 1} / {TDEE_TOTAL_STEPS}
+                      </span>
+
+                      <button
+                        className="text-foreground flex cursor-pointer items-center gap-1 text-sm font-medium disabled:opacity-50"
+                        onClick={() => setTdeeStep(Math.min(TDEE_TOTAL_STEPS - 1, tdeeStep + 1))}
+                        disabled={tdeeStep === TDEE_TOTAL_STEPS - 1}
+                      >
+                        Напред
+                        <ChevronRight className="h-4 w-4" />
+                      </button>
                     </div>
-                    <div className="border-t pt-2">
+                    <div className="space-y-2 border-t pt-4">
                       <p className="text-sm font-medium">Вашият TDEE: {nutrientData.tdee} kcal</p>
-                      <p className="text-muted-foreground mt-1 text-sm">
-                        Това е ориентирът за поддръжка, дефицит или излишък.
-                      </p>
                     </div>
                   </div>
                 </PopoverContent>

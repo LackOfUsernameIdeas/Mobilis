@@ -17,7 +17,9 @@ export function BodyCompositionCard({ bodyFatData }: BodyCompositionCardProps) {
     <Card className="h-full">
       <CardHeader className="pb-3">
         <CardTitle className="text-base font-medium">Телесен състав</CardTitle>
-        <CardDescription>Разпределение на мазнини и мускули</CardDescription>
+        <CardDescription>
+          Разпределение на мастна (BFM) и чиста телесна маса (LBM) - мускули, кости, органи и течности
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex gap-2">
@@ -29,7 +31,7 @@ export function BodyCompositionCard({ bodyFatData }: BodyCompositionCardProps) {
           <div className="space-y-1">
             <div className="text-muted-foreground flex items-center gap-2 text-sm">
               <Droplets className="text-chart-1 h-4 w-4" />
-              <span>Мазнини</span>
+              <span>BFM</span>
             </div>
             <p className="text-2xl font-bold">{bodyFatData.bodyFatMass.toFixed(2)} кг</p>
           </div>
@@ -37,7 +39,7 @@ export function BodyCompositionCard({ bodyFatData }: BodyCompositionCardProps) {
           <div className="space-y-1">
             <div className="text-muted-foreground flex items-center gap-2 text-sm">
               <BicepsFlexed className="text-chart-2 h-4 w-4" />
-              <span>Мускули</span>
+              <span>LBM</span>
             </div>
             <p className="text-2xl font-bold">{bodyFatData.leanBodyMass.toFixed(2)} кг</p>
           </div>
