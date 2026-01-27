@@ -2,6 +2,7 @@
 
 import Header from "./components/Header";
 import HeroSection from "./components/HeroSection";
+import StatsSection from "./components/StatsSection";
 import FeaturesSection from "./components/FeaturesSection";
 import Footer from "./components/Footer";
 import { features } from "./constants";
@@ -12,6 +13,8 @@ export default function LandingPage() {
       <Header />
       <HeroSection />
       <FeaturesSection features={features} />
+      <StatsSection />
+
       <Footer />
     </div>
   );
