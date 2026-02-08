@@ -241,7 +241,7 @@ export function WorkoutExercisesCard({ workoutData, userId }: WorkoutExercisesCa
                 );
               })}
 
-              <PrepSection title="Разпускане" duration={cooldown_duration_minutes} items={cooldown_exercises} />
+              <PrepSection title="Разтягане" duration={cooldown_duration_minutes} items={cooldown_exercises} />
             </div>
             <div className="mt-4 flex justify-end">
               <button
