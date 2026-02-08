@@ -115,7 +115,7 @@ export default function HomePage() {
         <h1 className="text-4xl font-bold tracking-tight text-balance md:text-5xl">Здравно табло</h1>
         <div className="flex flex-wrap items-center gap-4">
           <p className="text-muted-foreground text-lg text-pretty md:text-xl">
-            Наблюдавайте телесния си състав и проследявайте фитнес напредъка си
+            Разгледайте телесния си състав и проследявайте напредъка си
           </p>
 
           <PageNavigation currentPage={currentPage} onPageChange={setCurrentPage} />
@@ -194,7 +194,10 @@ export default function HomePage() {
       )}
 
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.3 }}>
-        <Alert className="bg-destructive/10 group border-destructive/50 relative overflow-hidden rounded-lg border-2 p-4 transition-all duration-300">
+        <Alert
+          variant="destructive"
+          className="border-orange-200 bg-orange-50 text-orange-900 dark:border-orange-900/50 dark:bg-orange-950/50 dark:text-orange-200"
+        >
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription className="leading-relaxed text-pretty">
             Тези стойности са приблизителни и може да е необходима преоценка от здравен специалист, за да се адаптират

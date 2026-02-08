@@ -43,17 +43,27 @@ export async function middleware(req: NextRequest) {
   } = await supabase.auth.getUser();
   const { pathname } = req.nextUrl;
 
-  // Пренасочва към login страницата, ако потребителят не е автентикиран и се опитва да достъпи dashboard
+  // Пренасочва root "/" към landing само ако НЕ си логнат
+  if (pathname === "/" && !user) {
+    return NextResponse.redirect(new URL("/landing", req.url));
+  }
+
+  // Пренасочва логнати потребители от landing към dashboard (каквото и да е в dashboard)
+  if (user && pathname === "/landing") {
+    return NextResponse.redirect(new URL("/dashboard", req.url));
+  }
+
+  // Пренасочва към login, ако потребителят НЕ е логнат и се опитва да достъпи dashboard
   if (!user && pathname.startsWith("/dashboard")) {
     return NextResponse.redirect(new URL("/auth/login", req.url));
   }
 
-  // Пренасочва автентикирани потребители от login/register към measurements страницата
+  // Пренасочва верифицирани потребители от login/register към measurements страницата
   if (user && (pathname === "/auth/login" || pathname === "/auth/register")) {
     return NextResponse.redirect(new URL("/dashboard/measurements", req.url));
   }
 
-  // Проверява дали има измервания за днес, ако потребителят е автентикиран и не е на measurements страницата
+  // Проверява дали има измервания за днес, ако потребителят е верифициран и не е на measurements страницата
   if (user && pathname.startsWith("/dashboard") && pathname !== "/dashboard/measurements") {
     try {
       const result = await checkTodayMeasurements();
@@ -64,7 +74,6 @@ export async function middleware(req: NextRequest) {
       }
     } catch (error) {
       console.error("Error checking today's measurements:", error);
-      // При грешка позволява достъп, но записва проблема в лога
     }
   }
 
@@ -73,5 +82,5 @@ export async function middleware(req: NextRequest) {
 
 // Конфигурация за кои пътища middleware-ът да се прилага
 export const config = {
-  matcher: ["/dashboard/:path*", "/auth/login", "/auth/register"],
+  matcher: ["/", "/landing", "/dashboard/:path*", "/auth/login", "/auth/register"],
 };

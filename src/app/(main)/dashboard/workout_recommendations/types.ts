@@ -1,3 +1,5 @@
+import { StaticImageData } from "next/image";
+
 export type Category = "gym" | "calisthenics" | "yoga" | null;
 
 export type FormAnswers = Record<string, any>;
@@ -46,7 +48,7 @@ export interface CategoryOption {
   id: string;
   title: string;
   description: string;
-  icon: string;
+  icon: StaticImageData;
 }
 
 export interface QuestionOption {

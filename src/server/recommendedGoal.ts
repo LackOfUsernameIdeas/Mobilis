@@ -1,3 +1,4 @@
+import { getServerClient } from "@/lib/db/clients/server";
 import { calculateBMI, calculateBodyFat } from "./health";
 
 /**
@@ -266,4 +267,67 @@ export function getRecommendedGoal(
   const bodyFat = bodyFatResult.bodyFat;
 
   return recommendGoal(bmi, bodyFat, gender);
+}
+
+export interface MostRecommendedGoal {
+  goal: string;
+  goalName: string;
+  count: number;
+}
+
+/**
+ * Извлича най-често препоръчваната цел от user_metrics
+ */
+export async function getMostRecommendedGoal() {
+  const supabase = await getServerClient();
+
+  try {
+    // Вземане на всички цели от user_metrics
+    const { data: userMetrics, error } = await supabase.from("user_metrics").select("goal, goalName");
+
+    if (error) {
+      console.error("Error fetching user metrics:", error);
+      throw error;
+    }
+
+    if (!userMetrics || userMetrics.length === 0) {
+      return {
+        success: true,
+        data: null,
+      };
+    }
+
+    // Броене на всяка цел
+    const goalCounts = userMetrics.reduce(
+      (acc, metric) => {
+        const key = `${metric.goal}|${metric.goalName}`; // Комбинираме goal и goalName
+        if (!acc[key]) {
+          acc[key] = {
+            goal: metric.goal,
+            goalName: metric.goalName,
+            count: 0,
+          };
+        }
+        acc[key].count++;
+        return acc;
+      },
+      {} as Record<string, MostRecommendedGoal>,
+    );
+
+    // Намиране на най-често срещаната цел
+    const mostRecommended = Object.values(goalCounts).reduce((max, current) => {
+      return current.count > max.count ? current : max;
+    });
+
+    return {
+      success: true,
+      data: mostRecommended,
+    };
+  } catch (error) {
+    console.error("Error getting most recommended goal:", error);
+    return {
+      success: false,
+      error: "Failed to get most recommended goal",
+    };
+  }
 }

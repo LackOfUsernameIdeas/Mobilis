@@ -49,7 +49,7 @@ export function HealthStatsCards({ bmiData, bodyFatData, goalData }: HealthStats
             <div className="mb-2 flex items-center justify-between">
               <CardDescription className="mb-0 flex items-center gap-2">
                 <Scale className="size-4" />
-                Индекс на телесна маса (ИТМ)
+                BMI (Индекс на телесна маса)
               </CardDescription>
               <div className="flex items-center gap-2">
                 <Badge
@@ -65,25 +65,30 @@ export function HealthStatsCards({ bmiData, bodyFatData, goalData }: HealthStats
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="hover:bg-muted-foreground/25 hover:text-popover-foreground/75 h-6 w-6"
+                      className="hover:bg-muted-foreground/25 hover:text-popover-foreground/75 h-6 w-6 cursor-pointer"
                     >
                       <Info className="h-4 w-4" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-80">
                     <div className="space-y-2">
-                      <h4 className="font-semibold">Какво е ИТМ?</h4>
+                      <h4 className="font-semibold">Какво е BMI?</h4>
                       <div className="space-y-3">
                         <p className="text-muted-foreground text-sm leading-relaxed">
-                          ИТМ (или BMI) e показател, който служи за определяне на нормалното, здравословно тегло при
-                          хора с различен ръст и за диагностициране на затлъстяване и недохранване.
+                          BMI e медико-биологичен показател, който служи за определяне на съотношението между теглото и
+                          ръста на човек.
                         </p>
-                        <p className="text-muted-foreground text-sm leading-relaxed">
-                          Изчислява се по следната формула:
+                        <p className="text-foreground text-sm leading-relaxed">
+                          Неговата стойност се изчислява по формулата:
                         </p>
-                        <div className="text-muted-foreground text-sm leading-relaxed">
-                          <BlockMath math="\mathit{ИТМ} = \frac{\mathit{тегло\ (kg)}}{\mathit{ръст}^2\ \mathit{(m}^2\mathit{)}}" />
+                        <div className="text-foreground text-sm leading-relaxed">
+                          <BlockMath math="\mathit{BMI} = \frac{\mathit{тегло\ (kg)}}{\left[\; \mathit{ръст\ (m)} \;\right]^2}" />
                         </div>
+                        <p className="text-muted-foreground text-sm leading-relaxed">
+                          Получената числова стойност се сравнява със стандартизирани клинични диапазони, установени от
+                          Световната здравна организация (СЗО) въз основа на епидемиологични изследвания на милиони
+                          хора, които определят категориите на телесно състояние
+                        </p>
                       </div>
                       <div className="border-t pt-2">
                         <p className="text-sm font-medium">Вашата категория: {bmiData.health}</p>
@@ -116,7 +121,7 @@ export function HealthStatsCards({ bmiData, bodyFatData, goalData }: HealthStats
             <div className="mb-2 flex items-center justify-between">
               <CardDescription className="mb-0 flex items-center gap-2">
                 <Percent className="size-4" />
-                Телесни мазнини
+                BF% (процент телесни мазнини)
               </CardDescription>
               <div className="flex items-center gap-2">
                 <Popover>
@@ -124,66 +129,65 @@ export function HealthStatsCards({ bmiData, bodyFatData, goalData }: HealthStats
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="hover:bg-muted-foreground/25 hover:text-popover-foreground/75 h-6 w-6"
+                      className="hover:bg-muted-foreground/25 hover:text-popover-foreground/75 h-6 w-6 cursor-pointer"
                     >
                       <Info className="h-4 w-4" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-80">
                     <div className="space-y-4">
-                      <h4 className="font-semibold">Какво са телесните мазнини?</h4>
+                      <h4 className="font-semibold">Какво е BF%?</h4>
                       {step === 0 && (
                         <div className="space-y-3">
                           <p className="text-muted-foreground text-sm leading-relaxed">
-                            Телесните мазнини са мастната тъкан в тялото, която служи за съхранение на енергия, защита
-                            на органите и регулиране на хормоните.
-                          </p>
-                          <p className="text-muted-foreground text-sm leading-relaxed">
-                            Процентът телесни мазнини (BF%) показва каква част от телесното тегло се състои от мазнини и
-                            дава по-точна представа за здравето от ИТМ.
+                            BF% е медико-биологичен показател, който отразява относителното съдържание на телесни
+                            мазнини в организма, спрямо общата телесна маса.
                           </p>
                         </div>
                       )}
                       {step === 1 && (
                         <div className="space-y-3">
                           <p className="text-muted-foreground text-sm leading-relaxed">
-                            Изчислява се по формулата на американските военноморски сили (ACE/Navy Method), която
-                            използва обиколките на тялото:
+                            За изчисляването се използва U.S. Navy метод (Navy Body Fat Formula). Методът използва
+                            обиколки на различни части на тялото, както и ръст:
                           </p>
-                          <p className="text-muted-foreground text-sm leading-relaxed font-medium">За мъже:</p>
-                          <div className="text-muted-foreground text-sm leading-relaxed">
+                          <p className="text-foreground text-sm leading-relaxed font-medium">За мъже:</p>
+                          <div className="text-foreground text-sm leading-relaxed">
                             <div className="max-w-full overflow-x-auto">
-                              <BlockMath math="\mathit{BF\%} = 86.010 \cdot \log_{10}(\mathit{талия} - \mathit{врат}) - 70.041 \cdot \log_{10}(\mathit{височина}) + 36.76" />
+                              <BlockMath math="\mathit{BF\%} = 86.01 \cdot \log_{10}(\mathit{талия} - \mathit{врат}) - 70.041 \cdot \log_{10}(\mathit{височина}) + 36.76" />
                             </div>
                           </div>
-                          <p className="text-muted-foreground text-sm leading-relaxed font-medium">За жени:</p>
-                          <div className="text-muted-foreground text-sm leading-relaxed">
+                          <p className="text-foreground text-sm leading-relaxed font-medium">За жени:</p>
+                          <div className="text-foreground text-sm leading-relaxed">
                             <div className="max-w-full overflow-x-auto">
                               <BlockMath math="\mathit{BF\%} = 163.205 \cdot \log_{10}(\mathit{талия} + \mathit{таз} - \mathit{врат}) - 97.684 \cdot \log_{10}(\mathit{височина}) - 78.387" />
                             </div>
                           </div>
+                          <p className="text-muted-foreground text-sm leading-relaxed">
+                            Получената стойност се сравнява със стандартизираните диапазони на Американския съвет за
+                            упражнения (ACE), които класифицират телесното състояние въз основа на научни изследвания в
+                            областта на спортната медицина и хранителната физиология
+                          </p>
                         </div>
                       )}
                       {step === 2 && (
-                        <div className="space-y-3">
-                          <p className="text-muted-foreground text-sm leading-relaxed">
-                            След като се изчисли BF%, можем да определим:
-                          </p>
-                          <div className="text-muted-foreground text-sm leading-relaxed">
+                        <div>
+                          <p className="text-muted-foreground text-sm leading-relaxed">Съвместно с BF% се определят:</p>
+                          <div className="text-foreground text-sm leading-relaxed">
                             <div className="max-w-full overflow-x-auto">
-                              <BlockMath math="\mathit{Мазнинна\ маса\ (kg)} = \mathit{тегло\ (kg)} \times \frac{\mathit{BF\%}}{100}" />
+                              <BlockMath math="\mathit{BFM\ (Мастна\ телесна\  маса)} = \mathit{тегло\ (kg)} \times \frac{\mathit{BF\%}}{100}" />
                             </div>
                           </div>
-                          <div className="text-muted-foreground text-sm leading-relaxed">
+                          <div className="text-foreground text-sm leading-relaxed">
                             <div className="max-w-full overflow-x-auto">
-                              <BlockMath math="\mathit{Чиста\ маса\ (kg)} = \mathit{тегло\ (kg)} - \mathit{мазнинна\ маса\ (kg)}" />
+                              <BlockMath math="\mathit{LBM\ (Чиста\ телесна\  маса)} = \mathit{тегло\ (kg)} - \mathit{BFM\ (kg)}" />
                             </div>
                           </div>
                         </div>
                       )}
                       <div className="flex items-center justify-between py-2">
                         <button
-                          className="text-muted-foreground flex items-center gap-1 text-sm disabled:opacity-50"
+                          className="text-foreground flex cursor-pointer items-center gap-1 text-sm disabled:opacity-50"
                           onClick={prev}
                           disabled={step === 0}
                         >
@@ -196,7 +200,7 @@ export function HealthStatsCards({ bmiData, bodyFatData, goalData }: HealthStats
                         </span>
 
                         <button
-                          className="text-muted-foreground flex items-center gap-1 text-sm font-medium disabled:opacity-50"
+                          className="text-foreground flex cursor-pointer items-center gap-1 text-sm font-medium disabled:opacity-50"
                           onClick={next}
                           disabled={step === TOTAL_STEPS - 1}
                         >
@@ -210,11 +214,11 @@ export function HealthStatsCards({ bmiData, bodyFatData, goalData }: HealthStats
                         <p className="text-muted-foreground text-sm">
                           {getBodyFatDescription(goalData.bodyFatCategory)}
                         </p>
-                        <p className="text-muted-foreground text-sm">
-                          <span className="font-medium">Мазнинна маса:</span> {bodyFatData.bodyFatMass} кг
+                        <p className="text-foreground text-sm">
+                          <span className="font-medium">BFM (Мастна телесна маса):</span> {bodyFatData.bodyFatMass} кг
                         </p>
-                        <p className="text-muted-foreground text-sm">
-                          <span className="font-medium">Чиста маса:</span> {bodyFatData.leanBodyMass} кг
+                        <p className="text-foreground text-sm">
+                          <span className="font-medium">LBM (Чиста телесна маса):</span> {bodyFatData.leanBodyMass} кг
                         </p>
                       </div>
                     </div>
@@ -227,7 +231,9 @@ export function HealthStatsCards({ bmiData, bodyFatData, goalData }: HealthStats
             </CardTitle>
           </CardHeader>
           <CardFooter className="flex-col items-start gap-1.5 text-sm">
-            <div className="line-clamp-1 flex gap-2 font-medium">Мазнинна маса: {bodyFatData.bodyFatMass} кг</div>
+            <div className="line-clamp-1 flex gap-2 font-medium">
+              BFM (Мастна телесна маса): {bodyFatData.bodyFatMass} кг
+            </div>
           </CardFooter>
         </Card>
       </motion.div>
@@ -255,7 +261,7 @@ export function HealthStatsCards({ bmiData, bodyFatData, goalData }: HealthStats
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="hover:bg-muted-foreground/25 hover:text-popover-foreground/75 h-6 w-6"
+                      className="hover:bg-muted-foreground/25 hover:text-popover-foreground/75 h-6 w-6 cursor-pointer"
                     >
                       <Info className="h-4 w-4" />
                     </Button>
@@ -264,8 +270,10 @@ export function HealthStatsCards({ bmiData, bodyFatData, goalData }: HealthStats
                     <div className="space-y-2">
                       <h4 className="font-semibold">Вашата препоръчана цел</h4>
                       <p className="text-muted-foreground text-sm leading-relaxed">
-                        Въз основа на вашия ИТМ и процент на телесни мазнини, препоръчваме следната цел за оптимизиране
-                        на вашето здраве и физическа форма.
+                        Въз основа на текущото физическо състояние – според здравните показатели, системата предоставя
+                        индивидуално съобразена насока, която всеки да има възможност да следва. Целта е по-лесно
+                        ориентиране в съставянето на режими и тренировки, с които да се постига ефективен краен
+                        резултат.
                       </p>
                     </div>
                   </PopoverContent>

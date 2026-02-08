@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     const {
       userId,
       generationId,
-      startingDay = "monday",
+      startingDay = "Ден 1",
       type,
     } = body as {
       userId: string;
@@ -36,8 +36,8 @@ export async function POST(request: Request) {
       .select("*")
       .eq("user_id", userId)
       .eq("generation_id", generationId)
-      .eq("is_active", true)
-      .single();
+      .limit(1)
+      .maybeSingle();
 
     if (existingSession) {
       return NextResponse.json(existingSession);
@@ -49,10 +49,22 @@ export async function POST(request: Request) {
         user_id: userId,
         generation_id: generationId,
         current_day: startingDay,
-        is_active: true,
       })
       .select()
-      .single();
+      .limit(1)
+      .maybeSingle();
+
+    if (error?.code === "23505") {
+      const { data } = await supabase
+        .from(table)
+        .select("*")
+        .eq("user_id", userId)
+        .eq("generation_id", generationId)
+        .limit(1)
+        .single();
+
+      return NextResponse.json(data);
+    }
 
     if (error) throw error;
 

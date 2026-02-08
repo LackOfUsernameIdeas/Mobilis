@@ -1,4 +1,4 @@
-import { Utensils, ChartBar, Layers, Activity, type LucideIcon } from "lucide-react";
+import { Utensils, ChartBar, Layers, Activity, Mail, type LucideIcon } from "lucide-react";
 
 export interface NavSubItem {
   title: string;
@@ -50,6 +50,11 @@ export const sidebarItems: NavGroup[] = [
         url: "/dashboard/specialized_programs",
         icon: Layers,
         subItems: [{ title: "За стойката", url: "/dashboard/specialized_programs/pose_correction", newTab: false }],
+      },
+      {
+        title: "Контакти",
+        url: "/dashboard/contact",
+        icon: Mail,
       },
     ],
   },

@@ -25,7 +25,8 @@ export async function GET(request: Request) {
       .select("current_day")
       .eq("user_id", userId)
       .eq("generation_id", Number(generationId))
-      .eq("is_active", true)
+      .order("created_at", { ascending: false })
+      .limit(1)
       .maybeSingle();
 
     if (error) throw error;

@@ -2,33 +2,14 @@
 
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
+import { CATEGORIES } from "../constants";
+import Image from "next/image";
 
 interface CategorySelectorProps {
   onSelectCategory: (category: "gym" | "calisthenics" | "yoga") => void;
 }
 
 export default function CategorySelector({ onSelectCategory }: CategorySelectorProps) {
-  const categories = [
-    {
-      id: "gym",
-      title: "Фитнес",
-      description: "Получете персонализирани планове за тренировки в залата",
-      icon: "🏋️",
-    },
-    {
-      id: "calisthenics",
-      title: "Калистеника",
-      description: "Получете персонализирани планове за тренировки с калистеника",
-      icon: "🏃",
-    },
-    {
-      id: "yoga",
-      title: "Йога",
-      description: "Намерете йога практики, които отговарят на вашите цели",
-      icon: "🧘",
-    },
-  ];
-
   return (
     <div className="space-y-6 pt-30 sm:space-y-8">
       <div className="space-y-3 text-center">
@@ -42,7 +23,7 @@ export default function CategorySelector({ onSelectCategory }: CategorySelectorP
       </div>
 
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {categories.map((category, index) => {
+        {CATEGORIES.map((category, index) => {
           return (
             <motion.div
               key={category.id}
@@ -62,9 +43,20 @@ export default function CategorySelector({ onSelectCategory }: CategorySelectorP
                   <div className="flex-1 space-y-4">
                     {/* Icon Container */}
                     <div className="bg-muted/50 group-hover:bg-muted flex h-16 w-16 items-center justify-center rounded-2xl transition-colors duration-300">
-                      <span className="text-4xl transition-transform duration-300 group-hover:scale-110">
-                        {category.icon}
-                      </span>
+                      <div
+                        className="bg-primary h-12 w-12 transition-transform duration-300 will-change-transform"
+                        style={{
+                          transform: "translateZ(0)",
+                          WebkitMaskImage: `url(${category.icon.src})`,
+                          maskImage: `url(${category.icon.src})`,
+                          WebkitMaskRepeat: "no-repeat",
+                          maskRepeat: "no-repeat",
+                          WebkitMaskSize: "contain",
+                          maskSize: "contain",
+                          WebkitMaskPosition: "center",
+                          maskPosition: "center",
+                        }}
+                      />
                     </div>
                     {/* Content */}
                     <div className="space-y-2">
