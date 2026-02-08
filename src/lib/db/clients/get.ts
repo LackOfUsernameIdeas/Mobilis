@@ -181,10 +181,14 @@ export async function fetchUserNutritionOverview() {
  * Извлича прогреса за конкретен ден в тренировъчната/хранителна сесия
  * @param type - workout / meal
  * @param sessionId - ID на сесията
- * @param dayExerciseIds - Масив с ID-та на упражненията за деня
- * @returns Обект с прогрес на упражненията
+ * @param itemIds - Масив с ID-та на упражненията/ястията за деня
+ * @returns Обект с прогрес на упражненията/ястията
  */
-export const getDayProgress = async (type: "workout" | "meal", sessionId: string, itemIds: number[]) => {
+export const getDayProgress = async <T>(
+  type: "workout" | "meal",
+  sessionId: string,
+  itemIds: number[],
+): Promise<T[]> => {
   const user = await getAuthenticatedUser();
 
   const res = await fetch(

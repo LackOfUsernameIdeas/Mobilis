@@ -36,7 +36,7 @@ export function HealthStatsCards({ bmiData, bodyFatData, goalData }: HealthStats
   const prev = () => setStep((s) => Math.max(s - 1, 0));
 
   return (
-    <div className="grid grid-cols-1 gap-4 @xl/main:grid-cols-2 @5xl/main:grid-cols-3">
+    <div className="grid grid-cols-1 gap-4 @xl/main:grid-cols-1 @5xl/main:grid-cols-3">
       {/* BMI Card */}
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
