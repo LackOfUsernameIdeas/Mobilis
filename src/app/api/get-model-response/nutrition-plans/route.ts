@@ -204,7 +204,8 @@ function generateResponseFormat() {
               properties: {
                 day: {
                   type: "string",
-                  description: "Ден във формат 'Ден 1', 'Ден 2', etc.",
+                  pattern: "^Ден [1-7]$",
+                  description: "Ден във формат 'Ден 1', 'Ден 2', и така нататък.",
                 },
                 total_macros: {
                   type: "object",
@@ -232,6 +233,7 @@ function generateResponseFormat() {
                     properties: {
                       meal_id: {
                         type: "string",
+                        pattern: "^[a-z]+(_[a-z]+)*$",
                         description:
                           "Уникален идентификатор за рецептата (например: 'oatmeal_protein_blueberries', 'chicken_rice_broccoli')",
                       },
@@ -255,6 +257,7 @@ function generateResponseFormat() {
                       },
                       time: {
                         type: "string",
+                        pattern: "^([0-1][0-9]|2[0-3]):[0-5][0-9]$",
                         description: "Време във формат HH:MM",
                       },
                       description: {
@@ -276,7 +279,8 @@ function generateResponseFormat() {
                             },
                             unit: {
                               type: "string",
-                              description: "Мерна единица на български (г, мл, бр, ч.л., с.л.)",
+                              enum: ["г", "мл", "бр", "ч.л.", "с.л."],
+                              description: "Мерна единица на български",
                             },
                           },
                           required: ["name", "quantity", "unit"],
@@ -344,6 +348,8 @@ function generateResponseFormat() {
               type: "string",
               description: "Хранителни съвети на български",
             },
+            minItems: 3,
+            maxItems: 5,
             description: "3-5 съвета за хранене",
           },
         },
