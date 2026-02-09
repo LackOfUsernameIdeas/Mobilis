@@ -141,7 +141,7 @@ export default function HomePage() {
               <div className="flex gap-1 rounded-lg border p-1">
                 <Button
                   variant={activePlan === "workout" ? "default" : "ghost"}
-                  className={`${!(activePlan === "workout") && "hover:bg-primary/75 dark:hover:bg-primary/50"} flex-1`}
+                  className={`${!(activePlan === "workout") && "hover:bg-primary/75 dark:hover:bg-primary/50"} flex-1 cursor-pointer`}
                   onClick={() => setActivePlan("workout")}
                 >
                   <Dumbbell />
@@ -149,7 +149,7 @@ export default function HomePage() {
                 </Button>
                 <Button
                   variant={activePlan === "nutrition" ? "default" : "ghost"}
-                  className={`${!(activePlan === "nutrition") && "hover:bg-primary/75 dark:hover:bg-primary/50"} flex-1`}
+                  className={`${!(activePlan === "nutrition") && "hover:bg-primary/75 dark:hover:bg-primary/50"} flex-1 cursor-pointer`}
                   onClick={() => setActivePlan("nutrition")}
                 >
                   <UtensilsCrossed />

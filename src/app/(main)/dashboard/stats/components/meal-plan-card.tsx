@@ -190,7 +190,7 @@ export function MealPlanCard({ userId, nutritionData }: MealPlanCardProps) {
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0 flex-1" onClick={() => handleMealClick(meal)}>
                         <div className="mb-1 flex items-center gap-2">
-                          <p className="truncate text-sm font-semibold">{meal.name}</p>
+                          <p className="text-sm font-semibold">{meal.name}</p>
                         </div>
                         <div className="text-muted-foreground flex flex-wrap items-center gap-2 text-xs">
                           <span className="flex items-center gap-1">
