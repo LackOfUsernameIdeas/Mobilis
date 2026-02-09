@@ -90,18 +90,20 @@ function generateUserPrompt(answers: Record<string, any>, userStats?: any): stri
         - Body Fat: ${userStats?.bodyFat || "не е изчислен"}%
         - Маса на телесните мазнини: ${userStats?.bodyFatMass || "не е изчислена"} кг
         - Чиста телесна маса: ${userStats?.leanBodyMass || "не е изчислена"} кг
-
+        
         **Хранителни предпочитания и цели:**
         - Основна цел: ${answers.mainGoal || "не е посочена"}
         - Период от деня, в който потребителя тренира: ${trainingPeriodBG}
         - Целево тегло: ${answers.targetWeight === "yes" ? answers.targetWeightValue + " кг" : "не е посочено"}
-        - Дневни калории: ${answers.calories || "не е посочено"} kcal
-        - Дневни протеини: ${answers.protein || "не е посочено"} g
-        - Дневни въглехидрати: ${answers.carbs || "не е посочено"} g
-        - Дневни мазнини: ${answers.fats || "не е посочено"} g
         - Здравословни проблеми или алергии: ${answers.healthIssues || "Няма"}
         - Предпочитани кухни: ${answers.cuisinePreference?.join(", ") || "Нямам предпочитания"}
 
+        **ДНЕВНИ МАКРОНУТРИЕНТНИ ЦЕЛИ (СТРОГИ):**
+        - Калории: ${answers.calories} kcal (допустим диапазон: ${answers.calories - 50} - ${answers.calories + 50} kcal)
+        - Протеини: ${answers.protein}g (допустим диапазон: ${answers.protein - 10} - ${answers.protein + 10}g)
+        - Въглехидрати: ${answers.carbs}g (допустим диапазон: ${answers.carbs - 15} - ${answers.carbs + 15}g)
+        - Мазнини: ${answers.fats}g (допустим диапазон: ${answers.fats - 10} - ${answers.fats + 10}g)
+        
         **СТРУКТУРА НА ХРАНИТЕЛНИЯ ПЛАН:**
         Като имаш предвид, че потребителят тренира ${trainingPeriodBG}, осигури:
         - Закуска (освен ако тренировката е сутрин - тогава закуската е след тренировката)
@@ -146,6 +148,24 @@ function generateUserPrompt(answers: Record<string, any>, userStats?: any): stri
         * Примери: пилешко филе с ориз, протеинов шейк с банан, риба с картофи
         * Порции: 400-600 kcal, 30-40g протеини, 40-60g въглехидрати
 
+        **ЗАДЪЛЖИТЕЛНИ ВАЛИДАЦИОННИ ПРОВЕРКИ ПРЕДИ ГЕНЕРИРАНЕ:**
+        ЗА ВСЯКО ХРАНЕНЕ провери:
+        1. ✓ calories > 0 AND calories >= 100 AND calories <= 1000
+        2. ✓ protein > 0 AND protein >= 5
+        3. ✓ carbs >= 0 (може да е 0 за кето храна)
+        4. ✓ fats > 0 AND fats >= 2
+        5. ✓ (protein × 4) + (carbs × 4) + (fats × 9) = calories (±10% толеранс)
+        
+        ЗА ВСЕКИ ДЕН провери:
+        1. ✓ Сума от калориите на всички хранения = ${answers.calories} kcal (±50 kcal)
+        2. ✓ Сума от протеините = ${answers.protein}g (±10g)
+        3. ✓ Сума от въглехидратите = ${answers.carbs}g (±15g)
+        4. ✓ Сума от мазнините = ${answers.fats}g (±10g)
+        5. ✓ Задължително 1 pre_workout_snack и 1 post_workout_snack
+        6. ✓ Времената на храненията са последователни с минимум 2 часа разлика
+        
+        АКО НЯКОЯ ПРОВЕРКА НЕ МИНАВА - КОРИГИРАЙ ПРЕДИ ДА ПРОДЪЛЖИШ!
+
         **Формат на отговора:**
         - meal_id: Уникален идентификатор за рецептата във формат малки букви с долни черти (например: "oatmeal_protein_blueberries", "chicken_rice_broccoli", "tuna_salad_olive_oil"). ВИНАГИ в единствено число.
         - name: Име на рецептата на БЪЛГАРСКИ (например: "Овесена каша с протеин и боровинки", "Пилешко филе с ориз и броколи")
@@ -181,10 +201,14 @@ function generateUserPrompt(answers: Record<string, any>, userStats?: any): stri
         - Съвети за следене на прогрес, тегло или телесни измервания
 
         **КРИТИЧНО ВАЖНО:**
+        - Всички макронутриенти са > 0 (освен carbs може да е 0)
+        - Дневните макроси за всеки ден са в допустимия диапазон
+        - Макросите за всяко хранене трябва да са точни и сумата им да отговаря на дневните цели
         - ВСИЧКИ текстове (name, description, ingredients.name, instructions) трябва да са на БЪЛГАРСКИ
         - Използвай само български единици: "г" (грама), "мл" (милилитри), "бр" (броя), "ч.л." (чаена лъжичка), "с.л." (супена лъжичка)
-        - Макросите за всяко хранене трябва да са точни и сумата им да отговаря на дневните цели
         - Предтренировъчното и следтренировъчното хранене са ЗАДЪЛЖИТЕЛНИ и трябва да са позиционирани правилно спрямо периода на тренировка - ${trainingPeriodBG}
+        - Времената на храненията са логични и последователни
+        - Няма отрицателни числа НИКЪДЕ
         `;
 }
 
@@ -212,15 +236,23 @@ function generateResponseFormat() {
                   properties: {
                     calories: {
                       type: "number",
+                      minimum: 1000,
+                      description: "Общи калории за деня (ТРЯБВА да е положително число >= 1000)",
                     },
                     protein: {
                       type: "number",
+                      minimum: 50,
+                      description: "Общи протеини за деня в грамове (ТРЯБВА да е положително число >= 50)",
                     },
                     carbs: {
                       type: "number",
+                      minimum: 0,
+                      description: "Общи въглехидрати за деня в грамове (може да е 0 за кето)",
                     },
                     fats: {
                       type: "number",
+                      minimum: 20,
+                      description: "Общи мазнини за деня в грамове (ТРЯБВА да е положително число >= 20)",
                     },
                   },
                   required: ["calories", "protein", "carbs", "fats"],
@@ -228,19 +260,20 @@ function generateResponseFormat() {
                 },
                 meals: {
                   type: "array",
+                  minItems: 5,
+                  maxItems: 7,
                   items: {
                     type: "object",
                     properties: {
                       meal_id: {
                         type: "string",
                         pattern: "^[a-z]+(_[a-z]+)*$",
-                        description:
-                          "Уникален идентификатор за рецептата (например: 'oatmeal_protein_blueberries', 'chicken_rice_broccoli')",
+                        description: "Уникален идентификатор в единствено число с малки букви и долни черти",
                       },
                       name: {
                         type: "string",
-                        description:
-                          "Име на рецептата на български (например: 'Овесена каша с протеин и боровинки', 'Пилешко филе с ориз и броколи')",
+                        minLength: 5,
+                        description: "Име на рецептата на български (минимум 5 символа)",
                       },
                       meal_type: {
                         type: "string",
@@ -258,24 +291,28 @@ function generateResponseFormat() {
                       time: {
                         type: "string",
                         pattern: "^([0-1][0-9]|2[0-3]):[0-5][0-9]$",
-                        description: "Време във формат HH:MM",
+                        description: "Време във формат HH:MM (24-часов формат)",
                       },
                       description: {
                         type: "string",
-                        description: "Кратко описание на български",
+                        minLength: 20,
+                        description: "Описание на български (минимум 20 символа)",
                       },
                       ingredients: {
                         type: "array",
+                        minItems: 2,
                         items: {
                           type: "object",
                           properties: {
                             name: {
                               type: "string",
+                              minLength: 2,
                               description: "Име на съставката на български",
                             },
                             quantity: {
                               type: "number",
-                              description: "Количество",
+                              minimum: 0.1,
+                              description: "Количество (ТРЯБВА да е положително число > 0)",
                             },
                             unit: {
                               type: "string",
@@ -292,15 +329,24 @@ function generateResponseFormat() {
                         properties: {
                           calories: {
                             type: "number",
+                            minimum: 100,
+                            maximum: 1000,
+                            description: "Калории за храненето (ТРЯБВА: 100-1000 kcal, положително число)",
                           },
                           protein: {
                             type: "number",
+                            minimum: 5,
+                            description: "Протеини в грамове (ТРЯБВА да е положително число >= 5)",
                           },
                           carbs: {
                             type: "number",
+                            minimum: 0,
+                            description: "Въглехидрати в грамове (може да е 0)",
                           },
                           fats: {
                             type: "number",
+                            minimum: 2,
+                            description: "Мазнини в грамове (ТРЯБВА да е положително число >= 2)",
                           },
                         },
                         required: ["calories", "protein", "carbs", "fats"],
@@ -308,18 +354,22 @@ function generateResponseFormat() {
                       },
                       instructions: {
                         type: "array",
+                        minItems: 2,
                         items: {
                           type: "string",
-                          description: "Стъпка от инструкциите на български",
+                          minLength: 10,
+                          description: "Стъпка от инструкциите на български (минимум 10 символа)",
                         },
                       },
                       prep_time: {
                         type: "number",
-                        description: "Време за подготовка в минути",
+                        minimum: 0,
+                        description: "Време за подготовка в минути (>= 0)",
                       },
                       cooking_time: {
                         type: "number",
-                        description: "Време за готвене в минути",
+                        minimum: 0,
+                        description: "Време за готвене в минути (>= 0)",
                       },
                     },
                     required: [
@@ -346,11 +396,12 @@ function generateResponseFormat() {
             type: "array",
             items: {
               type: "string",
-              description: "Хранителни съвети на български",
+              minLength: 20,
+              description: "Хранителен съвет на български (минимум 20 символа)",
             },
             minItems: 3,
             maxItems: 5,
-            description: "3-5 съвета за хранене",
+            description: "3-5 универсални хранителни съвета",
           },
         },
         required: ["weekly_plan", "nutrition_tips"],
