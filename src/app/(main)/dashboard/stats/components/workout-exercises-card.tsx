@@ -67,14 +67,14 @@ export function WorkoutExercisesCard({ workoutData, userId }: WorkoutExercisesCa
 
         setSessionId(session.id);
 
-        if (session.current_day !== currentDay) {
+        if (!sessionId && session.current_day !== currentDay) {
           setCurrentDay(session.current_day);
+          return;
         }
 
         const dayMealIds = exercises.map((m) => m.id);
         const progress = await getDayProgress<WorkoutExerciseProgress>("workout", session.id, dayMealIds);
 
-        console.log("progress", progress);
         const statusMap: Record<number, Status> = {};
         exercises.forEach((ex) => {
           const progressEntry = progress.find((p) => p.day_exercise_id === ex.id);
@@ -90,7 +90,12 @@ export function WorkoutExercisesCard({ workoutData, userId }: WorkoutExercisesCa
     };
 
     loadProgress();
-  }, [userId, generationId, currentDay, exercises.length]);
+  }, [userId, generationId, exercises.length]);
+
+  useEffect(() => {
+    const initialStatus = exercises.reduce((acc, ex) => ({ ...acc, [ex.id]: "pending" }), {});
+    setExerciseStatus(initialStatus);
+  }, [exercises.map((ex) => ex.id).join(",")]);
 
   const handleExerciseClick = (exercise: Exercise) => {
     setSelectedExercise(exercise);

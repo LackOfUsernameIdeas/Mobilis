@@ -33,8 +33,6 @@ export default function HomePage() {
   const [chartData, setChartData] = useState<BodyFatWeightEntry[] | null>(null);
   const [workoutData, setWorkoutData] = useState<WorkoutData | null>(null);
   const [nutritionData, setNutritionData] = useState<NutritionData | null>(null);
-  const [workoutDaysCompleted, setWorkoutDaysCompleted] = useState<string[] | null>(null);
-  const [nutritionDaysCompleted, setNutritionDaysCompleted] = useState<string[] | null>(null);
   const [activePlan, setActivePlan] = useState<ActivePlan>("workout");
   const [loading, setLoading] = useState(true);
 
@@ -65,29 +63,6 @@ export default function HomePage() {
 
     loadHealthData();
   }, []);
-
-  useEffect(() => {
-    if (!workoutData || !nutritionData) {
-      return;
-    }
-
-    async function loadCurrentDays() {
-      try {
-        const workoutId = workoutData!.day_recommendations[0]!.generation_id;
-        const nutritionId = nutritionData!.day_recommendations[0]!.generation_id;
-
-        const workoutRes = await getCompletedDays("workout", workoutId);
-        const nutritionRes = await getCompletedDays("meal", nutritionId);
-
-        setWorkoutDaysCompleted(workoutRes.completedDays);
-        setNutritionDaysCompleted(nutritionRes.completedDays);
-      } catch (e) {
-        console.error("Failed to fetch current days", e);
-      }
-    }
-
-    loadCurrentDays();
-  }, [workoutData, nutritionData]);
 
   if (loading) {
     return (
