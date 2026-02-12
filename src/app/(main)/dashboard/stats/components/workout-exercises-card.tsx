@@ -28,11 +28,13 @@ export function WorkoutExercisesCard({ workoutData, userId }: WorkoutExercisesCa
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [videoCache, setVideoCache] = useState<Record<string, string>>({});
+  const [viewMode, setViewMode] = useState<"current" | "history">("current");
+  const [historyDay, setHistoryDay] = useState<string | null>(null);
+
   const sortedDaysWorkout = sortDaysByNumber(workoutData.day_recommendations);
   const currentDayWorkout = getCurrentDayObject(sortedDaysWorkout, currentDay);
   const maxDay = sortedDaysWorkout.length;
   const exercises = workoutData.day_exercises.filter((ex) => ex.day === currentDayWorkout.day);
-
   console.log("exercises", exercises);
   console.log("currentDay", currentDay);
   console.log("sortedDaysWorkout", sortedDaysWorkout);
@@ -42,6 +44,9 @@ export function WorkoutExercisesCard({ workoutData, userId }: WorkoutExercisesCa
   const generationId = currentDayWorkout.generation_id;
   const completionKey = `workout-session-completed:${generationId}`;
   const isSessionCompleted = typeof window !== "undefined" && localStorage.getItem(completionKey) === "true";
+  const displayDay = viewMode === "history" && historyDay ? historyDay : currentDay;
+  const displayDayWorkout = getCurrentDayObject(sortedDaysWorkout, displayDay);
+  const displayExercises = workoutData.day_exercises.filter((ex) => ex.day === displayDayWorkout.day);
 
   if (isSessionCompleted) {
     return <NoDataCard type="workout" />;
@@ -72,8 +77,8 @@ export function WorkoutExercisesCard({ workoutData, userId }: WorkoutExercisesCa
           return;
         }
 
-        const dayMealIds = exercises.map((m) => m.id);
-        const progress = await getDayProgress<WorkoutExerciseProgress>("workout", session.id, dayMealIds);
+        const dayWorkoutIds = exercises.map((m) => m.id);
+        const progress = await getDayProgress<WorkoutExerciseProgress>("workout", session.id, dayWorkoutIds);
 
         const statusMap: Record<number, Status> = {};
         exercises.forEach((ex) => {
@@ -144,6 +149,69 @@ export function WorkoutExercisesCard({ workoutData, userId }: WorkoutExercisesCa
     }
   };
 
+  const handleViewPreviousDay = async () => {
+    const dayToView = viewMode === "current" ? currentDay : historyDay!;
+    const currentDayNumber = parseInt(dayToView.split(" ")[1], 10);
+
+    if (currentDayNumber > 1) {
+      const previousDay = `Ден ${currentDayNumber - 1}`;
+      setHistoryDay(previousDay);
+      setViewMode("history");
+
+      if (sessionId) {
+        const previousDayExercises = workoutData.day_exercises.filter(
+          (m) => m.day === getCurrentDayObject(sortedDaysWorkout, previousDay).day,
+        );
+        const dayWorkoutIds = previousDayExercises.map((ex) => ex.id);
+        const progress = await getDayProgress<WorkoutExerciseProgress>("workout", sessionId, dayWorkoutIds);
+
+        const statusMap: Record<number, Status> = {};
+        previousDayExercises.forEach((ex) => {
+          const progressEntry = progress.find((p) => p.day_exercise_id === ex.id);
+          statusMap[ex.id] = progressEntry ? progressEntry.status : "pending";
+        });
+        setExerciseStatus(statusMap);
+      }
+    }
+  };
+
+  const handleViewNextDay = async () => {
+    if (!historyDay) return;
+
+    const currentDayNumber = parseInt(historyDay.split(" ")[1], 10);
+    const currentDayActualNumber = parseInt(currentDay.split(" ")[1], 10);
+
+    if (currentDayNumber < currentDayActualNumber) {
+      const nextDay = `Ден ${currentDayNumber + 1}`;
+
+      if (nextDay === currentDay) {
+        setViewMode("current");
+        setHistoryDay(null);
+        const dayWorkoutIds = exercises.map((ex) => ex.id);
+        const progress = await getDayProgress<WorkoutExerciseProgress>("workout", sessionId!, dayWorkoutIds);
+        const statusMap: Record<number, Status> = {};
+        exercises.forEach((ex) => {
+          const progressEntry = progress.find((p) => p.day_exercise_id === ex.id);
+          statusMap[ex.id] = progressEntry ? progressEntry.status : "pending";
+        });
+        setExerciseStatus(statusMap);
+      } else {
+        setHistoryDay(nextDay);
+        const nextDayExercises = workoutData.day_exercises.filter(
+          (m) => m.day === getCurrentDayObject(sortedDaysWorkout, nextDay).day,
+        );
+        const dayWorkoutIds = nextDayExercises.map((m) => m.id);
+        const progress = await getDayProgress<WorkoutExerciseProgress>("workout", sessionId!, dayWorkoutIds);
+        const statusMap: Record<number, Status> = {};
+        nextDayExercises.forEach((m) => {
+          const progressEntry = progress.find((p) => p.day_exercise_id === m.id);
+          statusMap[m.id] = progressEntry ? progressEntry.status : "pending";
+        });
+        setExerciseStatus(statusMap);
+      }
+    }
+  };
+
   const getCardStyles = (status: Status) => {
     switch (status) {
       case "completed":
@@ -181,21 +249,45 @@ export function WorkoutExercisesCard({ workoutData, userId }: WorkoutExercisesCa
         <NoDataCard type="workout" />
       ) : (
         <Card className="h-full">
-          <CardHeader className="pb-3">
+          <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Dumbbell className="text-muted-foreground h-5 w-5" />
-                <CardTitle className="text-base font-medium">{currentDay} - Упражнения</CardTitle>
+                <CardTitle className="text-base font-medium">
+                  {displayDay} - Упражнения {viewMode === "history" && "(Преглед)"}
+                </CardTitle>
               </div>
               <Badge variant="outline">{exercises.length} упражнения</Badge>
             </div>
             <CardDescription>{totalSets} общо серии</CardDescription>
+            <div className="mt-2 flex items-center justify-between">
+              <button
+                onClick={handleViewPreviousDay}
+                disabled={parseInt((viewMode === "history" ? historyDay! : currentDay).split(" ")[1], 10) === 1}
+                className={`rounded-lg px-3 py-1.5 text-sm transition ${
+                  parseInt((viewMode === "history" ? historyDay! : currentDay).split(" ")[1], 10) > 1
+                    ? "bg-muted hover:bg-muted/80 text-foreground"
+                    : "bg-muted/50 text-muted-foreground cursor-not-allowed"
+                }`}
+              >
+                ← Предишен ден
+              </button>
+
+              {viewMode === "history" && (
+                <button
+                  onClick={handleViewNextDay}
+                  className="bg-muted hover:bg-muted/80 text-foreground rounded-lg px-3 py-1.5 text-sm transition"
+                >
+                  Следващ ден →
+                </button>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               <PrepSection title="Загрявка" duration={warmup_duration_minutes} items={warmup_exercises} />
 
-              {exercises.map((exercise, index) => {
+              {displayExercises.map((exercise, index) => {
                 const status = exerciseStatus[exercise.id] || "pending";
                 return (
                   <div
@@ -220,10 +312,13 @@ export function WorkoutExercisesCard({ workoutData, userId }: WorkoutExercisesCa
                         <div className="flex gap-1">
                           <button
                             onClick={() => handleStatusChange(exercise.id, "completed")}
+                            disabled={viewMode === "history"}
                             className={`rounded-full px-2 py-0.5 text-xs transition ${
-                              status === "completed"
-                                ? "bg-green-500 text-white"
-                                : "bg-green-100 text-green-700 dark:bg-emerald-500/20 dark:text-emerald-300"
+                              viewMode === "history"
+                                ? "bg-muted text-muted-foreground cursor-not-allowed opacity-50"
+                                : status === "completed"
+                                  ? "bg-green-500 text-white"
+                                  : "bg-green-100 text-green-700 dark:bg-emerald-500/20 dark:text-emerald-300"
                             }`}
                           >
                             ✔
@@ -231,10 +326,13 @@ export function WorkoutExercisesCard({ workoutData, userId }: WorkoutExercisesCa
 
                           <button
                             onClick={() => handleStatusChange(exercise.id, "skipped")}
+                            disabled={viewMode === "history"}
                             className={`rounded-full px-2 py-0.5 text-xs transition ${
-                              status === "skipped"
-                                ? "bg-red-500 text-white"
-                                : "bg-red-100 text-red-700 dark:bg-rose-500/20 dark:text-rose-300"
+                              viewMode === "history"
+                                ? "bg-muted text-muted-foreground cursor-not-allowed opacity-50"
+                                : status === "skipped"
+                                  ? "bg-red-500 text-white"
+                                  : "bg-red-100 text-red-700 dark:bg-rose-500/20 dark:text-rose-300"
                             }`}
                           >
                             ✖
@@ -248,19 +346,22 @@ export function WorkoutExercisesCard({ workoutData, userId }: WorkoutExercisesCa
 
               <PrepSection title="Разтягане" duration={cooldown_duration_minutes} items={cooldown_exercises} />
             </div>
-            <div className="mt-4 flex justify-end">
-              <button
-                disabled={!allCompleted}
-                onClick={handleNextDay}
-                className={`rounded-lg px-4 py-2 text-sm transition ${
-                  allCompleted
-                    ? "bg-primary hover:bg-chart-4 text-white"
-                    : "bg-muted text-muted-foreground cursor-not-allowed"
-                }`}
-              >
-                Следващ ден
-              </button>
-            </div>
+
+            {viewMode === "current" && (
+              <div className="mt-4 flex justify-end">
+                <button
+                  disabled={!allCompleted}
+                  onClick={handleNextDay}
+                  className={`rounded-lg px-4 py-2 text-sm transition ${
+                    allCompleted
+                      ? "bg-primary hover:bg-chart-4 text-white"
+                      : "bg-muted text-muted-foreground cursor-not-allowed"
+                  }`}
+                >
+                  Следващ ден
+                </button>
+              </div>
+            )}
 
             {selectedExercise && (
               <ExerciseModal

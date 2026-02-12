@@ -27,6 +27,8 @@ export function MealPlanCard({ userId, nutritionData }: MealPlanCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [viewMode, setViewMode] = useState<"current" | "history">("current");
+  const [historyDay, setHistoryDay] = useState<string | null>(null);
 
   const sortedDaysNutrition = sortDaysByNumber(nutritionData.day_recommendations);
   console.log("sortedDaysNutrition", sortedDaysNutrition);
@@ -37,6 +39,9 @@ export function MealPlanCard({ userId, nutritionData }: MealPlanCardProps) {
   const generationId = currentDayNutrition.generation_id;
   const completionKey = `nutrition-session-completed:${generationId}`;
   const isSessionCompleted = typeof window !== "undefined" && localStorage.getItem(completionKey) === "true";
+  const displayDay = viewMode === "history" && historyDay ? historyDay : currentDay;
+  const displayDayNutrition = getCurrentDayObject(sortedDaysNutrition, displayDay);
+  const displayMeals = nutritionData.day_meals.filter((ex) => ex.day === displayDayNutrition.day);
 
   if (isSessionCompleted) {
     return <NoDataCard type="meal" />;
@@ -130,6 +135,69 @@ export function MealPlanCard({ userId, nutritionData }: MealPlanCardProps) {
     }
   };
 
+  const handleViewPreviousDay = async () => {
+    const dayToView = viewMode === "current" ? currentDay : historyDay!;
+    const currentDayNumber = parseInt(dayToView.split(" ")[1], 10);
+
+    if (currentDayNumber > 1) {
+      const previousDay = `Ден ${currentDayNumber - 1}`;
+      setHistoryDay(previousDay);
+      setViewMode("history");
+
+      if (sessionId) {
+        const previousDayMeals = nutritionData.day_meals.filter(
+          (m) => m.day === getCurrentDayObject(sortedDaysNutrition, previousDay).day,
+        );
+        const dayMealIds = previousDayMeals.map((m) => m.id);
+        const progress = await getDayProgress<MealItemProgress>("meal", sessionId, dayMealIds);
+
+        const statusMap: Record<number, Status> = {};
+        previousDayMeals.forEach((m) => {
+          const progressEntry = progress.find((p) => p.day_meal_id === m.id);
+          statusMap[m.id] = progressEntry ? progressEntry.status : "pending";
+        });
+        setMealStatus(statusMap);
+      }
+    }
+  };
+
+  const handleViewNextDay = async () => {
+    if (!historyDay) return;
+
+    const currentDayNumber = parseInt(historyDay.split(" ")[1], 10);
+    const currentDayActualNumber = parseInt(currentDay.split(" ")[1], 10);
+
+    if (currentDayNumber < currentDayActualNumber) {
+      const nextDay = `Ден ${currentDayNumber + 1}`;
+
+      if (nextDay === currentDay) {
+        setViewMode("current");
+        setHistoryDay(null);
+        const dayMealIds = meals.map((m) => m.id);
+        const progress = await getDayProgress<MealItemProgress>("meal", sessionId!, dayMealIds);
+        const statusMap: Record<number, Status> = {};
+        meals.forEach((m) => {
+          const progressEntry = progress.find((p) => p.day_meal_id === m.id);
+          statusMap[m.id] = progressEntry ? progressEntry.status : "pending";
+        });
+        setMealStatus(statusMap);
+      } else {
+        setHistoryDay(nextDay);
+        const nextDayMeals = nutritionData.day_meals.filter(
+          (m) => m.day === getCurrentDayObject(sortedDaysNutrition, nextDay).day,
+        );
+        const dayMealIds = nextDayMeals.map((m) => m.id);
+        const progress = await getDayProgress<MealItemProgress>("meal", sessionId!, dayMealIds);
+        const statusMap: Record<number, Status> = {};
+        nextDayMeals.forEach((m) => {
+          const progressEntry = progress.find((p) => p.day_meal_id === m.id);
+          statusMap[m.id] = progressEntry ? progressEntry.status : "pending";
+        });
+        setMealStatus(statusMap);
+      }
+    }
+  };
+
   const getCardStyles = (status: Status) => {
     switch (status) {
       case "completed":
@@ -168,11 +236,13 @@ export function MealPlanCard({ userId, nutritionData }: MealPlanCardProps) {
         <NoDataCard type="meal" />
       ) : (
         <Card className="h-full">
-          <CardHeader className="pb-3">
+          <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <UtensilsCrossed className="text-muted-foreground h-5 w-5" />
-                <CardTitle className="text-base font-medium">{currentDay} - Хранене</CardTitle>
+                <CardTitle className="text-base font-medium">
+                  {displayDay} - Хранене {viewMode === "history" && "(Преглед)"}
+                </CardTitle>
               </div>
               <Badge variant="outline">{meals.length} ястия</Badge>
             </div>
@@ -180,10 +250,32 @@ export function MealPlanCard({ userId, nutritionData }: MealPlanCardProps) {
               <Flame className="h-3 w-3" />
               {totalCalories} kcal общо
             </CardDescription>
+            <div className="mt-2 flex items-center justify-between">
+              <button
+                onClick={handleViewPreviousDay}
+                disabled={parseInt((viewMode === "history" ? historyDay! : currentDay).split(" ")[1], 10) === 1}
+                className={`rounded-lg px-3 py-1.5 text-sm transition ${
+                  parseInt((viewMode === "history" ? historyDay! : currentDay).split(" ")[1], 10) > 1
+                    ? "bg-muted hover:bg-muted/80 text-foreground"
+                    : "bg-muted/50 text-muted-foreground cursor-not-allowed"
+                }`}
+              >
+                ← Предишен ден
+              </button>
+
+              {viewMode === "history" && (
+                <button
+                  onClick={handleViewNextDay}
+                  className="bg-muted hover:bg-muted/80 text-foreground rounded-lg px-3 py-1.5 text-sm transition"
+                >
+                  Следващ ден →
+                </button>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {meals.map((meal, index) => {
+              {displayMeals.map((meal, index) => {
                 const status = mealStatus[meal.id] || "pending";
                 const mealData = meal.nutrition_meals;
 
@@ -226,10 +318,13 @@ export function MealPlanCard({ userId, nutritionData }: MealPlanCardProps) {
                               e.stopPropagation();
                               handleStatusChange(meal.id, "completed");
                             }}
+                            disabled={viewMode === "history"}
                             className={`rounded-full px-2 py-0.5 text-xs transition ${
-                              status === "completed"
-                                ? "bg-green-500 text-white"
-                                : "bg-green-100 text-green-700 dark:bg-emerald-500/20 dark:text-emerald-300"
+                              viewMode === "history"
+                                ? "bg-muted text-muted-foreground cursor-not-allowed opacity-50"
+                                : status === "completed"
+                                  ? "bg-green-500 text-white"
+                                  : "bg-green-100 text-green-700 dark:bg-emerald-500/20 dark:text-emerald-300"
                             }`}
                           >
                             ✔
@@ -239,10 +334,13 @@ export function MealPlanCard({ userId, nutritionData }: MealPlanCardProps) {
                               e.stopPropagation();
                               handleStatusChange(meal.id, "skipped");
                             }}
+                            disabled={viewMode === "history"}
                             className={`rounded-full px-2 py-0.5 text-xs transition ${
-                              status === "skipped"
-                                ? "bg-red-500 text-white"
-                                : "bg-red-100 text-red-700 dark:bg-rose-500/20 dark:text-rose-300"
+                              viewMode === "history"
+                                ? "bg-muted text-muted-foreground cursor-not-allowed opacity-50"
+                                : status === "skipped"
+                                  ? "bg-red-500 text-white"
+                                  : "bg-red-100 text-red-700 dark:bg-rose-500/20 dark:text-rose-300"
                             }`}
                           >
                             ✖
@@ -255,19 +353,21 @@ export function MealPlanCard({ userId, nutritionData }: MealPlanCardProps) {
               })}
             </div>
 
-            <div className="mt-4 flex justify-end">
-              <button
-                disabled={!allCompleted}
-                onClick={handleNextDay}
-                className={`rounded-lg px-4 py-2 text-sm transition ${
-                  allCompleted
-                    ? "bg-primary hover:bg-chart-4 text-white"
-                    : "bg-muted text-muted-foreground cursor-not-allowed"
-                }`}
-              >
-                Следващ ден
-              </button>
-            </div>
+            {viewMode === "current" && (
+              <div className="mt-4 flex justify-end">
+                <button
+                  disabled={!allCompleted}
+                  onClick={handleNextDay}
+                  className={`rounded-lg px-4 py-2 text-sm transition ${
+                    allCompleted
+                      ? "bg-primary hover:bg-chart-4 text-white"
+                      : "bg-muted text-muted-foreground cursor-not-allowed"
+                  }`}
+                >
+                  Следващ ден
+                </button>
+              </div>
+            )}
 
             {selectedMeal && (
               <MealModal open={isModalOpen} onOpenChange={setIsModalOpen} meal={formatMeal(selectedMeal)} />
