@@ -59,8 +59,9 @@ export function MealPlanCard({ userId, nutritionData }: MealPlanCardProps) {
 
         setSessionId(session.id);
 
-        if (session.current_day !== currentDay) {
+        if (!sessionId && session.current_day !== currentDay) {
           setCurrentDay(session.current_day);
+          return;
         }
 
         const dayMealIds = meals.map((m) => m.id);
@@ -81,7 +82,12 @@ export function MealPlanCard({ userId, nutritionData }: MealPlanCardProps) {
     };
 
     loadProgress();
-  }, [userId, generationId, currentDay, meals.length]);
+  }, [userId, generationId, meals.length]);
+
+  useEffect(() => {
+    const initialStatus = meals.reduce((acc, ex) => ({ ...acc, [ex.id]: "pending" }), {});
+    setMealStatus(initialStatus);
+  }, [meals.map((ex) => ex.id).join(",")]);
 
   const totalCalories = meals.reduce((sum, meal) => sum + (meal.nutrition_meals?.calories || 0), 0);
 
@@ -114,11 +120,10 @@ export function MealPlanCard({ userId, nutritionData }: MealPlanCardProps) {
 
       if (result.status === "completed") {
         localStorage.setItem(completionKey, "true");
-        window.location.reload(); // <-- stupid!
+        window.location.reload();
         return;
       }
 
-      setMealStatus({});
       setCurrentDay(nextDay);
     } catch (error) {
       console.error("Error moving to next day:", error);
