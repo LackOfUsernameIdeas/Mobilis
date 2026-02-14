@@ -47,7 +47,8 @@ export async function GET(request: Request) {
       `,
       )
       .eq("generation_id", generation.id)
-      .order("day", { ascending: true });
+      .order("day", { ascending: true })
+      .order("time", { ascending: true });
 
     return NextResponse.json({
       preferences: preferences ?? null,
