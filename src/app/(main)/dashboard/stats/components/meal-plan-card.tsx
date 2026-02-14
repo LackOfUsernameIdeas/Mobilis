@@ -11,6 +11,7 @@ import { Status, Meal, MealItemProgress, NutritionData } from "@/app/(main)/dash
 import { MEAL_TYPE_LABELS } from "@/app/(main)/dashboard/stats/constants";
 import { formatMeal, getCurrentDayObject, sortDaysByNumber } from "@/app/(main)/dashboard/stats/helper_functions";
 import { NoDataCard } from "@/app/(main)/dashboard/stats/components/no-data-card";
+import { Button } from "@/components/ui/button";
 
 interface MealPlanCardProps {
   userId: string;
@@ -254,7 +255,7 @@ export function MealPlanCard({ userId, nutritionData }: MealPlanCardProps) {
               <button
                 onClick={handleViewPreviousDay}
                 disabled={parseInt((viewMode === "history" ? historyDay! : currentDay).split(" ")[1], 10) === 1}
-                className={`rounded-lg px-3 py-1.5 text-sm transition ${
+                className={`cursor-pointer rounded-lg px-3 py-1.5 text-sm transition ${
                   parseInt((viewMode === "history" ? historyDay! : currentDay).split(" ")[1], 10) > 1
                     ? "bg-muted hover:bg-muted/80 text-foreground"
                     : "bg-muted/50 text-muted-foreground cursor-not-allowed"
@@ -266,7 +267,7 @@ export function MealPlanCard({ userId, nutritionData }: MealPlanCardProps) {
               {viewMode === "history" && (
                 <button
                   onClick={handleViewNextDay}
-                  className="bg-muted hover:bg-muted/80 text-foreground rounded-lg px-3 py-1.5 text-sm transition"
+                  className="bg-muted hover:bg-muted/80 text-foreground cursor-pointer rounded-lg px-3 py-1.5 text-sm transition"
                 >
                   Следващ ден →
                 </button>
@@ -280,10 +281,7 @@ export function MealPlanCard({ userId, nutritionData }: MealPlanCardProps) {
                 const mealData = meal.nutrition_meals;
 
                 return (
-                  <div
-                    key={index}
-                    className={`cursor-pointer rounded-r-lg border-l-2 p-3 transition ${getCardStyles(status)}`}
-                  >
+                  <div key={index} className={`rounded-r-lg border-l-2 p-3 transition ${getCardStyles(status)}`}>
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0 flex-1" onClick={() => handleMealClick(meal)}>
                         <div className="mb-1 flex items-center gap-2">
@@ -319,7 +317,7 @@ export function MealPlanCard({ userId, nutritionData }: MealPlanCardProps) {
                               handleStatusChange(meal.id, "completed");
                             }}
                             disabled={viewMode === "history"}
-                            className={`rounded-full px-2 py-0.5 text-xs transition ${
+                            className={`cursor-pointer rounded-full px-2 py-0.5 text-xs transition ${
                               viewMode === "history"
                                 ? "bg-muted text-muted-foreground cursor-not-allowed opacity-50"
                                 : status === "completed"
@@ -335,7 +333,7 @@ export function MealPlanCard({ userId, nutritionData }: MealPlanCardProps) {
                               handleStatusChange(meal.id, "skipped");
                             }}
                             disabled={viewMode === "history"}
-                            className={`rounded-full px-2 py-0.5 text-xs transition ${
+                            className={`cursor-pointer rounded-full px-2 py-0.5 text-xs transition ${
                               viewMode === "history"
                                 ? "bg-muted text-muted-foreground cursor-not-allowed opacity-50"
                                 : status === "skipped"
@@ -355,17 +353,18 @@ export function MealPlanCard({ userId, nutritionData }: MealPlanCardProps) {
 
             {viewMode === "current" && (
               <div className="mt-4 flex justify-end">
-                <button
+                <Button
                   disabled={!allCompleted}
                   onClick={handleNextDay}
-                  className={`rounded-lg px-4 py-2 text-sm transition ${
+                  variant={"default"}
+                  className={`cursor-pointer rounded-lg px-4 py-2 text-sm transition ${
                     allCompleted
-                      ? "bg-primary hover:bg-chart-4 text-white"
+                      ? "bg-primary hover:bg-primary/85"
                       : "bg-muted text-muted-foreground cursor-not-allowed"
                   }`}
                 >
                   Следващ ден
-                </button>
+                </Button>
               </div>
             )}
 

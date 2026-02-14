@@ -11,6 +11,7 @@ import { Exercise, Status, WorkoutData, WorkoutExerciseProgress } from "../types
 import PrepSection from "@/app/(main)/dashboard/stats/components/prep";
 import { formatExercise, getCurrentDayObject, sortDaysByNumber } from "@/app/(main)/dashboard/stats/helper_functions";
 import { NoDataCard } from "@/app/(main)/dashboard/stats/components/no-data-card";
+import { Button } from "@/components/ui/button";
 
 interface WorkoutExercisesCardProps {
   userId: string;
@@ -264,7 +265,7 @@ export function WorkoutExercisesCard({ workoutData, userId }: WorkoutExercisesCa
               <button
                 onClick={handleViewPreviousDay}
                 disabled={parseInt((viewMode === "history" ? historyDay! : currentDay).split(" ")[1], 10) === 1}
-                className={`rounded-lg px-3 py-1.5 text-sm transition ${
+                className={`cursor-pointer rounded-lg px-3 py-1.5 text-sm transition ${
                   parseInt((viewMode === "history" ? historyDay! : currentDay).split(" ")[1], 10) > 1
                     ? "bg-muted hover:bg-muted/80 text-foreground"
                     : "bg-muted/50 text-muted-foreground cursor-not-allowed"
@@ -276,7 +277,7 @@ export function WorkoutExercisesCard({ workoutData, userId }: WorkoutExercisesCa
               {viewMode === "history" && (
                 <button
                   onClick={handleViewNextDay}
-                  className="bg-muted hover:bg-muted/80 text-foreground rounded-lg px-3 py-1.5 text-sm transition"
+                  className="bg-muted hover:bg-muted/80 text-foreground cursor-pointer rounded-lg px-3 py-1.5 text-sm transition"
                 >
                   Следващ ден →
                 </button>
@@ -290,10 +291,7 @@ export function WorkoutExercisesCard({ workoutData, userId }: WorkoutExercisesCa
               {displayExercises.map((exercise, index) => {
                 const status = exerciseStatus[exercise.id] || "pending";
                 return (
-                  <div
-                    key={index}
-                    className={`cursor-pointer rounded-r-lg border-l-2 p-3 transition ${getCardStyles(status)}`}
-                  >
+                  <div key={index} className={`rounded-r-lg border-l-2 p-3 transition ${getCardStyles(status)}`}>
                     <div className="flex items-start justify-between">
                       <div className="flex-1" onClick={() => handleExerciseClick(exercise)}>
                         <p className="text-sm font-semibold">{exercise.exercise_name}</p>
@@ -313,7 +311,7 @@ export function WorkoutExercisesCard({ workoutData, userId }: WorkoutExercisesCa
                           <button
                             onClick={() => handleStatusChange(exercise.id, "completed")}
                             disabled={viewMode === "history"}
-                            className={`rounded-full px-2 py-0.5 text-xs transition ${
+                            className={`cursor-pointer rounded-full px-2 py-0.5 text-xs transition ${
                               viewMode === "history"
                                 ? "bg-muted text-muted-foreground cursor-not-allowed opacity-50"
                                 : status === "completed"
@@ -327,7 +325,7 @@ export function WorkoutExercisesCard({ workoutData, userId }: WorkoutExercisesCa
                           <button
                             onClick={() => handleStatusChange(exercise.id, "skipped")}
                             disabled={viewMode === "history"}
-                            className={`rounded-full px-2 py-0.5 text-xs transition ${
+                            className={`cursor-pointer rounded-full px-2 py-0.5 text-xs transition ${
                               viewMode === "history"
                                 ? "bg-muted text-muted-foreground cursor-not-allowed opacity-50"
                                 : status === "skipped"
@@ -349,17 +347,18 @@ export function WorkoutExercisesCard({ workoutData, userId }: WorkoutExercisesCa
 
             {viewMode === "current" && (
               <div className="mt-4 flex justify-end">
-                <button
+                <Button
                   disabled={!allCompleted}
                   onClick={handleNextDay}
-                  className={`rounded-lg px-4 py-2 text-sm transition ${
+                  variant={"default"}
+                  className={`cursor-pointer rounded-lg px-4 py-2 text-sm transition ${
                     allCompleted
-                      ? "bg-primary hover:bg-chart-4 text-white"
+                      ? "bg-primary hover:bg-primary/85"
                       : "bg-muted text-muted-foreground cursor-not-allowed"
                   }`}
                 >
                   Следващ ден
-                </button>
+                </Button>
               </div>
             )}
 
