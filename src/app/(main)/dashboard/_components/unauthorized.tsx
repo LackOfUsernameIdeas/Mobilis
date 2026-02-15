@@ -23,8 +23,8 @@ export function Unauthorized() {
         </div>
 
         <div className="flex flex-col items-center gap-1">
-          <p className="text-foreground text-sm font-medium">Влезте в профила си първо!</p>
-          <p className="text-muted-foreground animate-pulse text-xs">Пренасочване към вход...</p>
+          <p className="text-foreground text-sm font-medium">Влезте в профила си, за да използвате приложението!</p>
+          <p className="text-muted-foreground animate-pulse text-xs">Пренасочване...</p>
         </div>
       </div>
     </div>
