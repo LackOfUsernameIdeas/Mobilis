@@ -12,35 +12,33 @@ export async function GET(request: Request) {
 
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 
-    const { data: preferences, error: prefError } = await supabase
+    const { data: preferences } = await supabase
       .from("nutrition_user_preferences")
       .select("*")
       .eq("user_id", userId)
       .order("created_at", { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
-    if (prefError) throw prefError;
-
-    const { data: generation, error: genError } = await supabase
+    const { data: generation } = await supabase
       .from("nutrition_generations")
       .select("*")
       .eq("user_id", userId)
       .order("id", { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
-    if (genError) throw genError;
+    if (!generation) {
+      return NextResponse.json(null, { status: 200 });
+    }
 
-    const { data: days, error: daysError } = await supabase
+    const { data: days } = await supabase
       .from("nutrition_day_recommendations")
       .select("*")
       .eq("generation_id", generation.id)
       .order("day", { ascending: true });
 
-    if (daysError) throw daysError;
-
-    const { data: meals, error: mealsError } = await supabase
+    const { data: meals } = await supabase
       .from("nutrition_day_meals")
       .select(
         `
@@ -49,15 +47,14 @@ export async function GET(request: Request) {
       `,
       )
       .eq("generation_id", generation.id)
-      .order("day", { ascending: true });
-
-    if (mealsError) throw mealsError;
+      .order("day", { ascending: true })
+      .order("time", { ascending: true });
 
     return NextResponse.json({
-      preferences,
+      preferences: preferences ?? null,
       generation,
-      day_recommendations: days,
-      day_meals: meals,
+      day_recommendations: days ?? [],
+      day_meals: meals ?? [],
     });
   } catch (error) {
     console.error("Error fetching nutrition plan:", error);

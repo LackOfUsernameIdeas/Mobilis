@@ -290,7 +290,7 @@ export const YOGA_QUESTIONS = [
   },
 ];
 
-export const RESULTS_LOADING_TEXT = "Генериране на тренировъчни препоръки. Моля, изчакайте 1/2 минути...";
+export const RESULTS_LOADING_TEXT = "Генериране на тренировъчни препоръки. Моля, изчакайте 1-2 минути...";
 
 export const ANIMATION_VARIANTS = {
   fadeIn: {

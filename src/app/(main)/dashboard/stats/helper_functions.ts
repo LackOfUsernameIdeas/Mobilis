@@ -14,12 +14,12 @@ export function sortDaysByNumber<T extends { day: string }>(days: T[]): T[] {
 /**
  * Намира текущия незавършен ден от списъка
  * @param sortedDays - Сортиран масив с дни
- * @param completedDays - Масив със завършени имена на дни
+ * @param currentDay - Сегашният ден
  * @returns Текущ незавършен ден или последен ден ако всички са завършени
  */
-export function getCurrentDay<T extends { day: string }>(sortedDays: T[], completedDays: string[]): T {
+export function getCurrentDayObject<Day extends { day: string }>(sortedDays: Day[], currentDay: string): Day {
   for (const day of sortedDays) {
-    if (!completedDays.includes(day.day)) {
+    if (day.day === currentDay) {
       return day;
     }
   }

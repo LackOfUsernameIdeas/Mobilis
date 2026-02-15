@@ -1,6 +1,83 @@
 import { saveUserPreferences, saveWorkoutRecommendations } from "@/server/saveFunctions";
 import { NextRequest, NextResponse } from "next/server";
 
+const muscle_activation = {
+  type: "object",
+  properties: {
+    chest: {
+      type: "boolean",
+    },
+    front_delts: {
+      type: "boolean",
+    },
+    side_delts: {
+      type: "boolean",
+    },
+    rear_delts: {
+      type: "boolean",
+    },
+    biceps: {
+      type: "boolean",
+    },
+    triceps: {
+      type: "boolean",
+    },
+    forearms: {
+      type: "boolean",
+    },
+    traps: {
+      type: "boolean",
+    },
+    lats: {
+      type: "boolean",
+    },
+    lower_back: {
+      type: "boolean",
+    },
+    abs: {
+      type: "boolean",
+    },
+    obliques: {
+      type: "boolean",
+    },
+    quadriceps: {
+      type: "boolean",
+    },
+    hamstrings: {
+      type: "boolean",
+    },
+    glutes: {
+      type: "boolean",
+    },
+    calves: {
+      type: "boolean",
+    },
+    adductors: {
+      type: "boolean",
+    },
+  },
+  required: [
+    "chest",
+    "front_delts",
+    "side_delts",
+    "rear_delts",
+    "biceps",
+    "triceps",
+    "forearms",
+    "traps",
+    "lats",
+    "lower_back",
+    "abs",
+    "obliques",
+    "quadriceps",
+    "hamstrings",
+    "glutes",
+    "calves",
+    "adductors",
+  ],
+  additionalProperties: false,
+};
+
 export async function POST(req: NextRequest) {
   try {
     const { userId, category, answers, userStats } = await req.json();
@@ -100,16 +177,17 @@ function generateUserPrompt(category: string, answers: Record<string, any>, user
       - При цел 'strength' приоритизирай тежки съставни упражнения с ниски повторения (1-6) и дълги паузи за почивка
       - Адаптирай програмата с посочената информация за здравословни проблеми, ако има такава (избягвай упражнения, които биха влошили здравословното състояние на потребителя или дай алтернативни упражнения)
       - exercise_name винаги трябва да съдържа само официалното наименование на упражнението (например: "Barbell Bench Press", "Deadlift", "Lat Pulldown")
-      - exercise_id ВИНАГИ трябва да следва следния формат: име на упражнението в **единствено число** (например: "barbell_bench_press", а не "barbell_bench_presses"), малки букви, разделени с долна черта. Ако има по-сложна дума, съставена от две или повече думи (например "skullcrusher"), тя също трябва да се раздели на отделни думи с долна черта, например: "skull_crusher", "barbell_bench_press", "deadlift", "lat_pulldown"
       - Относно информацията за повторения, използвай формат като "8-12" за диапазон или "10" за точен брой
-      - muscle_activation трябва да отразява точно кои мускули се активират (true/false)
+      
+      **Активация на мускули:**
+      - muscle_activation трябва да отразява точно кои мускули се активират в позата (true/false)
+      - За ВСЯКО упражнение провери дали muscle_activation е точен
+      - Упражненията в Ден 3, Ден 4 и по-късно трябва да имат СЪЩАТА точност като Ден 1
       
       **КРИТИЧНО ВАЖНО - ЗАДЪЛЖИТЕЛНИ ПРАВИЛА ЗА ЕЗИК И ФОРМАТ:**
-      - day: ВИНАГИ използвай формат "Ден 1", "Ден 2", "Ден 3", "Ден 4" и т.н. (НИКОГА "Day 1", "Day 2")
       - focus: ВИНАГИ на БЪЛГАРСКИ (например: "Горна част на тялото", "Долна част на тялото + коремни мускули")
       - warmup.exercises: ВСИЧКИ упражнения и обяснения САМО на БЪЛГАРСКИ (например: "5 минути бързо ходене или леко каране на колело", "Кръгови движения с ръцете", "Леки загряващи серии")
-      - cooldown.exercises: ВСИЧКИ упражнения и обяснения САМО на БЪЛГАРСКИ (например: "Статично разтягане на гърдите", "Разтягане на трицепс над главата")
-      - safety_considerations: ДО 3 съвета и ВСИЧКИ да са на български`;
+      - cooldown.exercises: ВСИЧКИ упражнения и обяснения САМО на БЪЛГАРСКИ (например: "Статично разтягане на гърдите", "Разтягане на трицепс над главата")`;
   } else if (category === "calisthenics") {
     return `Създай персонализирана седмична калистенична програма за потребител със следните характеристики:
 
@@ -149,16 +227,17 @@ function generateUserPrompt(category: string, answers: Record<string, any>, user
       - Адаптирай програмата с посочената информация за здравословни проблеми, ако има такава
       - exercise_name винаги трябва да съдържа само официалното наименование на калистеничното упражнение (например: "Push-Ups", "Pull-Ups", "Dips", "Squats", "Plank")
       - Стреми се да посочваш конкретна вариация на упражненията (например: "Diamond Push-Ups", "Archer Pull-Ups", "Bulgarian Split Squats")
-      - exercise_id ВИНАГИ трябва да следва следния формат: име на упражнението в **единствено число** (например: "push_up", а не "push_ups"), малки букви, разделени с долна черта. Ако има по-сложна дума, съставена от две или повече думи (например "handstand"), тя също трябва да се раздели на отделни думи с долна черта, например: "hand_stand", "diamond_push_ups", "archer_pull_ups", "bulgarian_split_squats"
       - Относно информацията за повторения, използвай формат като "12-20" за диапазон или "15" за точен брой
-      - muscle_activation трябва да отразява точно кои мускули се активират (true/false)
+      
+      **Активация на мускули:**
+      - muscle_activation трябва да отразява точно кои мускули се активират в позата (true/false)
+      - За ВСЯКО упражнение провери дали muscle_activation е точен
+      - Упражненията в Ден 3, Ден 4 и по-късно трябва да имат СЪЩАТА точност като Ден 1
       
       **КРИТИЧНО ВАЖНО - ЗАДЪЛЖИТЕЛНИ ПРАВИЛА ЗА ЕЗИК И ФОРМАТ:**
-      - day: ВИНАГИ използвай формат "Ден 1", "Ден 2", "Ден 3", "Ден 4" и т.н. (НИКОГА "Day 1", "Day 2")
       - focus: ВИНАГИ на БЪЛГАРСКИ (например: "Горна част на тялото", "Долна част на тялото + коремни мускули")
       - warmup.exercises: ВСИЧКИ упражнения и обяснения САМО на БЪЛГАРСКИ (например: "5 минути бързо ходене или леко каране на колело", "Кръгови движения с ръцете", "Леки загряващи серии")
-      - cooldown.exercises: ВСИЧКИ упражнения и обяснения САМО на БЪЛГАРСКИ (например: "Статично разтягане на гърдите", "Разтягане на трицепс над главата")
-      - safety_considerations: ДО 3 съвета и ВСИЧКИ да са на български`;
+      - cooldown.exercises: ВСИЧКИ упражнения и обяснения САМО на БЪЛГАРСКИ (например: "Статично разтягане на гърдите", "Разтягане на трицепс над главата")`;
   } else if (category === "yoga") {
     return `Създай персонализирана седмична йога програма за потребител със следните предпочитания:
 
@@ -217,7 +296,6 @@ function generateUserPrompt(category: string, answers: Record<string, any>, user
 
       **Наименования:**
       - exercise_name винаги трябва да съдържа официалното наименование на йога позата на английски и санскрит в скоби (например: "Downward Facing Dog (Adho Mukha Svanasana)", "Warrior I (Virabhadrasana I)", "Tree Pose (Vrksasana)")
-      - exercise_id ВИНАГИ трябва да следва следния формат: име на упражнението в **единствено число** (например: "downward_facing_dog", а не "downward_facing_dogs"), малки букви, разделени с долна черта. Ако има по-сложна дума, съставена от две или повече думи (например "sunbird"), тя също трябва да се раздели на отделни думи с долна черта, например: "sun_bird", "downward_facing_dog", "warrior_i", "tree_pose". НИКОГА НЕ ДОБАВЯЙ думата "pose".
       - При нужда от модификация посочвай конкретната вариация (например: "Modified Chaturanga", "Supported Headstand", "Half Pigeon Pose")
 
       **Повторения и задържане:**
@@ -229,13 +307,13 @@ function generateUserPrompt(category: string, answers: Record<string, any>, user
       **Активация на мускули:**
       - muscle_activation трябва да отразява точно кои мускули се активират в позата (true/false)
       - Бъди прецизен - различните пози активират различни мускулни групи
+      - За ВСЯКО упражнение провери дали muscle_activation е точен
+      - Упражненията в Ден 3, Ден 4 и по-късно трябва да имат СЪЩАТА точност като Ден 1
       
       **КРИТИЧНО ВАЖНО - ЗАДЪЛЖИТЕЛНИ ПРАВИЛА ЗА ЕЗИК И ФОРМАТ:**
-      - day: ВИНАГИ използвай формат "Ден 1", "Ден 2", "Ден 3", "Ден 4" и т.н. (НИКОГА "Day 1", "Day 2")
       - focus: ВИНАГИ на БЪЛГАРСКИ (например: "Гъвкавост и баланс - фокус върху тазобедрените стави", "Сила и издръжливост - динамична последователност")
       - warmup.exercises: ВСИЧКИ упражнения и обяснения САМО на БЪЛГАРСКИ (например: "Центриране и медитация (1-2 минути)", "Дихателни техники - дълбоко коремно дишане (2-3 минути)", "Слънчеви поздрави (Сурия Намаскар) - 3-5 цикъла")
-      - cooldown.exercises: ВСИЧКИ упражнения и обяснения САМО на БЪЛГАРСКИ (например: "Леки разтягания в седнало положение", "Шавасана - финална релаксация (5-10 минути)")
-      - safety_considerations: ДО 3 съвета и ВСИЧКИ да са на български`;
+      - cooldown.exercises: ВСИЧКИ упражнения и обяснения САМО на БЪЛГАРСКИ (например: "Леки разтягания в седнало положение", "Шавасана - финална релаксация (5-10 минути)")`;
   }
 
   // Placeholder
@@ -259,6 +337,8 @@ function generateResponseFormat(category: string) {
                 properties: {
                   day: {
                     type: "string",
+                    pattern: "^Ден [1-7]$",
+                    description: "Ден във формат 'Ден 1', 'Ден 2', и така нататък.",
                   },
                   focus: {
                     type: "string",
@@ -289,6 +369,8 @@ function generateResponseFormat(category: string) {
                         },
                         exercise_id: {
                           type: "string",
+                          pattern: "^[a-z]+(_[a-z]+)*$",
+                          description: "Уникален идентификатор в единствено число (например: 'barbell_bench_press')",
                         },
                         sets: {
                           type: "number",
@@ -296,82 +378,7 @@ function generateResponseFormat(category: string) {
                         reps: {
                           type: "string",
                         },
-                        muscle_activation: {
-                          type: "object",
-                          properties: {
-                            chest: {
-                              type: "boolean",
-                            },
-                            front_delts: {
-                              type: "boolean",
-                            },
-                            side_delts: {
-                              type: "boolean",
-                            },
-                            rear_delts: {
-                              type: "boolean",
-                            },
-                            biceps: {
-                              type: "boolean",
-                            },
-                            triceps: {
-                              type: "boolean",
-                            },
-                            forearms: {
-                              type: "boolean",
-                            },
-                            traps: {
-                              type: "boolean",
-                            },
-                            lats: {
-                              type: "boolean",
-                            },
-                            lower_back: {
-                              type: "boolean",
-                            },
-                            abs: {
-                              type: "boolean",
-                            },
-                            obliques: {
-                              type: "boolean",
-                            },
-                            quadriceps: {
-                              type: "boolean",
-                            },
-                            hamstrings: {
-                              type: "boolean",
-                            },
-                            glutes: {
-                              type: "boolean",
-                            },
-                            calves: {
-                              type: "boolean",
-                            },
-                            adductors: {
-                              type: "boolean",
-                            },
-                          },
-                          required: [
-                            "chest",
-                            "front_delts",
-                            "side_delts",
-                            "rear_delts",
-                            "biceps",
-                            "triceps",
-                            "forearms",
-                            "traps",
-                            "lats",
-                            "lower_back",
-                            "abs",
-                            "obliques",
-                            "quadriceps",
-                            "hamstrings",
-                            "glutes",
-                            "calves",
-                            "adductors",
-                          ],
-                          additionalProperties: false,
-                        },
+                        muscle_activation: muscle_activation,
                       },
                       required: ["exercise_name", "exercise_id", "sets", "reps", "muscle_activation"],
                       additionalProperties: false,
@@ -400,6 +407,8 @@ function generateResponseFormat(category: string) {
             },
             safety_considerations: {
               type: "array",
+              minItems: 1,
+              maxItems: 3,
               items: {
                 type: "string",
               },
@@ -426,6 +435,8 @@ function generateResponseFormat(category: string) {
                 properties: {
                   day: {
                     type: "string",
+                    pattern: "^Ден [1-7]$",
+                    description: "Ден във формат 'Ден 1', 'Ден 2', и така нататък.",
                   },
                   focus: {
                     type: "string",
@@ -456,6 +467,8 @@ function generateResponseFormat(category: string) {
                         },
                         exercise_id: {
                           type: "string",
+                          pattern: "^[a-z]+(_[a-z]+)*$",
+                          description: "Уникален идентификатор в единствено число (например: 'pull_up')",
                         },
                         sets: {
                           type: "number",
@@ -463,82 +476,7 @@ function generateResponseFormat(category: string) {
                         reps: {
                           type: "string",
                         },
-                        muscle_activation: {
-                          type: "object",
-                          properties: {
-                            chest: {
-                              type: "boolean",
-                            },
-                            front_delts: {
-                              type: "boolean",
-                            },
-                            side_delts: {
-                              type: "boolean",
-                            },
-                            rear_delts: {
-                              type: "boolean",
-                            },
-                            biceps: {
-                              type: "boolean",
-                            },
-                            triceps: {
-                              type: "boolean",
-                            },
-                            forearms: {
-                              type: "boolean",
-                            },
-                            traps: {
-                              type: "boolean",
-                            },
-                            lats: {
-                              type: "boolean",
-                            },
-                            lower_back: {
-                              type: "boolean",
-                            },
-                            abs: {
-                              type: "boolean",
-                            },
-                            obliques: {
-                              type: "boolean",
-                            },
-                            quadriceps: {
-                              type: "boolean",
-                            },
-                            hamstrings: {
-                              type: "boolean",
-                            },
-                            glutes: {
-                              type: "boolean",
-                            },
-                            calves: {
-                              type: "boolean",
-                            },
-                            adductors: {
-                              type: "boolean",
-                            },
-                          },
-                          required: [
-                            "chest",
-                            "front_delts",
-                            "side_delts",
-                            "rear_delts",
-                            "biceps",
-                            "triceps",
-                            "forearms",
-                            "traps",
-                            "lats",
-                            "lower_back",
-                            "abs",
-                            "obliques",
-                            "quadriceps",
-                            "hamstrings",
-                            "glutes",
-                            "calves",
-                            "adductors",
-                          ],
-                          additionalProperties: false,
-                        },
+                        muscle_activation: muscle_activation,
                       },
                       required: ["exercise_name", "exercise_id", "sets", "reps", "muscle_activation"],
                       additionalProperties: false,
@@ -567,6 +505,8 @@ function generateResponseFormat(category: string) {
             },
             safety_considerations: {
               type: "array",
+              minItems: 1,
+              maxItems: 3,
               items: {
                 type: "string",
               },
@@ -593,6 +533,8 @@ function generateResponseFormat(category: string) {
                 properties: {
                   day: {
                     type: "string",
+                    pattern: "^Ден [1-7]$",
+                    description: "Ден във формат 'Ден 1', 'Ден 2', и така нататък.",
                   },
                   focus: {
                     type: "string",
@@ -623,6 +565,8 @@ function generateResponseFormat(category: string) {
                         },
                         exercise_id: {
                           type: "string",
+                          pattern: "^[a-z]+(_[a-z]+)*$",
+                          description: "Уникален идентификатор в единствено число (например: 'downward_facing_dog')",
                         },
                         sets: {
                           type: "number",
@@ -630,82 +574,7 @@ function generateResponseFormat(category: string) {
                         reps: {
                           type: "string",
                         },
-                        muscle_activation: {
-                          type: "object",
-                          properties: {
-                            chest: {
-                              type: "boolean",
-                            },
-                            front_delts: {
-                              type: "boolean",
-                            },
-                            side_delts: {
-                              type: "boolean",
-                            },
-                            rear_delts: {
-                              type: "boolean",
-                            },
-                            biceps: {
-                              type: "boolean",
-                            },
-                            triceps: {
-                              type: "boolean",
-                            },
-                            forearms: {
-                              type: "boolean",
-                            },
-                            traps: {
-                              type: "boolean",
-                            },
-                            lats: {
-                              type: "boolean",
-                            },
-                            lower_back: {
-                              type: "boolean",
-                            },
-                            abs: {
-                              type: "boolean",
-                            },
-                            obliques: {
-                              type: "boolean",
-                            },
-                            quadriceps: {
-                              type: "boolean",
-                            },
-                            hamstrings: {
-                              type: "boolean",
-                            },
-                            glutes: {
-                              type: "boolean",
-                            },
-                            calves: {
-                              type: "boolean",
-                            },
-                            adductors: {
-                              type: "boolean",
-                            },
-                          },
-                          required: [
-                            "chest",
-                            "front_delts",
-                            "side_delts",
-                            "rear_delts",
-                            "biceps",
-                            "triceps",
-                            "forearms",
-                            "traps",
-                            "lats",
-                            "lower_back",
-                            "abs",
-                            "obliques",
-                            "quadriceps",
-                            "hamstrings",
-                            "glutes",
-                            "calves",
-                            "adductors",
-                          ],
-                          additionalProperties: false,
-                        },
+                        muscle_activation: muscle_activation,
                       },
                       required: ["exercise_name", "exercise_id", "sets", "reps", "muscle_activation"],
                       additionalProperties: false,
@@ -733,6 +602,8 @@ function generateResponseFormat(category: string) {
               },
             },
             safety_considerations: {
+              minItems: 1,
+              maxItems: 3,
               type: "array",
               items: {
                 type: "string",

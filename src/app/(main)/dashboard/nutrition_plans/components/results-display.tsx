@@ -12,9 +12,8 @@ import { Clock, Utensils, Activity } from "lucide-react";
 import { fetchNutritionPlan, getMealIconName, getMealBadgeBg as getMealBadgeBgHelper } from "../helper_functions";
 import { MEAL_TYPE_TRANSLATIONS, FORM_TEXT, RESULTS_TEXT } from "../constants";
 import type { ResultsDisplayProps, NutritionPlan, DayPlan, NutritionMeal } from "../types";
-import { getAuthenticatedUser } from "@/lib/db/clients/get";
 
-export default function ResultsDisplay({ category, answers, userStats, onReset }: ResultsDisplayProps) {
+export default function ResultsDisplay({ userId, answers, userStats, onReset }: ResultsDisplayProps) {
   const [recommendations, setRecommendations] = useState<NutritionPlan | null>(null);
   const [loading, setLoading] = useState(true);
   const hasFetched = useRef(false);
@@ -29,14 +28,7 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
       setLoading(true);
 
       try {
-        const user = await getAuthenticatedUser();
-
-        if (!user) {
-          console.error("User not authenticated");
-          return;
-        }
-
-        const nutritionPlan = await fetchNutritionPlan(user.id, category, answers, userStats);
+        const nutritionPlan = await fetchNutritionPlan(userId, answers, userStats);
         console.log("nutritionPlan: ", nutritionPlan);
 
         setRecommendations(nutritionPlan);
@@ -48,7 +40,7 @@ export default function ResultsDisplay({ category, answers, userStats, onReset }
     };
 
     fetchRecommendations();
-  }, [category, answers, userStats]);
+  }, [answers, userStats]);
 
   const handleMealClick = (meal: NutritionMeal) => {
     setSelectedMeal(meal);

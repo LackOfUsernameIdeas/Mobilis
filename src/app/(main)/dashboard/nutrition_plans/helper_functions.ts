@@ -67,12 +67,7 @@ export const calculateWeightDifference = (targetWeight: number, currentWeight: n
 /**
  * Извлича препоръки за хранителен план от API
  */
-export const fetchNutritionPlan = async (
-  userId: string,
-  category: string,
-  answers: Record<string, any>,
-  userStats: any,
-) => {
+export const fetchNutritionPlan = async (userId: string, answers: Record<string, any>, userStats: any) => {
   try {
     const response = await fetch("/api/get-model-response/nutrition-plans", {
       method: "POST",
@@ -81,7 +76,6 @@ export const fetchNutritionPlan = async (
       },
       body: JSON.stringify({
         userId,
-        category,
         answers,
         userStats,
       }),

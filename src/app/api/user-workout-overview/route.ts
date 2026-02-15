@@ -23,57 +23,49 @@ export async function GET(request: Request) {
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 
     // Извличане на най-новите потребителски предпочитания за тренировки
-    const { data: preferences, error: prefError } = await supabase
+    const { data: preferences } = await supabase
       .from("workout_user_preferences")
       .select("*")
       .eq("user_id", userId)
       .order("created_at", { ascending: false })
       .limit(1)
-      .single();
-
-    if (prefError) throw prefError;
+      .maybeSingle();
 
     // Извличане на най-новата генерация на тренировъчен план
-    const { data: generation, error: genError } = await supabase
+    const { data: generation } = await supabase
       .from("workout_generations")
       .select("*")
       .eq("user_id", userId)
       .order("id", { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
-    if (genError) throw genError;
+    if (!generation) {
+      return NextResponse.json(null, { status: 200 });
+    }
 
     // Извличане на дневните препоръки за текущата генерация
-    const { data: days, error: daysError } = await supabase
+    const { data: days } = await supabase
       .from("workout_day_recommendations")
       .select("*")
       .eq("generation_id", generation.id)
       .order("day", { ascending: true });
 
-    if (daysError) throw daysError;
-
-    // Извличане на упражненията за всеки ден с JOIN към таблицата workout_exercises
-    const { data: exercises, error: exError } = await supabase
+    const { data: exercises } = await supabase
       .from("workout_day_exercises")
       .select(
         `
-    *,
-    workout_exercises (*)
-  `,
+        *,
+        workout_exercises (*)
+      `,
       )
       .eq("generation_id", generation.id);
 
-    if (exError) throw exError;
-
-    console.log(`Successfully fetched complete workout plan for user ${userId}`);
-
-    // Връщане на комплексния обект с цялата информация
     return NextResponse.json({
-      preferences,
+      preferences: preferences ?? null,
       generation,
-      day_recommendations: days,
-      day_exercises: exercises,
+      day_recommendations: days ?? [],
+      day_exercises: exercises ?? [],
     });
   } catch (error: any) {
     console.error("Error fetching workout plan:", error);

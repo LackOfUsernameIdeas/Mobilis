@@ -8,23 +8,28 @@ import ResultsDisplay from "./components/results-display";
 import { Loader } from "../_components/loader";
 import { Category, FormAnswers, UserStats } from "./types";
 import { fetchUserHealthData } from "@/lib/db/clients/get";
+import { useAuth } from "@/contexts/auth-context";
+import { Unauthorized } from "@/app/(main)/dashboard/_components/unauthorized";
 
 export default function WorkoutRecommendationsPage() {
+  const { user, loading: authLoading } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState<Category>(null);
   const [submittedAnswers, setSubmittedAnswers] = useState<FormAnswers | null>(null);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
-  const [pageLoading, setPageLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchHealthData() {
+      if (!user) return;
+
       try {
-        const healthData = await fetchUserHealthData();
+        const healthData = await fetchUserHealthData(user.id);
 
         setUserStats(healthData);
       } catch (error) {
         console.error("Error initializing page:", error);
       } finally {
-        setPageLoading(false);
+        setLoading(false);
       }
     }
 
@@ -50,12 +55,16 @@ export default function WorkoutRecommendationsPage() {
     setSubmittedAnswers(null);
   };
 
-  if (pageLoading) {
+  if (authLoading || loading) {
     return (
-      <div className="bg-background flex min-h-[80vh] items-center justify-center">
-        <Loader />
+      <div className="flex min-h-[80vh] items-center justify-center">
+        <Loader text={authLoading ? "Автентикация..." : "Зареждане..."} />
       </div>
     );
+  }
+
+  if (!user) {
+    return <Unauthorized />;
   }
 
   return (

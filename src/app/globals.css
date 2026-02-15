@@ -196,3 +196,12 @@ These serve as the fallback; there is no separate default.css file. */
 .disable-transitions * {
   transition: none !important;
 }
+
+.no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}

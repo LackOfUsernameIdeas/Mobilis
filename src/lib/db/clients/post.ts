@@ -1,3 +1,24 @@
+import { UserData } from "@/app/(main)/dashboard/measurements/types";
+
+export async function saveUserMeasurements(data: UserData): Promise<void> {
+  const response = await fetch("/api/user-measurements", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const result = await response.json().catch(() => ({ error: "Server error" }));
+    throw new Error(result?.error || `Server error: ${response.status}`);
+  }
+
+  const result = await response.json();
+
+  if (!result?.success) {
+    throw new Error(result?.error || "Failed to save measurements");
+  }
+}
+
 /**
  * Извлича съществуваща или създава нова тренировъчна/хранителна сесия
  * @param type - workout / meal
@@ -47,13 +68,14 @@ export const markItemProgress = async (
  * @param type - workout / meal
  * @param sessionId - ID на сесията
  * @param nextDay - Следващ ден на седмицата
+ * @param maxDay - Краен ден, ако е равно с nextDay се нулира сесия
  * @returns Обект с актуализираната сесия
  */
-export const moveToNextDay = async (type: "workout" | "meal", sessionId: string, nextDay: string) => {
+export const moveToNextDay = async (type: "workout" | "meal", sessionId: string, nextDay: string, maxDay: number) => {
   const res = await fetch("/api/next-day", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ type, sessionId, nextDay }),
+    body: JSON.stringify({ type, sessionId, nextDay, maxDay }),
   });
 
   if (!res.ok) {
