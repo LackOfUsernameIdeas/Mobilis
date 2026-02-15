@@ -1,6 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+
 import {
   Sidebar,
   SidebarContent,
@@ -10,31 +13,22 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { APP_CONFIG } from "@/config/app-config";
+import { useAuth } from "@/contexts/auth-context";
+import { fetchUserMeasurements } from "@/lib/db/clients/get";
 import { sidebarItems } from "@/navigation/sidebar/sidebar-items";
 import SidebarMeasurements from "@/app/(main)/dashboard/_components/sidebar/measurements";
 import { NavMain } from "./nav-main";
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import { fetchUserMeasurements } from "@/lib/db/clients/get";
 
-export function AppSidebar({
-  user,
-  ...props
-}: React.ComponentProps<typeof Sidebar> & {
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    avatar: string;
-  } | null;
-}) {
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user } = useAuth();
   const [measurements, setMeasurements] = useState<any>(null);
 
   useEffect(() => {
     async function loadMeasurements() {
-      try {
-        const measurements = await fetchUserMeasurements();
+      if (!user) return;
 
+      try {
+        const measurements = await fetchUserMeasurements(user.id);
         setMeasurements(measurements);
       } catch (error) {
         console.error("error fetching measurements:", error);
@@ -42,7 +36,7 @@ export function AppSidebar({
     }
 
     loadMeasurements();
-  }, []);
+  }, [user]);
 
   return (
     <Sidebar {...props}>

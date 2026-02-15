@@ -8,14 +8,15 @@ import { checkTodayMeasurements } from "@/server/measurements";
 import { Loader } from "../_components/loader";
 import { MeasurementModal } from "./components/MeasurementModal";
 import { LoadingOverlay } from "./components/LoadingOverlay";
-import type { FormData, UserData } from "./types";
+import type { FormData } from "./types";
 import {
   isFormValid,
   loadSavedMeasurements,
-  saveMeasurements,
+  saveMeasurementsLocally,
   convertFormDataToUserData,
   validateAllFields,
 } from "./helper_functions";
+import { saveUserMeasurements } from "@/lib/db/clients/post";
 
 const initialFormData: FormData = {
   height: "",
@@ -31,7 +32,7 @@ const initialFormData: FormData = {
 export default function MeasurementsPage() {
   const router = useRouter();
 
-  const [pageLoading, setPageLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -70,7 +71,7 @@ export default function MeasurementsPage() {
         console.error("Error during initialization:", err);
         setIsModalOpen(true);
       } finally {
-        setPageLoading(false);
+        setLoading(false);
       }
     }
 
@@ -90,7 +91,7 @@ export default function MeasurementsPage() {
     setError(null);
 
     try {
-      const data: UserData = convertFormDataToUserData(formData);
+      const data = convertFormDataToUserData(formData);
 
       const validationErrors = validateAllFields(data);
       if (validationErrors.length > 0) {
@@ -98,50 +99,20 @@ export default function MeasurementsPage() {
         return;
       }
 
-      console.log("Saving measurements:", data);
-
-      saveMeasurements(data);
-
-      const response = await fetch("/api/user-measurements", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      console.log("Response status:", response.status);
-      console.log("Response ok:", response.ok);
-
-      if (!response.ok) {
-        const result = await response.json().catch(() => ({ error: "Server error" }));
-        console.error("Server returned error:", result);
-        throw new Error(result?.error || `Server error: ${response.status}`);
-      }
-
-      const result = await response.json();
-      console.log("Result:", result);
-
-      if (!result?.success) {
-        throw new Error(result?.error || "Failed to save measurements");
-      }
-
-      console.log("Success! Redirecting...");
+      saveMeasurementsLocally(data);
+      await saveUserMeasurements(data);
 
       setIsModalOpen(false);
-
-      // Force a hard navigation if soft navigation fails
-      if (typeof window !== "undefined") {
-        window.location.href = "/dashboard/stats";
-      } else {
-        router.push("/dashboard/stats");
-      }
+      router.push("/dashboard/stats");
     } catch (err) {
       console.error("Error saving measurements:", err);
+      setError(err instanceof Error ? err.message : "Failed to save measurements");
     } finally {
       setSubmitLoading(false);
     }
   };
 
-  if (pageLoading) {
+  if (loading) {
     return (
       <div className="bg-background flex min-h-[80vh] items-center justify-center">
         <Loader />

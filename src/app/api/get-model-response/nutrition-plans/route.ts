@@ -3,13 +3,13 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId, category, answers, userStats } = await req.json();
+    const { userId, answers, userStats } = await req.json();
 
-    if (!category || !userId || !answers) {
-      return NextResponse.json({ error: "Category, user id and answers are required" }, { status: 400 });
+    if (!userId || !answers) {
+      return NextResponse.json({ error: "User id and answers are required" }, { status: 400 });
     }
 
-    saveUserPreferences(userId, category, answers);
+    saveUserPreferences(userId, "nutrition", answers);
 
     const systemPrompt = generateSystemPrompt();
     const userPrompt = generateUserPrompt(answers, userStats);

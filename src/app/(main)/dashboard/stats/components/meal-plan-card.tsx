@@ -71,7 +71,7 @@ export function MealPlanCard({ userId, nutritionData }: MealPlanCardProps) {
         }
 
         const dayMealIds = meals.map((m) => m.id);
-        const progress = await getDayProgress<MealItemProgress>("meal", session.id, dayMealIds);
+        const progress = await getDayProgress<MealItemProgress>(userId, "meal", session.id, dayMealIds);
 
         const statusMap: Record<number, Status> = {};
         meals.forEach((m) => {
@@ -150,7 +150,7 @@ export function MealPlanCard({ userId, nutritionData }: MealPlanCardProps) {
           (m) => m.day === getCurrentDayObject(sortedDaysNutrition, previousDay).day,
         );
         const dayMealIds = previousDayMeals.map((m) => m.id);
-        const progress = await getDayProgress<MealItemProgress>("meal", sessionId, dayMealIds);
+        const progress = await getDayProgress<MealItemProgress>(userId, "meal", sessionId, dayMealIds);
 
         const statusMap: Record<number, Status> = {};
         previousDayMeals.forEach((m) => {
@@ -175,7 +175,7 @@ export function MealPlanCard({ userId, nutritionData }: MealPlanCardProps) {
         setViewMode("current");
         setHistoryDay(null);
         const dayMealIds = meals.map((m) => m.id);
-        const progress = await getDayProgress<MealItemProgress>("meal", sessionId!, dayMealIds);
+        const progress = await getDayProgress<MealItemProgress>(userId, "meal", sessionId!, dayMealIds);
         const statusMap: Record<number, Status> = {};
         meals.forEach((m) => {
           const progressEntry = progress.find((p) => p.day_meal_id === m.id);
@@ -188,7 +188,7 @@ export function MealPlanCard({ userId, nutritionData }: MealPlanCardProps) {
           (m) => m.day === getCurrentDayObject(sortedDaysNutrition, nextDay).day,
         );
         const dayMealIds = nextDayMeals.map((m) => m.id);
-        const progress = await getDayProgress<MealItemProgress>("meal", sessionId!, dayMealIds);
+        const progress = await getDayProgress<MealItemProgress>(userId, "meal", sessionId!, dayMealIds);
         const statusMap: Record<number, Status> = {};
         nextDayMeals.forEach((m) => {
           const progressEntry = progress.find((p) => p.day_meal_id === m.id);

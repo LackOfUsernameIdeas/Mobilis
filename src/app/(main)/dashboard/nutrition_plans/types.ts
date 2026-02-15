@@ -83,7 +83,7 @@ export interface NutritionFormProps {
 }
 
 export interface ResultsDisplayProps {
-  category: "nutrition";
+  userId: string;
   answers: FormAnswers;
   userStats?: UserStats | null;
   onReset: () => void;

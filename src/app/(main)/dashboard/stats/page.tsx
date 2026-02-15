@@ -13,7 +13,6 @@ import {
   fetchUserWorkoutOverview,
   fetchUserNutritionOverview,
   fetchBodyFatWeightHistory,
-  getCompletedDays,
 } from "@/lib/db/clients/get";
 import { WorkoutExercisesCard } from "@/app/(main)/dashboard/stats/components/workout-exercises-card";
 import { NutrientStatsCard } from "@/app/(main)/dashboard/stats/components/nutrient-stats-cards";
@@ -21,11 +20,13 @@ import { MacronutrientChartCard } from "@/app/(main)/dashboard/stats/components/
 import { BMIData, BodyFatData, GoalData, NutrientData, WorkoutData, BodyFatWeightEntry, NutritionData } from "./types";
 import { MealPlanCard } from "@/app/(main)/dashboard/stats/components/meal-plan-card";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/auth-context";
+import { Unauthorized } from "@/app/(main)/dashboard/_components/unauthorized";
 
 type ActivePlan = "workout" | "nutrition";
 
 export default function HomePage() {
-  const [uid, setUID] = useState<string | null>(null);
+  const { user, loading: authLoading } = useAuth();
   const [bmiData, setBmiData] = useState<BMIData | null>(null);
   const [bodyFatData, setBodyFatData] = useState<BodyFatData | null>(null);
   const [goalData, setGoalData] = useState<GoalData | null>(null);
@@ -38,13 +39,14 @@ export default function HomePage() {
 
   useEffect(() => {
     async function loadHealthData() {
-      try {
-        const metrics = await fetchUserMetrics(true);
-        const chartData = await fetchBodyFatWeightHistory();
-        const workout = await fetchUserWorkoutOverview();
-        const nutrition = await fetchUserNutritionOverview();
+      if (!user) return;
 
-        setUID(metrics.userId);
+      try {
+        const metrics = await fetchUserMetrics(user.id);
+        const chartData = await fetchBodyFatWeightHistory(user.id);
+        const workout = await fetchUserWorkoutOverview(user.id);
+        const nutrition = await fetchUserNutritionOverview(user.id);
+
         setBmiData(metrics.bmiData);
         setBodyFatData(metrics.bodyFatData);
         setGoalData(metrics.goalData);
@@ -55,21 +57,25 @@ export default function HomePage() {
         console.log("workout", workout);
         console.log("nutrition", nutrition);
       } catch (error) {
-        console.error("Еrror fetching health data:", error);
+        console.error("Error fetching health data:", error);
       } finally {
         setLoading(false);
       }
     }
 
     loadHealthData();
-  }, []);
+  }, [user]);
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="flex min-h-[80vh] items-center justify-center">
-        <Loader />
+        <Loader text={authLoading ? "Автентикация..." : "Зареждане..."} />
       </div>
     );
+  }
+
+  if (!user) {
+    return <Unauthorized />;
   }
 
   const hasWorkout = !!workoutData && activePlan === "workout";
@@ -89,7 +95,7 @@ export default function HomePage() {
         </div>
       </motion.div>
 
-      {bmiData && bodyFatData && goalData && uid && nutrientData && chartData && (
+      {bmiData && bodyFatData && goalData && user.id && nutrientData && chartData && (
         <>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -139,9 +145,9 @@ export default function HomePage() {
                 transition={{ duration: 0.3 }}
               >
                 {activePlan === "workout" ? (
-                  <WorkoutExercisesCard workoutData={workoutData} userId={uid} />
+                  <WorkoutExercisesCard workoutData={workoutData} userId={user.id} />
                 ) : (
-                  <MealPlanCard nutritionData={nutritionData} userId={uid} />
+                  <MealPlanCard nutritionData={nutritionData} userId={user.id} />
                 )}
               </motion.div>
             </div>

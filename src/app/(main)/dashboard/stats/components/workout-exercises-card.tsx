@@ -79,7 +79,7 @@ export function WorkoutExercisesCard({ workoutData, userId }: WorkoutExercisesCa
         }
 
         const dayWorkoutIds = exercises.map((m) => m.id);
-        const progress = await getDayProgress<WorkoutExerciseProgress>("workout", session.id, dayWorkoutIds);
+        const progress = await getDayProgress<WorkoutExerciseProgress>(userId, "workout", session.id, dayWorkoutIds);
 
         const statusMap: Record<number, Status> = {};
         exercises.forEach((ex) => {
@@ -164,7 +164,7 @@ export function WorkoutExercisesCard({ workoutData, userId }: WorkoutExercisesCa
           (m) => m.day === getCurrentDayObject(sortedDaysWorkout, previousDay).day,
         );
         const dayWorkoutIds = previousDayExercises.map((ex) => ex.id);
-        const progress = await getDayProgress<WorkoutExerciseProgress>("workout", sessionId, dayWorkoutIds);
+        const progress = await getDayProgress<WorkoutExerciseProgress>(userId, "workout", sessionId, dayWorkoutIds);
 
         const statusMap: Record<number, Status> = {};
         previousDayExercises.forEach((ex) => {
@@ -189,7 +189,7 @@ export function WorkoutExercisesCard({ workoutData, userId }: WorkoutExercisesCa
         setViewMode("current");
         setHistoryDay(null);
         const dayWorkoutIds = exercises.map((ex) => ex.id);
-        const progress = await getDayProgress<WorkoutExerciseProgress>("workout", sessionId!, dayWorkoutIds);
+        const progress = await getDayProgress<WorkoutExerciseProgress>(userId, "workout", sessionId!, dayWorkoutIds);
         const statusMap: Record<number, Status> = {};
         exercises.forEach((ex) => {
           const progressEntry = progress.find((p) => p.day_exercise_id === ex.id);
@@ -202,7 +202,7 @@ export function WorkoutExercisesCard({ workoutData, userId }: WorkoutExercisesCa
           (m) => m.day === getCurrentDayObject(sortedDaysWorkout, nextDay).day,
         );
         const dayWorkoutIds = nextDayExercises.map((m) => m.id);
-        const progress = await getDayProgress<WorkoutExerciseProgress>("workout", sessionId!, dayWorkoutIds);
+        const progress = await getDayProgress<WorkoutExerciseProgress>(userId, "workout", sessionId!, dayWorkoutIds);
         const statusMap: Record<number, Status> = {};
         nextDayExercises.forEach((m) => {
           const progressEntry = progress.find((p) => p.day_exercise_id === m.id);

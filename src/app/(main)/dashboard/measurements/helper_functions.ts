@@ -50,7 +50,7 @@ export const loadSavedMeasurements = (): UserData | null => {
   return null;
 };
 
-export const saveMeasurements = (data: UserData): void => {
+export const saveMeasurementsLocally = (data: UserData): void => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 };
 

@@ -1,3 +1,24 @@
+import { UserData } from "@/app/(main)/dashboard/measurements/types";
+
+export async function saveUserMeasurements(data: UserData): Promise<void> {
+  const response = await fetch("/api/user-measurements", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const result = await response.json().catch(() => ({ error: "Server error" }));
+    throw new Error(result?.error || `Server error: ${response.status}`);
+  }
+
+  const result = await response.json();
+
+  if (!result?.success) {
+    throw new Error(result?.error || "Failed to save measurements");
+  }
+}
+
 /**
  * Извлича съществуваща или създава нова тренировъчна/хранителна сесия
  * @param type - workout / meal
