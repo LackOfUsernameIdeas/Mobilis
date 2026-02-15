@@ -1,6 +1,6 @@
 export const MEAL_TYPE_LABELS: Record<string, string> = {
   breakfast: "Закуска",
-  morning_snack: "Сутрешна закуска",
+  morning_snack: "Предиобедна закуска",
   lunch: "Обяд",
   afternoon_snack: "Следобедна закуска",
   pre_workout_snack: "Преди тренировка",
