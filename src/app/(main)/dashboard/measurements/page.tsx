@@ -103,7 +103,13 @@ export default function MeasurementsPage() {
       await saveUserMeasurements(data);
 
       setIsModalOpen(false);
-      router.push("/dashboard/stats");
+
+      // Force a hard navigation if soft navigation fails
+      if (typeof window !== "undefined") {
+        window.location.href = "/dashboard/stats";
+      } else {
+        router.push("/dashboard/stats");
+      }
     } catch (err) {
       console.error("Error saving measurements:", err);
       setError(err instanceof Error ? err.message : "Failed to save measurements");
