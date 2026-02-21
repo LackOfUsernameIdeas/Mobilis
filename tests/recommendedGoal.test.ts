@@ -23,35 +23,35 @@ describe("getRecommendedGoal", () => {
   afterEach(() => vi.clearAllMocks());
 
   describe("BMI-driven critical cases", () => {
-    it("recommends dirty_bulk for severe thinness (BMI < 16)", () => {
+    it("препоръчва dirty_bulk при тежко поднормено тегло (BMI < 16)", () => {
       mockHealthCalcs(14, 8);
       const result = getRecommendedGoal(180, 45, "male", 35, 75);
       expect(result.goal).toBe("dirty_bulk");
       expect(result.bmiCategory).toBe("severe_thin");
     });
 
-    it("recommends dirty_bulk for moderate thinness (16 ≤ BMI < 17)", () => {
+    it("препоръчва dirty_bulk при умерено поднормено тегло (16 ≤ BMI < 17)", () => {
       mockHealthCalcs(16.5, 10);
       const result = getRecommendedGoal(180, 53, "male", 35, 75);
       expect(result.goal).toBe("dirty_bulk");
       expect(result.bmiCategory).toBe("moderate_thin");
     });
 
-    it("recommends aggressive_cut for obese class 3 (BMI ≥ 40)", () => {
+    it("препоръчва aggressive_cut при затлъстяване клас 3 (BMI ≥ 40)", () => {
       mockHealthCalcs(42, 35);
       const result = getRecommendedGoal(170, 121, "male", 45, 120);
       expect(result.goal).toBe("aggressive_cut");
       expect(result.bmiCategory).toBe("obese_3");
     });
 
-    it("recommends aggressive_cut for obese class 2 (35 ≤ BMI < 40)", () => {
+    it("препоръчва aggressive_cut при затлъстяване клас 2 (35 ≤ BMI < 40)", () => {
       mockHealthCalcs(37, 33);
       const result = getRecommendedGoal(170, 107, "male", 45, 115);
       expect(result.goal).toBe("aggressive_cut");
       expect(result.bmiCategory).toBe("obese_2");
     });
 
-    it("recommends cut for obese class 1 (30 ≤ BMI < 35)", () => {
+    it("препоръчва cut при затлъстяване клас 1 (30 ≤ BMI < 35)", () => {
       mockHealthCalcs(32, 28);
       const result = getRecommendedGoal(170, 92, "male", 40, 105);
       expect(result.goal).toBe("cut");
@@ -60,14 +60,14 @@ describe("getRecommendedGoal", () => {
   });
 
   describe("critical body fat", () => {
-    it("recommends dirty_bulk for critical body fat in males (< 2%)", () => {
+    it("препоръчва dirty_bulk при критично ниска телесна мазнина при мъже (< 2%)", () => {
       mockHealthCalcs(22, 1);
       const result = getRecommendedGoal(180, 71, "male", 35, 78);
       expect(result.goal).toBe("dirty_bulk");
       expect(result.bodyFatCategory).toBe("critical");
     });
 
-    it("recommends dirty_bulk for critical body fat in females (< 10%)", () => {
+    it("препоръчва dirty_bulk при критично ниска телесна мазнина при жени (< 10%)", () => {
       mockHealthCalcs(22, 8);
       const result = getRecommendedGoal(165, 60, "female", 32, 72);
       expect(result.goal).toBe("dirty_bulk");
@@ -76,7 +76,7 @@ describe("getRecommendedGoal", () => {
   });
 
   describe("mild thinness", () => {
-    it("recommends lean_bulk for mild thinness (17.5 ≤ BMI < 18.5)", () => {
+    it("препоръчва lean_bulk при леко поднормено тегло (17.5 ≤ BMI < 18.5)", () => {
       mockHealthCalcs(18, 12);
       const result = getRecommendedGoal(180, 58, "male", 35, 76);
       expect(result.goal).toBe("lean_bulk");
@@ -85,7 +85,7 @@ describe("getRecommendedGoal", () => {
   });
 
   describe("normal BMI combinations", () => {
-    it("recommends recomposition when BMI normal + body fat obese (male)", () => {
+    it("препоръчва recomposition при нормален BMI + затлъстяване по телесна мазнина (мъже)", () => {
       mockHealthCalcs(23, 26);
       const result = getRecommendedGoal(180, 74, "male", 37, 90);
       expect(result.goal).toBe("recomposition");
@@ -93,28 +93,28 @@ describe("getRecommendedGoal", () => {
       expect(result.bodyFatCategory).toBe("obese");
     });
 
-    it("recommends recomposition when BMI normal + body fat average (male)", () => {
+    it("препоръчва recomposition при нормален BMI + средна телесна мазнина (мъже)", () => {
       mockHealthCalcs(23, 20);
       const result = getRecommendedGoal(180, 74, "male", 37, 85);
       expect(result.goal).toBe("recomposition");
       expect(result.bodyFatCategory).toBe("average");
     });
 
-    it("recommends maintenance when BMI normal + body fat fitness (male)", () => {
+    it("препоръчва maintenance при нормален BMI + фитнес ниво на телесна мазнина (мъже)", () => {
       mockHealthCalcs(23, 15);
       const result = getRecommendedGoal(180, 74, "male", 36, 80);
       expect(result.goal).toBe("maintenance");
       expect(result.bodyFatCategory).toBe("fitness");
     });
 
-    it("recommends maintenance when BMI normal + body fat athletes (male)", () => {
+    it("препоръчва maintenance при нормален BMI + атлетично ниво на телесна мазнина (мъже)", () => {
       mockHealthCalcs(23, 10);
       const result = getRecommendedGoal(180, 74, "male", 36, 78);
       expect(result.goal).toBe("maintenance");
       expect(result.bodyFatCategory).toBe("athletes");
     });
 
-    it("recommends recomposition when BMI normal + body fat obese (female)", () => {
+    it("препоръчва recomposition при нормален BMI + затлъстяване по телесна мазнина (жени)", () => {
       mockHealthCalcs(23, 34);
       const result = getRecommendedGoal(165, 62, "female", 32, 90);
       expect(result.goal).toBe("recomposition");
@@ -123,14 +123,14 @@ describe("getRecommendedGoal", () => {
   });
 
   describe("overweight BMI combinations", () => {
-    it("recommends maintenance when overweight + body fat fitness (athletes/fitness)", () => {
+    it("препоръчва maintenance при наднормено тегло + фитнес/атлетична телесна мазнина", () => {
       mockHealthCalcs(27, 15);
       const result = getRecommendedGoal(180, 87, "male", 37, 88);
       expect(result.goal).toBe("maintenance");
       expect(result.bmiCategory).toBe("overweight");
     });
 
-    it("recommends recomposition when overweight + body fat average", () => {
+    it("препоръчва recomposition при наднормено тегло + средна телесна мазнина", () => {
       mockHealthCalcs(27, 20);
       const result = getRecommendedGoal(180, 87, "male", 38, 92);
       expect(result.goal).toBe("recomposition");
@@ -138,7 +138,7 @@ describe("getRecommendedGoal", () => {
       expect(result.bodyFatCategory).toBe("average");
     });
 
-    it("recommends cut when overweight + body fat obese", () => {
+    it("препоръчва cut при наднормено тегло + затлъстяване по телесна мазнина", () => {
       mockHealthCalcs(27, 27);
       const result = getRecommendedGoal(180, 87, "male", 40, 100);
       expect(result.goal).toBe("cut");
@@ -148,7 +148,7 @@ describe("getRecommendedGoal", () => {
   });
 
   describe("return shape", () => {
-    it("returns all required fields", () => {
+    it("връща всички задължителни полета", () => {
       mockHealthCalcs(23, 15);
       const result = getRecommendedGoal(180, 74, "male", 36, 80);
 
@@ -161,7 +161,7 @@ describe("getRecommendedGoal", () => {
       expect(result).toHaveProperty("reasoning");
     });
 
-    it("passes bmi and bodyFat values through to the result", () => {
+    it("предава стойностите на bmi и bodyFat в резултата", () => {
       mockHealthCalcs(22.5, 14);
       const result = getRecommendedGoal(180, 73, "male", 36, 80);
 
@@ -169,14 +169,14 @@ describe("getRecommendedGoal", () => {
       expect(result.bodyFatPercentage).toBe(14);
     });
 
-    it("forwards hip to calculateBodyFat for females", () => {
+    it("подава hip към calculateBodyFat при жени", () => {
       mockHealthCalcs(23, 22);
       getRecommendedGoal(165, 62, "female", 32, 75, 95);
 
       expect(calculateBodyFat).toHaveBeenCalledWith(165, "female", 62, 32, 75, 95);
     });
 
-    it("passes undefined hip for males", () => {
+    it("подава undefined за hip при мъже", () => {
       mockHealthCalcs(23, 15);
       getRecommendedGoal(180, 74, "male", 36, 80);
 
@@ -204,7 +204,7 @@ describe("getMostRecommendedGoal", () => {
   }
 
   describe("successful queries", () => {
-    it("returns the most frequent goal", async () => {
+    it("връща най-често срещаната цел", async () => {
       mockMetrics([
         { goal: "cut", goalName: "Изгаряне на мазнини (Cut)" },
         { goal: "cut", goalName: "Изгаряне на мазнини (Cut)" },
@@ -219,7 +219,7 @@ describe("getMostRecommendedGoal", () => {
       });
     });
 
-    it("returns single record when only one entry exists", async () => {
+    it("връща единствения запис когато съществува само един", async () => {
       mockMetrics([{ goal: "lean_bulk", goalName: "Чисто качване (Lean Bulk)" }]);
 
       const result = await getMostRecommendedGoal();
@@ -230,7 +230,7 @@ describe("getMostRecommendedGoal", () => {
       });
     });
 
-    it("returns null data when metrics table is empty", async () => {
+    it("връща null данни когато таблицата с метрики е празна", async () => {
       mockMetrics([]);
 
       const result = await getMostRecommendedGoal();
@@ -238,7 +238,7 @@ describe("getMostRecommendedGoal", () => {
       expect(result).toEqual({ success: true, data: null });
     });
 
-    it("returns null data when metrics table returns null", async () => {
+    it("връща null данни когато таблицата с метрики връща null", async () => {
       mockMetrics(null);
 
       const result = await getMostRecommendedGoal();
@@ -246,7 +246,7 @@ describe("getMostRecommendedGoal", () => {
       expect(result).toEqual({ success: true, data: null });
     });
 
-    it("breaks ties by returning whichever appears first in Object.values order", async () => {
+    it("разрешава равенство като връща първото срещнато според реда на Object.values", async () => {
       mockMetrics([
         { goal: "cut", goalName: "Изгаряне на мазнини (Cut)" },
         { goal: "maintenance", goalName: "Поддържане (Maintenance)" },
@@ -260,7 +260,7 @@ describe("getMostRecommendedGoal", () => {
       expect((result as any).data.count).toBe(1);
     });
 
-    it("correctly counts multiple distinct goals", async () => {
+    it("брои правилно множество различни цели", async () => {
       mockMetrics([
         { goal: "cut", goalName: "Изгаряне на мазнини (Cut)" },
         { goal: "cut", goalName: "Изгаряне на мазнини (Cut)" },
@@ -278,7 +278,7 @@ describe("getMostRecommendedGoal", () => {
       });
     });
 
-    it("treats same goal with different goalName as separate entries", async () => {
+    it("третира еднаква цел с различно goalName като отделни записи", async () => {
       mockMetrics([
         { goal: "cut", goalName: "Name A" },
         { goal: "cut", goalName: "Name B" },
@@ -295,7 +295,7 @@ describe("getMostRecommendedGoal", () => {
   });
 
   describe("error handling", () => {
-    it("returns failure when supabase query errors", async () => {
+    it("връща неуспех при грешка в supabase заявката", async () => {
       mockMetrics(null, new Error("DB error"));
 
       const result = await getMostRecommendedGoal();
@@ -306,7 +306,7 @@ describe("getMostRecommendedGoal", () => {
       });
     });
 
-    it("throws when getServerClient rejects (not caught by function)", async () => {
+    it("хвърля грешка когато getServerClient е отхвърлен (не се прихваща от функцията)", async () => {
       vi.mocked(getServerClient).mockRejectedValue(new Error("Auth error"));
 
       await expect(getMostRecommendedGoal()).rejects.toThrow("Auth error");
@@ -314,7 +314,7 @@ describe("getMostRecommendedGoal", () => {
   });
 
   describe("return shape", () => {
-    it("success response with data has correct shape", async () => {
+    it("успешният отговор с данни има правилната форма", async () => {
       mockMetrics([{ goal: "recomposition", goalName: "Рекомпозиция (Recomposition)" }]);
 
       const result = await getMostRecommendedGoal();
@@ -328,7 +328,7 @@ describe("getMostRecommendedGoal", () => {
       expect(typeof data.count).toBe("number");
     });
 
-    it("failure response has correct shape", async () => {
+    it("неуспешният отговор има правилната форма", async () => {
       mockMetrics(null, new Error("fail"));
 
       const result = await getMostRecommendedGoal();

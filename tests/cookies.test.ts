@@ -26,7 +26,7 @@ describe("cookies", () => {
   });
 
   describe("getValueFromCookie", () => {
-    it("returns cookie value when cookie exists", async () => {
+    it("връща стойността на cookie когато то съществува", async () => {
       mockCookieStore.get.mockReturnValue({ value: "test-value" });
 
       const result = await getValueFromCookie("test-key");
@@ -35,7 +35,7 @@ describe("cookies", () => {
       expect(mockCookieStore.get).toHaveBeenCalledWith("test-key");
     });
 
-    it("returns undefined when cookie does not exist", async () => {
+    it("връща undefined когато cookie не съществува", async () => {
       mockCookieStore.get.mockReturnValue(undefined);
 
       const result = await getValueFromCookie("non-existent-key");
@@ -44,7 +44,7 @@ describe("cookies", () => {
       expect(mockCookieStore.get).toHaveBeenCalledWith("non-existent-key");
     });
 
-    it("returns undefined when cookie value is undefined", async () => {
+    it("връща undefined когато стойността на cookie е undefined", async () => {
       mockCookieStore.get.mockReturnValue({ value: undefined });
 
       const result = await getValueFromCookie("test-key");
@@ -52,7 +52,7 @@ describe("cookies", () => {
       expect(result).toBeUndefined();
     });
 
-    it("handles empty string value", async () => {
+    it("обработва празен низ като стойност", async () => {
       mockCookieStore.get.mockReturnValue({ value: "" });
 
       const result = await getValueFromCookie("empty-key");
@@ -62,7 +62,7 @@ describe("cookies", () => {
   });
 
   describe("setValueToCookie", () => {
-    it("sets cookie with default options", async () => {
+    it("записва cookie с настройките по подразбиране", async () => {
       await setValueToCookie("test-key", "test-value");
 
       expect(mockCookieStore.set).toHaveBeenCalledWith("test-key", "test-value", {
@@ -71,7 +71,7 @@ describe("cookies", () => {
       });
     });
 
-    it("sets cookie with custom path", async () => {
+    it("записва cookie с персонализиран path", async () => {
       await setValueToCookie("test-key", "test-value", { path: "/dashboard" });
 
       expect(mockCookieStore.set).toHaveBeenCalledWith("test-key", "test-value", {
@@ -80,7 +80,7 @@ describe("cookies", () => {
       });
     });
 
-    it("sets cookie with custom maxAge", async () => {
+    it("записва cookie с персонализиран maxAge", async () => {
       const oneHour = 60 * 60;
       await setValueToCookie("test-key", "test-value", { maxAge: oneHour });
 
@@ -90,7 +90,7 @@ describe("cookies", () => {
       });
     });
 
-    it("sets cookie with both custom path and maxAge", async () => {
+    it("записва cookie с персонализирани path и maxAge", async () => {
       await setValueToCookie("test-key", "test-value", {
         path: "/admin",
         maxAge: 3600,
@@ -102,7 +102,7 @@ describe("cookies", () => {
       });
     });
 
-    it("handles empty string value", async () => {
+    it("обработва празен низ като стойност", async () => {
       await setValueToCookie("test-key", "");
 
       expect(mockCookieStore.set).toHaveBeenCalledWith("test-key", "", {
@@ -111,7 +111,7 @@ describe("cookies", () => {
       });
     });
 
-    it("handles special characters in value", async () => {
+    it("обработва специални символи в стойността", async () => {
       const specialValue = "value with spaces & symbols!@#";
       await setValueToCookie("test-key", specialValue);
 
@@ -126,7 +126,7 @@ describe("cookies", () => {
     const allowedThemes = ["light", "dark", "system"] as const;
     const allowedSizes = ["small", "medium", "large"] as const;
 
-    it("returns valid preference value", async () => {
+    it("връща валидна стойност на предпочитание", async () => {
       mockCookieStore.get.mockReturnValue({ value: "dark" });
 
       const result = await getPreference("theme", allowedThemes, "light");
@@ -135,7 +135,7 @@ describe("cookies", () => {
       expect(mockCookieStore.get).toHaveBeenCalledWith("theme");
     });
 
-    it("returns fallback when cookie does not exist", async () => {
+    it("връща стойността по подразбиране когато cookie не съществува", async () => {
       mockCookieStore.get.mockReturnValue(undefined);
 
       const result = await getPreference("theme", allowedThemes, "light");
@@ -143,7 +143,7 @@ describe("cookies", () => {
       expect(result).toBe("light");
     });
 
-    it("returns fallback when value is not in allowed list", async () => {
+    it("връща стойността по подразбиране когато стойността не е в позволения списък", async () => {
       mockCookieStore.get.mockReturnValue({ value: "invalid-theme" });
 
       const result = await getPreference("theme", allowedThemes, "light");
@@ -151,7 +151,7 @@ describe("cookies", () => {
       expect(result).toBe("light");
     });
 
-    it("trims whitespace from cookie value", async () => {
+    it("премахва интервалите от началото и края на стойността", async () => {
       mockCookieStore.get.mockReturnValue({ value: "  dark  " });
 
       const result = await getPreference("theme", allowedThemes, "light");
@@ -159,7 +159,7 @@ describe("cookies", () => {
       expect(result).toBe("dark");
     });
 
-    it("returns fallback for empty string", async () => {
+    it("връща стойността по подразбиране за празен низ", async () => {
       mockCookieStore.get.mockReturnValue({ value: "" });
 
       const result = await getPreference("theme", allowedThemes, "light");
@@ -167,7 +167,7 @@ describe("cookies", () => {
       expect(result).toBe("light");
     });
 
-    it("returns fallback for whitespace-only string", async () => {
+    it("връща стойността по подразбиране за низ само с интервали", async () => {
       mockCookieStore.get.mockReturnValue({ value: "   " });
 
       const result = await getPreference("theme", allowedThemes, "light");
@@ -175,7 +175,7 @@ describe("cookies", () => {
       expect(result).toBe("light");
     });
 
-    it("handles different allowed value types", async () => {
+    it("обработва различни типове позволени стойности", async () => {
       mockCookieStore.get.mockReturnValue({ value: "medium" });
 
       const result = await getPreference("size", allowedSizes, "small");
@@ -183,7 +183,7 @@ describe("cookies", () => {
       expect(result).toBe("medium");
     });
 
-    it("is case-sensitive", async () => {
+    it("прави разлика между главни и малки букви", async () => {
       mockCookieStore.get.mockReturnValue({ value: "Dark" });
 
       const result = await getPreference("theme", allowedThemes, "light");
@@ -193,7 +193,7 @@ describe("cookies", () => {
   });
 
   describe("Integration scenarios", () => {
-    it("set and get preference workflow", async () => {
+    it("работен поток за записване и четене на предпочитание", async () => {
       // Записва предпочитание
       await setValueToCookie("user_theme", "dark");
 
@@ -205,7 +205,7 @@ describe("cookies", () => {
       expect(result).toBe("dark");
     });
 
-    it("handles preference migration (invalid old value)", async () => {
+    it("обработва миграция на предпочитание (невалидна стара стойност)", async () => {
       // Старото cookie съдържа невалидна стойност
       mockCookieStore.get.mockReturnValue({ value: "blue-theme" }); // стар формат
 
@@ -214,7 +214,7 @@ describe("cookies", () => {
       expect(result).toBe("system"); // Връща новата стойност по подразбиране
     });
 
-    it("handles cookie with maxAge of 0 (session cookie)", async () => {
+    it("обработва cookie с maxAge равен на 0 (сесийно cookie)", async () => {
       await setValueToCookie("temp-data", "value", { maxAge: 0 });
 
       expect(mockCookieStore.set).toHaveBeenCalledWith("temp-data", "value", {
@@ -225,7 +225,7 @@ describe("cookies", () => {
   });
 
   describe("Edge cases", () => {
-    it("handles very long cookie values", async () => {
+    it("обработва много дълги стойности на cookie", async () => {
       const longValue = "a".repeat(4000);
       mockCookieStore.get.mockReturnValue({ value: longValue });
 
@@ -234,7 +234,7 @@ describe("cookies", () => {
       expect(result).toBe(longValue);
     });
 
-    it("handles unicode characters", async () => {
+    it("обработва unicode символи", async () => {
       const unicodeValue = "你好世界 🌍 Здравей";
       mockCookieStore.get.mockReturnValue({ value: unicodeValue });
 
@@ -243,7 +243,7 @@ describe("cookies", () => {
       expect(result).toBe(unicodeValue);
     });
 
-    it("handles numeric strings in preferences", async () => {
+    it("обработва числови низове в предпочитания", async () => {
       mockCookieStore.get.mockReturnValue({ value: "1" });
 
       const result = await getPreference("setting", ["1", "2", "3"] as const, "1");
@@ -251,7 +251,7 @@ describe("cookies", () => {
       expect(result).toBe("1");
     });
 
-    it("handles preference with single allowed value", async () => {
+    it("обработва предпочитание с единствена позволена стойност", async () => {
       mockCookieStore.get.mockReturnValue({ value: "only-option" });
 
       const result = await getPreference("single", ["only-option"] as const, "only-option");

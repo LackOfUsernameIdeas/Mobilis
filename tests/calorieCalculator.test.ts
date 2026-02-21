@@ -11,7 +11,7 @@ describe("calculateCalorieRecommendation", () => {
   };
 
   describe("BMR calculation", () => {
-    it("calculates correct BMR for male", () => {
+    it("изчислява правилен BMR за мъж", () => {
       const result = calculateCalorieRecommendation(
         baseParams.weight,
         baseParams.height,
@@ -25,7 +25,7 @@ describe("calculateCalorieRecommendation", () => {
       expect(result.bmr).toBe(1805);
     });
 
-    it("calculates correct BMR for female", () => {
+    it("изчислява правилен BMR за жена", () => {
       const result = calculateCalorieRecommendation(
         baseParams.weight,
         baseParams.height,
@@ -39,7 +39,7 @@ describe("calculateCalorieRecommendation", () => {
       expect(result.bmr).toBe(1639);
     });
 
-    it("adjusts BMR with age", () => {
+    it("коригира BMR спрямо възрастта", () => {
       const young = calculateCalorieRecommendation(20, 180, 20, "male", "sedentary", "maintenance");
       const old = calculateCalorieRecommendation(20, 180, 60, "male", "sedentary", "maintenance");
 
@@ -50,7 +50,7 @@ describe("calculateCalorieRecommendation", () => {
   });
 
   describe("TDEE calculation", () => {
-    it("calculates TDEE for sedentary lifestyle", () => {
+    it("изчислява TDEE за заседнал начин на живот", () => {
       const result = calculateCalorieRecommendation(
         baseParams.weight,
         baseParams.height,
@@ -64,7 +64,7 @@ describe("calculateCalorieRecommendation", () => {
       expect(result.tdee).toBe(2166);
     });
 
-    it("calculates TDEE for very active lifestyle", () => {
+    it("изчислява TDEE за много активен начин на живот", () => {
       const result = calculateCalorieRecommendation(
         baseParams.weight,
         baseParams.height,
@@ -78,7 +78,7 @@ describe("calculateCalorieRecommendation", () => {
       expect(result.tdee).toBe(3430);
     });
 
-    it("increases TDEE with higher activity levels", () => {
+    it("увеличава TDEE с по-високи нива на активност", () => {
       const activityLevels: ActivityLevel[] = ["sedentary", "light", "moderate", "active", "very_active"];
       const tdees = activityLevels.map(
         (level) =>
@@ -100,7 +100,7 @@ describe("calculateCalorieRecommendation", () => {
   });
 
   describe("Goal calorie adjustments", () => {
-    it("reduces calories for cut goal", () => {
+    it("намалява калориите при цел изгаряне (cut)", () => {
       const result = calculateCalorieRecommendation(
         baseParams.weight,
         baseParams.height,
@@ -114,7 +114,7 @@ describe("calculateCalorieRecommendation", () => {
       expect(result.goal.calories).toBe(result.tdee - 500);
     });
 
-    it("reduces more calories for aggressive cut", () => {
+    it("намалява повече калории при агресивно изгаряне", () => {
       const cut = calculateCalorieRecommendation(
         baseParams.weight,
         baseParams.height,
@@ -136,7 +136,7 @@ describe("calculateCalorieRecommendation", () => {
       expect(cut.goal.calories - aggCut.goal.calories).toBe(250); // -500 срещу -750
     });
 
-    it("adds calories for lean bulk goal", () => {
+    it("добавя калории при цел чисто качване (lean bulk)", () => {
       const result = calculateCalorieRecommendation(
         baseParams.weight,
         baseParams.height,
@@ -149,7 +149,7 @@ describe("calculateCalorieRecommendation", () => {
       expect(result.goal.calories).toBe(result.tdee + 300);
     });
 
-    it("adds more calories for dirty bulk", () => {
+    it("добавя повече калории при бързо качване (dirty bulk)", () => {
       const leanBulk = calculateCalorieRecommendation(
         baseParams.weight,
         baseParams.height,
@@ -170,7 +170,7 @@ describe("calculateCalorieRecommendation", () => {
       expect(dirtyBulk.goal.calories).toBeGreaterThan(leanBulk.goal.calories);
     });
 
-    it("maintains TDEE for maintenance goal", () => {
+    it("поддържа TDEE при цел поддържане (maintenance)", () => {
       const result = calculateCalorieRecommendation(
         baseParams.weight,
         baseParams.height,
@@ -185,7 +185,7 @@ describe("calculateCalorieRecommendation", () => {
   });
 
   describe("Macro calculations", () => {
-    it("calculates high protein for cut", () => {
+    it("изчислява висок протеин при изгаряне", () => {
       const result = calculateCalorieRecommendation(
         baseParams.weight,
         baseParams.height,
@@ -207,7 +207,7 @@ describe("calculateCalorieRecommendation", () => {
       expect(proteinPercent).toBeCloseTo(0.4, 1);
     });
 
-    it("calculates high carbs for lean bulk", () => {
+    it("изчислява високи въглехидрати при чисто качване", () => {
       const result = calculateCalorieRecommendation(
         baseParams.weight,
         baseParams.height,
@@ -224,7 +224,7 @@ describe("calculateCalorieRecommendation", () => {
       expect(carbs).toBeGreaterThan(fats);
     });
 
-    it("ensures all macros are positive integers", () => {
+    it("всички макроси са положителни цели числа", () => {
       const goals: FitnessGoal[] = ["cut", "lean_bulk", "maintenance", "aggressive_cut"];
 
       goals.forEach((goal) => {
@@ -247,7 +247,7 @@ describe("calculateCalorieRecommendation", () => {
       });
     });
 
-    it("macros add up approximately to total calories", () => {
+    it("сборът от макросите приблизително съответства на общите калории", () => {
       const result = calculateCalorieRecommendation(
         baseParams.weight,
         baseParams.height,
@@ -269,7 +269,7 @@ describe("calculateCalorieRecommendation", () => {
   });
 
   describe("Edge cases", () => {
-    it("handles very low weight", () => {
+    it("обработва много ниско тегло", () => {
       const result = calculateCalorieRecommendation(50, 160, 25, "female", "sedentary", "maintenance");
 
       expect(result.bmr).toBeGreaterThan(0);
@@ -277,7 +277,7 @@ describe("calculateCalorieRecommendation", () => {
       expect(result.goal.calories).toBeGreaterThan(0);
     });
 
-    it("handles very high weight", () => {
+    it("обработва много високо тегло", () => {
       const result = calculateCalorieRecommendation(150, 200, 30, "male", "very_active", "dirty_bulk");
 
       expect(result.bmr).toBeGreaterThan(0);
@@ -285,14 +285,14 @@ describe("calculateCalorieRecommendation", () => {
       expect(result.goal.calories).toBeGreaterThan(result.tdee);
     });
 
-    it("handles elderly age", () => {
+    it("обработва напреднала възраст", () => {
       const result = calculateCalorieRecommendation(70, 170, 80, "male", "light", "maintenance");
 
       expect(result.bmr).toBeGreaterThan(0);
       expect(result.tdee).toBeGreaterThan(result.bmr);
     });
 
-    it("returns rounded integer values", () => {
+    it("връща закръглени цели числа", () => {
       // Проверка, че резултатите са закръглени цели числа
       const result = calculateCalorieRecommendation(75.5, 182.3, 28, "male", "moderate", "cut");
 
@@ -303,7 +303,7 @@ describe("calculateCalorieRecommendation", () => {
   });
 
   describe("Real-world scenarios", () => {
-    it("typical office worker wanting to lose weight", () => {
+    it("типичен служител на бюро, който иска да свали тегло", () => {
       // Типичен служител на бюро, който иска да свали тегло
       const result = calculateCalorieRecommendation(
         85, // леко наднормено тегло
@@ -319,7 +319,7 @@ describe("calculateCalorieRecommendation", () => {
       expect(result.goal.macros.protein).toBeGreaterThan(100); // Достатъчно протеин
     });
 
-    it("young athlete wanting to gain muscle", () => {
+    it("млад спортист, който иска да качи мускулна маса", () => {
       // Млад спортист, който иска да качи мускулна маса
       const result = calculateCalorieRecommendation(70, 180, 20, "male", "very_active", "lean_bulk");
 
@@ -328,7 +328,7 @@ describe("calculateCalorieRecommendation", () => {
       expect(result.goal.macros.carbs).toBeGreaterThan(result.goal.macros.protein);
     });
 
-    it("woman on recomposition journey", () => {
+    it("жена в процес на рекомпозиция на тялото", () => {
       // Жена в процес на рекомпозиция на тялото
       const result = calculateCalorieRecommendation(65, 165, 28, "female", "moderate", "recomposition");
 

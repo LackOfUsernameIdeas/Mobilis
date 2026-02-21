@@ -41,7 +41,7 @@ describe("measurements", () => {
   });
 
   describe("checkTodayMeasurements", () => {
-    it("returns false when user is not authenticated", async () => {
+    it("връща false когато потребителят не е автентикиран", async () => {
       mockSupabase.auth.getUser.mockResolvedValue({
         data: { user: null },
         error: new Error("Not authenticated"),
@@ -53,7 +53,7 @@ describe("measurements", () => {
       expect(result.hasTodayMeasurement).toBe(false);
     });
 
-    it("returns true with no measurements when none exist today", async () => {
+    it("връща true без измервания когато няма измерване за днес", async () => {
       mockSupabase.auth.getUser.mockResolvedValue({
         data: { user: { id: "user-123" } },
         error: null,
@@ -75,7 +75,7 @@ describe("measurements", () => {
       expect(result.data).toEqual([]);
     });
 
-    it("returns true with measurement when one exists today", async () => {
+    it("връща true с измерване когато съществува такова за днес", async () => {
       const today = new Date().toISOString().split("T")[0];
       const mockMeasurement = {
         id: "measurement-123",
@@ -107,7 +107,7 @@ describe("measurements", () => {
       expect(result.data?.[0].id).toBe("measurement-123");
     });
 
-    it("queries correct table with correct filters", async () => {
+    it("прави заявка към правилната таблица с правилните филтри", async () => {
       const today = new Date().toISOString().split("T")[0];
 
       mockSupabase.auth.getUser.mockResolvedValue({
@@ -134,7 +134,7 @@ describe("measurements", () => {
       expect(mockQuery.limit).toHaveBeenCalledWith(1);
     });
 
-    it("throws error when database query fails", async () => {
+    it("хвърля грешка при неуспешна заявка към базата данни", async () => {
       mockSupabase.auth.getUser.mockResolvedValue({
         data: { user: { id: "user-123" } },
         error: null,
@@ -183,7 +183,7 @@ describe("measurements", () => {
       global.fetch = vi.fn();
     });
 
-    it("returns error when user is not authenticated", async () => {
+    it("връща грешка когато потребителят не е автентикиран", async () => {
       mockSupabase.auth.getUser.mockResolvedValue({
         data: { user: null },
         error: new Error("Not authenticated"),
@@ -195,7 +195,7 @@ describe("measurements", () => {
       expect(result.error).toBe("You must be logged in to save measurements");
     });
 
-    it("calls all API endpoints in parallel", async () => {
+    it("извиква всички API endpoints паралелно", async () => {
       const mockFetch = vi.mocked(global.fetch);
 
       // Mock на API отговорите
@@ -245,7 +245,7 @@ describe("measurements", () => {
       expect(mockFetch).toHaveBeenCalledTimes(4);
     });
 
-    it("saves measurements with correct data", async () => {
+    it("записва измерванията с правилните данни", async () => {
       const mockFetch = vi.mocked(global.fetch);
       mockFetch.mockResolvedValue({
         ok: true,
@@ -257,7 +257,7 @@ describe("measurements", () => {
       expect(saveUserMeasurements).toHaveBeenCalledWith("user-123", mockMeasurementData);
     });
 
-    it("saves metrics with correct calculated data", async () => {
+    it("записва метриките с правилно изчислените данни", async () => {
       const mockFetch = vi.mocked(global.fetch);
 
       // Mock на всички API отговори с конкретни стойности за проверка
@@ -321,7 +321,7 @@ describe("measurements", () => {
       );
     });
 
-    it("returns error when API calls fail", async () => {
+    it("връща грешка при неуспешни API извиквания", async () => {
       const mockFetch = vi.mocked(global.fetch);
 
       mockFetch.mockResolvedValue({
@@ -335,7 +335,7 @@ describe("measurements", () => {
       expect(result.error).toBe("Failed to calculate health metrics");
     });
 
-    it("returns error when nutrients calculation fails", async () => {
+    it("връща грешка при неуспешно изчисляване на хранителни стойности", async () => {
       const mockFetch = vi.mocked(global.fetch);
 
       mockFetch.mockImplementation((url: any) => {
@@ -354,7 +354,7 @@ describe("measurements", () => {
       expect(result.error).toBe("Failed to calculate nutrients");
     });
 
-    it("handles errors gracefully", async () => {
+    it("обработва грешките коректно", async () => {
       vi.mocked(global.fetch).mockRejectedValue(new Error("Network error"));
 
       const result = await saveMeasurementsAndCalculateMetrics(mockMeasurementData);
@@ -363,7 +363,7 @@ describe("measurements", () => {
       expect(result.error).toBe("Network error");
     });
 
-    it("works without hip measurement for males", async () => {
+    it("работи без измерване на ханш при мъже", async () => {
       const maleData = { ...mockMeasurementData, hip: undefined };
 
       const mockFetch = vi.mocked(global.fetch);
