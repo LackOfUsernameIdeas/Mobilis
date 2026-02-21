@@ -1,7 +1,6 @@
-// tests/nutritionalProfile.test.ts
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-// Mock MUST be before other imports
+// Mock-ът ТРЯБВА да е преди другите импорти
 vi.mock("@/lib/db/clients/server", () => ({
   getServerClient: vi.fn(),
 }));
@@ -113,7 +112,7 @@ describe("getAverageNutritionalProfile", () => {
         },
       );
 
-      // 3 records: calories avg = (2000+1000+1500)/3 = 1500, protein = 303/3 = 101, fats = 213/3 = 71, carbs = 603/3 = 201
+      // 3 записа: средно calories = (2000+1000+1500)/3 = 1500, protein = 303/3 = 101, fats = 213/3 = 71, carbs = 603/3 = 201
       const result = await getAverageNutritionalProfile();
 
       expect(result.success).toBe(true);
@@ -152,7 +151,7 @@ describe("getAverageNutritionalProfile", () => {
         },
       );
 
-      // avg of [1000, 2000, 3000, 4000] = 2500, etc.
+      // Средно на [1000, 2000, 3000, 4000] = 2500 и т.н.
       const result = await getAverageNutritionalProfile();
 
       expect(result).toEqual({

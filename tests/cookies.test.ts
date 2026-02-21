@@ -1,7 +1,6 @@
-// tests/cookies.test.ts
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-// Mock MUST be before other imports
+// Mock-ът ТРЯБВА да е преди другите импорти
 vi.mock("next/headers", () => ({
   cookies: vi.fn(),
 }));
@@ -13,7 +12,7 @@ describe("cookies", () => {
   let mockCookieStore: any;
 
   beforeEach(() => {
-    // Create a fresh mock cookie store before each test
+    // Създава нов mock cookie store преди всеки тест
     mockCookieStore = {
       get: vi.fn(),
       set: vi.fn(),
@@ -68,7 +67,7 @@ describe("cookies", () => {
 
       expect(mockCookieStore.set).toHaveBeenCalledWith("test-key", "test-value", {
         path: "/",
-        maxAge: 60 * 60 * 24 * 7, // 7 days in seconds
+        maxAge: 60 * 60 * 24 * 7, // 7 дни в секунди
       });
     });
 
@@ -185,20 +184,20 @@ describe("cookies", () => {
     });
 
     it("is case-sensitive", async () => {
-      mockCookieStore.get.mockReturnValue({ value: "Dark" }); // Capital D
+      mockCookieStore.get.mockReturnValue({ value: "Dark" });
 
       const result = await getPreference("theme", allowedThemes, "light");
 
-      expect(result).toBe("light"); // Should fallback because "Dark" !== "dark"
+      expect(result).toBe("light"); // Трябва да върне fallback, защото "Dark" !== "dark"
     });
   });
 
   describe("Integration scenarios", () => {
     it("set and get preference workflow", async () => {
-      // Set a preference
+      // Записва предпочитание
       await setValueToCookie("user_theme", "dark");
 
-      // Simulate getting it back
+      // Симулира прочитането му
       mockCookieStore.get.mockReturnValue({ value: "dark" });
 
       const result = await getPreference("user_theme", ["light", "dark", "system"] as const, "light");
@@ -207,12 +206,12 @@ describe("cookies", () => {
     });
 
     it("handles preference migration (invalid old value)", async () => {
-      // Old cookie has invalid value
-      mockCookieStore.get.mockReturnValue({ value: "blue-theme" }); // old format
+      // Старото cookie съдържа невалидна стойност
+      mockCookieStore.get.mockReturnValue({ value: "blue-theme" }); // стар формат
 
       const result = await getPreference("theme", ["light", "dark", "system"] as const, "system");
 
-      expect(result).toBe("system"); // Falls back to new default
+      expect(result).toBe("system"); // Връща новата стойност по подразбиране
     });
 
     it("handles cookie with maxAge of 0 (session cookie)", async () => {

@@ -1,4 +1,3 @@
-// tests/bodyMetrics.test.ts
 import { describe, it, expect } from "vitest";
 import { getBMICategory, calculateBMI, calculateBodyFat } from "@/server/health";
 
@@ -89,7 +88,7 @@ describe("bodyMetrics", () => {
     it("rounds BMI to 2 decimal places", () => {
       const result = calculateBMI(175, 73);
 
-      expect(result.bmi).toMatch(/^\d+\.\d{2}$/); // Matches format XX.XX
+      expect(result.bmi).toMatch(/^\d+\.\d{2}$/); // Формат XX.XX
     });
 
     it("handles very short height", () => {
@@ -122,7 +121,7 @@ describe("bodyMetrics", () => {
       it("calculates lean male athlete", () => {
         const result = calculateBodyFat(180, "male", 75, 36, 75);
 
-        expect(result.bodyFat).toBeLessThan(20); // Changed from 15 to 20
+        expect(result.bodyFat).toBeLessThan(20); // Променено от 15 на 20
         expect(result.leanBodyMass).toBeGreaterThan(result.bodyFatMass);
       });
 
@@ -135,14 +134,14 @@ describe("bodyMetrics", () => {
       });
 
       it("clamps body fat to minimum 3%", () => {
-        // Extreme lean measurements to trigger lower bound
+        // Екстремно слаби мерки за да се тригерира долната граница
         const result = calculateBodyFat(200, "male", 60, 30, 60);
 
         expect(result.bodyFat).toBeGreaterThanOrEqual(3);
       });
 
       it("clamps body fat to maximum 60%", () => {
-        // Extreme measurements to trigger upper bound
+        // Екстремни мерки за да се тригерира горната граница
         const result = calculateBodyFat(160, "male", 150, 45, 140);
 
         expect(result.bodyFat).toBeLessThanOrEqual(60);
@@ -210,6 +209,7 @@ describe("bodyMetrics", () => {
       it("fat mass + lean mass equals total weight", () => {
         const result = calculateBodyFat(175, "male", 85, 40, 90);
 
+        // Сумата от мастна и чиста маса трябва да е равна на общото тегло
         const total = result.bodyFatMass + result.leanBodyMass;
         expect(total).toBeCloseTo(85, 1);
       });
@@ -217,6 +217,7 @@ describe("bodyMetrics", () => {
       it("rounds all values to 2 decimal places", () => {
         const result = calculateBodyFat(180, "male", 80, 38, 85);
 
+        // Проверка, че всички стойности са закръглени до 2 знака след десетичната точка
         expect(result.bodyFat.toString()).toMatch(/^\d+\.\d{1,2}$/);
         expect(result.bodyFatMass.toString()).toMatch(/^\d+\.\d{1,2}$/);
         expect(result.leanBodyMass.toString()).toMatch(/^\d+\.\d{1,2}$/);
@@ -225,7 +226,7 @@ describe("bodyMetrics", () => {
       it("calculates realistic fat mass for healthy male", () => {
         const result = calculateBodyFat(180, "male", 80, 38, 85);
 
-        // Healthy male should have 10-20% body fat
+        // Здравият мъж трябва да има между 10-20% телесни мазнини
         expect(result.bodyFatMass).toBeGreaterThan(8);
         expect(result.bodyFatMass).toBeLessThan(20);
       });
@@ -233,7 +234,7 @@ describe("bodyMetrics", () => {
       it("calculates realistic lean mass for healthy female", () => {
         const result = calculateBodyFat(165, "female", 65, 32, 75, 95);
 
-        // Lean mass should be majority of weight
+        // Чистата маса трябва да е преобладаваща част от теглото
         expect(result.leanBodyMass).toBeGreaterThan(29);
         expect(result.leanBodyMass).toBeLessThan(65);
       });

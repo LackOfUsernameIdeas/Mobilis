@@ -1,9 +1,4 @@
-// tests/saveFunctions.test.ts
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-
-// ─── Mock setup ──────────────────────────────────────────────────────────────
-// vi.mock() is hoisted above all variable declarations by Vitest's transformer,
-// so we use vi.hoisted() to create the mockClient in the same hoisted scope.
+import { describe, it, expect, vi, afterEach } from "vitest";
 
 const mockClient = vi.hoisted(() => ({ from: vi.fn() }));
 
@@ -19,9 +14,9 @@ import {
   saveUserMetrics,
 } from "@/server/saveFunctions";
 
-// ─── Chain builder helpers ────────────────────────────────────────────────────
+// ─── Помощни функции за изграждане на вериги ──────────────────────────────────
 
-/** Builds a full insert → select → single chain */
+/** Изгражда пълна верига insert → select → single */
 function insertChain(result: { data: any; error: any }) {
   const single = vi.fn().mockResolvedValue(result);
   const select = vi.fn(() => ({ single }));
@@ -29,21 +24,21 @@ function insertChain(result: { data: any; error: any }) {
   return { insert, select, single };
 }
 
-/** Builds a full upsert → select chain */
+/** Изгражда пълна верига upsert → select */
 function upsertChain(result: { data: any; error: any }) {
   const select = vi.fn().mockResolvedValue(result);
   const upsert = vi.fn(() => ({ select }));
   return { upsert, select };
 }
 
-/** Builds a full insert → select chain (no single) */
+/** Изгражда пълна верига insert → select (без single) */
 function insertSelectChain(result: { data: any; error: any }) {
   const select = vi.fn().mockResolvedValue(result);
   const insert = vi.fn(() => ({ select }));
   return { insert, select };
 }
 
-/** Builds a select → eq → eq → order → limit → single chain */
+/** Изгражда верига select → eq → eq → order → limit → single */
 function selectFilterChain(result: { data: any; error: any }) {
   const single = vi.fn().mockResolvedValue(result);
   const limit = vi.fn(() => ({ single }));
@@ -54,7 +49,7 @@ function selectFilterChain(result: { data: any; error: any }) {
   return { select, eq1, eq2, order, limit, single };
 }
 
-/** Builds a select → eq → order → limit → single chain (one eq) */
+/** Изгражда верига select → eq → order → limit → single (с едно eq) */
 function selectOneEqChain(result: { data: any; error: any }) {
   const single = vi.fn().mockResolvedValue(result);
   const limit = vi.fn(() => ({ single }));
@@ -64,10 +59,11 @@ function selectOneEqChain(result: { data: any; error: any }) {
   return { select, eq, order, limit, single };
 }
 
-// ─── Fixtures ─────────────────────────────────────────────────────────────────
+// ─── Тестови данни (фикстури) ─────────────────────────────────────────────────
 
 const userId = "user-123";
 
+// Отговори за фитнес категория
 const gymAnswers = {
   mainGoal: "muscle",
   experience: "beginner",
@@ -80,6 +76,7 @@ const gymAnswers = {
   specificExercises: "bench press",
 };
 
+// Отговори за йога категория
 const yogaAnswers = {
   mainGoal: "flexibility",
   experience: "intermediate",
@@ -91,6 +88,7 @@ const yogaAnswers = {
   specificExercises: "",
 };
 
+// Отговори за хранене
 const nutritionAnswers = {
   mainGoal: "cut",
   trainingTime: "morning",
@@ -104,6 +102,7 @@ const nutritionAnswers = {
   fats: "65",
 };
 
+// Препоръки за тренировки (примерни данни)
 const workoutRecommendations = {
   weekly_schedule: [
     {
@@ -146,6 +145,7 @@ const workoutRecommendations = {
   safety_considerations: ["warm up properly"],
 };
 
+// Препоръки за хранене (примерни данни)
 const nutritionRecommendations = {
   weekly_plan: [
     {
@@ -175,15 +175,16 @@ const nutritionRecommendations = {
 describe("saveUserPreferences", () => {
   afterEach(() => vi.clearAllMocks());
 
+  // Тестове за неподдържани категории
   describe("unsupported categories", () => {
-    it("returns success without DB call for unsupported category", async () => {
+    it("връща успех без извикване на БД за неподдържана категория", async () => {
       const result = await saveUserPreferences(userId, "meditation", {});
 
       expect(mockClient.from).not.toHaveBeenCalled();
       expect(result).toEqual({ success: true, message: "Category does not require saving" });
     });
 
-    it("handles all unsupported category strings", async () => {
+    it("обработва всички неподдържани категории", async () => {
       for (const cat of ["cardio", "pilates", "running"]) {
         const result = await saveUserPreferences(userId, cat, {});
         expect(result.success).toBe(true);
@@ -191,8 +192,9 @@ describe("saveUserPreferences", () => {
     });
   });
 
+  // Тестове за категория хранене
   describe("nutrition category", () => {
-    it("inserts into nutrition_user_preferences and returns data", async () => {
+    it("вмъква запис в nutrition_user_preferences и връща данните", async () => {
       const savedRecord = { id: "pref-1", user_id: userId };
       const chain = insertChain({ data: savedRecord, error: null });
       mockClient.from.mockReturnValue(chain);
@@ -203,7 +205,7 @@ describe("saveUserPreferences", () => {
       expect(result).toEqual({ success: true, data: savedRecord });
     });
 
-    it("passes correct nutrition fields to insert", async () => {
+    it("подава правилните полета за хранене към insert", async () => {
       const chain = insertChain({ data: { id: "1" }, error: null });
       mockClient.from.mockReturnValue(chain);
 
@@ -222,7 +224,7 @@ describe("saveUserPreferences", () => {
       );
     });
 
-    it("sets targetWeightValue to null when targetWeight is not yes", async () => {
+    it("задава targetWeightValue на null когато targetWeight не е 'yes'", async () => {
       const chain = insertChain({ data: { id: "1" }, error: null });
       mockClient.from.mockReturnValue(chain);
 
@@ -231,7 +233,7 @@ describe("saveUserPreferences", () => {
       expect(chain.insert).toHaveBeenCalledWith(expect.objectContaining({ targetWeightValue: null }));
     });
 
-    it("ensures cuisinePreference defaults to empty array when not array", async () => {
+    it("cuisinePreference по подразбиране е празен масив, когато не е масив", async () => {
       const chain = insertChain({ data: { id: "1" }, error: null });
       mockClient.from.mockReturnValue(chain);
 
@@ -240,7 +242,7 @@ describe("saveUserPreferences", () => {
       expect(chain.insert).toHaveBeenCalledWith(expect.objectContaining({ cuisinePreference: [] }));
     });
 
-    it("throws when DB insert fails", async () => {
+    it("хвърля грешка при неуспешен insert в БД", async () => {
       const chain = insertChain({ data: null, error: { message: "DB error" } });
       mockClient.from.mockReturnValue(chain);
 
@@ -250,8 +252,9 @@ describe("saveUserPreferences", () => {
     });
   });
 
+  // Тестове за фитнес категория
   describe("gym category", () => {
-    it("inserts into workout_user_preferences", async () => {
+    it("вмъква запис в workout_user_preferences", async () => {
       const savedRecord = { id: "pref-2", user_id: userId };
       const chain = insertChain({ data: savedRecord, error: null });
       mockClient.from.mockReturnValue(chain);
@@ -262,7 +265,7 @@ describe("saveUserPreferences", () => {
       expect(result).toEqual({ success: true, data: savedRecord });
     });
 
-    it("includes gym-specific fields", async () => {
+    it("включва специфичните полета за фитнес", async () => {
       const chain = insertChain({ data: { id: "1" }, error: null });
       mockClient.from.mockReturnValue(chain);
 
@@ -277,7 +280,7 @@ describe("saveUserPreferences", () => {
       );
     });
 
-    it("defaults muscleGroups to empty array when not an array", async () => {
+    it("muscleGroups по подразбиране е празен масив, когато не е масив", async () => {
       const chain = insertChain({ data: { id: "1" }, error: null });
       mockClient.from.mockReturnValue(chain);
 
@@ -286,7 +289,7 @@ describe("saveUserPreferences", () => {
       expect(chain.insert).toHaveBeenCalledWith(expect.objectContaining({ muscleGroups: [] }));
     });
 
-    it("throws when DB insert fails", async () => {
+    it("хвърля грешка при неуспешен insert в БД", async () => {
       const chain = insertChain({ data: null, error: { message: "constraint violation" } });
       mockClient.from.mockReturnValue(chain);
 
@@ -296,8 +299,9 @@ describe("saveUserPreferences", () => {
     });
   });
 
+  // Тестове за категория калистеника
   describe("calisthenics category", () => {
-    it("includes calisthenics-specific fields (same as gym)", async () => {
+    it("включва специфичните полета за калистеника (същите като фитнес)", async () => {
       const chain = insertChain({ data: { id: "1" }, error: null });
       mockClient.from.mockReturnValue(chain);
 
@@ -309,8 +313,9 @@ describe("saveUserPreferences", () => {
     });
   });
 
+  // Тестове за йога категория
   describe("yoga category", () => {
-    it("inserts yoga-specific fields, not gym fields", async () => {
+    it("вмъква специфичните полета за йога, а не тези за фитнес", async () => {
       const chain = insertChain({ data: { id: "1" }, error: null });
       mockClient.from.mockReturnValue(chain);
 
@@ -322,6 +327,7 @@ describe("saveUserPreferences", () => {
           focusAreas: ["hips", "shoulders"],
         }),
       );
+      // Полетата за фитнес не трябва да присъстват
       expect(chain.insert).not.toHaveBeenCalledWith(expect.objectContaining({ warmupCooldown: expect.anything() }));
       expect(chain.insert).not.toHaveBeenCalledWith(expect.objectContaining({ muscleGroups: expect.anything() }));
     });
@@ -333,6 +339,7 @@ describe("saveUserPreferences", () => {
 describe("saveWorkoutRecommendations", () => {
   afterEach(() => vi.clearAllMocks());
 
+  // Помощна функция за настройка на mock-овете за тренировки
   function setupWorkoutMocks({
     prefsResult = { data: { id: "pref-1" }, error: null },
     genResult = { data: { id: 42 }, error: null },
@@ -355,7 +362,7 @@ describe("saveWorkoutRecommendations", () => {
     return { prefsChain, genChain, daysChain, exercisesUpsertCh, dayExercisesChain };
   }
 
-  it("returns success with generationId on happy path", async () => {
+  it("връща успех с generationId при успешно изпълнение", async () => {
     setupWorkoutMocks();
 
     const result = await saveWorkoutRecommendations(userId, "gym", workoutRecommendations);
@@ -366,13 +373,13 @@ describe("saveWorkoutRecommendations", () => {
     expect(result.data).toHaveProperty("days");
   });
 
-  it("throws when weekly_schedule is empty", async () => {
+  it("хвърля грешка когато weekly_schedule е празен", async () => {
     await expect(
       saveWorkoutRecommendations(userId, "gym", { weekly_schedule: [], safety_considerations: [] }),
     ).rejects.toThrow("No workout schedule provided");
   });
 
-  it("throws when preferences fetch fails", async () => {
+  it("хвърля грешка при неуспешно зареждане на предпочитания", async () => {
     const prefsChain = selectFilterChain({ data: null, error: { message: "not found" } });
     mockClient.from.mockReturnValue(prefsChain);
 
@@ -381,7 +388,7 @@ describe("saveWorkoutRecommendations", () => {
     );
   });
 
-  it("throws when generation insert fails", async () => {
+  it("хвърля грешка при неуспешен insert на генерация", async () => {
     let callIndex = 0;
     mockClient.from.mockImplementation(() => {
       callIndex++;
@@ -394,7 +401,7 @@ describe("saveWorkoutRecommendations", () => {
     );
   });
 
-  it("throws when day recommendations insert fails", async () => {
+  it("хвърля грешка при неуспешен insert на препоръките по дни", async () => {
     let callIndex = 0;
     mockClient.from.mockImplementation(() => {
       callIndex++;
@@ -408,7 +415,7 @@ describe("saveWorkoutRecommendations", () => {
     );
   });
 
-  it("returns early with empty exercises array when no workout exercises in schedule", async () => {
+  it("връща ранен резултат с празен масив от упражнения, когато няма упражнения в програмата", async () => {
     const noWorkoutRecs = {
       weekly_schedule: [
         {
@@ -417,7 +424,7 @@ describe("saveWorkoutRecommendations", () => {
           focus: "rest",
           warmup: { duration_minutes: 0, exercises: [] },
           cooldown: { duration_minutes: 0, exercises: [] },
-          // no workout field
+          // без поле workout
         },
       ],
       safety_considerations: [],
@@ -437,7 +444,7 @@ describe("saveWorkoutRecommendations", () => {
     expect((result as any).data.exercises).toEqual([]);
   });
 
-  it("throws when workout exercises upsert fails", async () => {
+  it("хвърля грешка при неуспешен upsert на упражненията", async () => {
     let callIndex = 0;
     mockClient.from.mockImplementation(() => {
       callIndex++;
@@ -452,7 +459,7 @@ describe("saveWorkoutRecommendations", () => {
     );
   });
 
-  it("throws when day exercises insert fails", async () => {
+  it("хвърля грешка при неуспешен insert на упражненията по дни", async () => {
     let callIndex = 0;
     mockClient.from.mockImplementation(() => {
       callIndex++;
@@ -474,6 +481,7 @@ describe("saveWorkoutRecommendations", () => {
 describe("saveNutritionRecommendations", () => {
   afterEach(() => vi.clearAllMocks());
 
+  // Помощна функция за настройка на mock-овете за хранене
   function setupNutritionMocks({
     prefsResult = { data: { id: "pref-1" }, error: null },
     genResult = { data: { id: 99 }, error: null },
@@ -492,7 +500,7 @@ describe("saveNutritionRecommendations", () => {
     });
   }
 
-  it("returns success with generationId on happy path", async () => {
+  it("връща успех с generationId при успешно изпълнение", async () => {
     setupNutritionMocks();
 
     const result = await saveNutritionRecommendations(userId, nutritionRecommendations);
@@ -503,13 +511,13 @@ describe("saveNutritionRecommendations", () => {
     expect(result.data).toHaveProperty("days");
   });
 
-  it("throws when weekly_plan is empty", async () => {
+  it("хвърля грешка когато weekly_plan е празен", async () => {
     await expect(saveNutritionRecommendations(userId, { weekly_plan: [], nutrition_tips: [] })).rejects.toThrow(
       "No nutrition plan provided",
     );
   });
 
-  it("throws when preferences fetch fails", async () => {
+  it("хвърля грешка при неуспешно зареждане на предпочитания", async () => {
     mockClient.from.mockReturnValue(selectOneEqChain({ data: null, error: { message: "not found" } }));
 
     await expect(saveNutritionRecommendations(userId, nutritionRecommendations)).rejects.toThrow(
@@ -517,7 +525,7 @@ describe("saveNutritionRecommendations", () => {
     );
   });
 
-  it("throws when generation insert fails", async () => {
+  it("хвърля грешка при неуспешен insert на генерация", async () => {
     let callIndex = 0;
     mockClient.from.mockImplementation(() => {
       callIndex++;
@@ -530,7 +538,7 @@ describe("saveNutritionRecommendations", () => {
     );
   });
 
-  it("throws when day recommendations insert fails", async () => {
+  it("хвърля грешка при неуспешен insert на препоръките по дни", async () => {
     let callIndex = 0;
     mockClient.from.mockImplementation(() => {
       callIndex++;
@@ -544,7 +552,7 @@ describe("saveNutritionRecommendations", () => {
     );
   });
 
-  it("returns early with empty meals when no meals in plan", async () => {
+  it("връща ранен резултат с празен масив от ястия, когато планът няма ястия", async () => {
     const noMealsPlan = {
       weekly_plan: [{ day: "Monday", total_macros: { calories: 2000, protein: 150, carbs: 200, fats: 65 }, meals: [] }],
       nutrition_tips: [],
@@ -564,7 +572,7 @@ describe("saveNutritionRecommendations", () => {
     expect((result as any).data.meals).toEqual([]);
   });
 
-  it("throws when meals upsert fails", async () => {
+  it("хвърля грешка при неуспешен upsert на ястията", async () => {
     let callIndex = 0;
     mockClient.from.mockImplementation(() => {
       callIndex++;
@@ -579,7 +587,7 @@ describe("saveNutritionRecommendations", () => {
     );
   });
 
-  it("throws when day meals insert fails", async () => {
+  it("хвърля грешка при неуспешен insert на ястията по дни", async () => {
     let callIndex = 0;
     mockClient.from.mockImplementation(() => {
       callIndex++;
@@ -601,6 +609,7 @@ describe("saveNutritionRecommendations", () => {
 describe("saveUserMeasurements", () => {
   afterEach(() => vi.clearAllMocks());
 
+  // Примерни данни за измервания
   const measurementData = {
     height: 180.4,
     weight: 75.6,
@@ -611,7 +620,7 @@ describe("saveUserMeasurements", () => {
     waist: 85.8,
   };
 
-  it("inserts and returns the saved measurement record", async () => {
+  it("вмъква и връща записания запис за измервания", async () => {
     const savedRecord = { id: "meas-1", user_id: userId };
     const chain = insertChain({ data: savedRecord, error: null });
     mockClient.from.mockReturnValue(chain);
@@ -622,7 +631,7 @@ describe("saveUserMeasurements", () => {
     expect(result).toEqual(savedRecord);
   });
 
-  it("rounds all numeric values before inserting", async () => {
+  it("закръгля всички числови стойности преди вмъкване", async () => {
     const chain = insertChain({ data: { id: "1" }, error: null });
     mockClient.from.mockReturnValue(chain);
 
@@ -638,7 +647,7 @@ describe("saveUserMeasurements", () => {
     );
   });
 
-  it("defaults hip to 0 when not provided (male)", async () => {
+  it("hip по подразбиране е 0 когато не е подаден (мъже)", async () => {
     const chain = insertChain({ data: { id: "1" }, error: null });
     mockClient.from.mockReturnValue(chain);
 
@@ -647,7 +656,7 @@ describe("saveUserMeasurements", () => {
     expect(chain.insert).toHaveBeenCalledWith(expect.objectContaining({ hip: 0 }));
   });
 
-  it("rounds hip when provided (female)", async () => {
+  it("закръгля hip когато е подаден (жени)", async () => {
     const chain = insertChain({ data: { id: "1" }, error: null });
     mockClient.from.mockReturnValue(chain);
 
@@ -656,7 +665,7 @@ describe("saveUserMeasurements", () => {
     expect(chain.insert).toHaveBeenCalledWith(expect.objectContaining({ hip: 96 }));
   });
 
-  it("throws when DB insert fails", async () => {
+  it("хвърля грешка при неуспешен insert в БД", async () => {
     const chain = insertChain({ data: null, error: new Error("insert failed") });
     mockClient.from.mockReturnValue(chain);
 
@@ -669,6 +678,7 @@ describe("saveUserMeasurements", () => {
 describe("saveUserMetrics", () => {
   afterEach(() => vi.clearAllMocks());
 
+  // Примерни данни за метрики
   const metricsData = {
     bmi: "22.5",
     health: "normal",
@@ -689,7 +699,7 @@ describe("saveUserMetrics", () => {
     carbs: 250,
   };
 
-  it("inserts and returns the saved metrics record", async () => {
+  it("вмъква и връща записания запис за метрики", async () => {
     const savedRecord = { id: "metrics-1", user_id: userId };
     const chain = insertChain({ data: savedRecord, error: null });
     mockClient.from.mockReturnValue(chain);
@@ -700,7 +710,7 @@ describe("saveUserMetrics", () => {
     expect(result).toEqual(savedRecord);
   });
 
-  it("parses bmi string to float before inserting", async () => {
+  it("парсва стойността на bmi от string към float преди вмъкване", async () => {
     const chain = insertChain({ data: { id: "1" }, error: null });
     mockClient.from.mockReturnValue(chain);
 
@@ -709,7 +719,7 @@ describe("saveUserMetrics", () => {
     expect(chain.insert).toHaveBeenCalledWith(expect.objectContaining({ bmi: 22.5 }));
   });
 
-  it("includes all required fields in the insert payload", async () => {
+  it("включва всички задължителни полета в payload-а за insert", async () => {
     const chain = insertChain({ data: { id: "1" }, error: null });
     mockClient.from.mockReturnValue(chain);
 
@@ -733,7 +743,7 @@ describe("saveUserMetrics", () => {
     );
   });
 
-  it("throws when DB insert fails", async () => {
+  it("хвърля грешка при неуспешен insert в БД", async () => {
     const chain = insertChain({ data: null, error: new Error("metrics insert failed") });
     mockClient.from.mockReturnValue(chain);
 

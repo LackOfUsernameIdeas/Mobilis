@@ -1,12 +1,11 @@
-// tests/measurements.test.ts
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-// Mock Next.js server client
+// Mock на Next.js server client
 vi.mock("@/lib/db/clients/server", () => ({
   getServerClient: vi.fn(),
 }));
 
-// Mock save functions
+// Mock на функциите за записване
 vi.mock("@/server/saveFunctions", () => ({
   saveUserMeasurements: vi.fn(),
   saveUserMetrics: vi.fn(),
@@ -20,10 +19,10 @@ describe("measurements", () => {
   let mockSupabase: any;
 
   beforeEach(() => {
-    // Reset all mocks
+    // Нулиране на всички mock-ове
     vi.clearAllMocks();
 
-    // Setup mock Supabase client
+    // Настройка на mock Supabase client
     mockSupabase = {
       auth: {
         getUser: vi.fn(),
@@ -33,7 +32,7 @@ describe("measurements", () => {
 
     vi.mocked(getServerClient).mockResolvedValue(mockSupabase);
 
-    // Mock environment variable
+    // Mock на environment variable
     process.env.NEXT_PUBLIC_BASE_URL = "http://localhost:3000";
   });
 
@@ -127,6 +126,7 @@ describe("measurements", () => {
 
       await checkTodayMeasurements();
 
+      // Проверка, че се използват правилната таблица и филтри
       expect(mockSupabase.from).toHaveBeenCalledWith("user_measurements");
       expect(mockQuery.select).toHaveBeenCalledWith("id, created_at");
       expect(mockQuery.eq).toHaveBeenCalledWith("user_id", "user-456");
@@ -169,17 +169,17 @@ describe("measurements", () => {
     };
 
     beforeEach(() => {
-      // Mock successful auth
+      // Mock на успешна автентикация
       mockSupabase.auth.getUser.mockResolvedValue({
         data: { user: { id: "user-123" } },
         error: null,
       });
 
-      // Mock successful save functions
+      // Mock на успешни функции за записване
       vi.mocked(saveUserMeasurements).mockResolvedValue({ id: "measurement-123" } as any);
       vi.mocked(saveUserMetrics).mockResolvedValue(undefined as any);
 
-      // Mock global fetch
+      // Mock на глобалния fetch
       global.fetch = vi.fn();
     });
 
@@ -198,7 +198,7 @@ describe("measurements", () => {
     it("calls all API endpoints in parallel", async () => {
       const mockFetch = vi.mocked(global.fetch);
 
-      // Mock API responses
+      // Mock на API отговорите
       mockFetch.mockImplementation((url: any) => {
         if (url.includes("/api/health/bmi")) {
           return Promise.resolve({
@@ -260,6 +260,7 @@ describe("measurements", () => {
     it("saves metrics with correct calculated data", async () => {
       const mockFetch = vi.mocked(global.fetch);
 
+      // Mock на всички API отговори с конкретни стойности за проверка
       mockFetch.mockImplementation((url: any) => {
         if (url.includes("/api/health/bmi")) {
           return Promise.resolve({
@@ -367,7 +368,7 @@ describe("measurements", () => {
 
       const mockFetch = vi.mocked(global.fetch);
 
-      // Properly mock all API responses (same as in other tests)
+      // Mock на всички API отговори (същото като в другите тестове)
       mockFetch.mockImplementation((url: any) => {
         if (url.includes("/api/health/bmi")) {
           return Promise.resolve({

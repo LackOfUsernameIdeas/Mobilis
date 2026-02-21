@@ -1,9 +1,8 @@
-// tests/calorieCalculator.test.ts
 import { describe, it, expect } from "vitest";
 import { calculateCalorieRecommendation, type ActivityLevel, type FitnessGoal } from "@/server/calorieCalculator";
 
 describe("calculateCalorieRecommendation", () => {
-  // Test subject: 25-year-old male, 80kg, 180cm
+  // Тестов субект: 25-годишен мъж, 80кг, 180см
   const baseParams = {
     weight: 80,
     height: 180,
@@ -44,9 +43,9 @@ describe("calculateCalorieRecommendation", () => {
       const young = calculateCalorieRecommendation(20, 180, 20, "male", "sedentary", "maintenance");
       const old = calculateCalorieRecommendation(20, 180, 60, "male", "sedentary", "maintenance");
 
-      // Older person should have lower BMR (5 cal/year difference)
+      // По-възрастният човек трябва да има по-нисък BMR (разлика от 5 кал/година)
       expect(young.bmr).toBeGreaterThan(old.bmr);
-      expect(young.bmr - old.bmr).toBe(200); // 40 years * 5 cal/year
+      expect(young.bmr - old.bmr).toBe(200); // 40 години * 5 кал/година
     });
   });
 
@@ -93,7 +92,7 @@ describe("calculateCalorieRecommendation", () => {
           ).tdee,
       );
 
-      // Each level should have higher TDEE than previous
+      // Всяко ниво на активност трябва да има по-висок TDEE от предишното
       for (let i = 1; i < tdees.length; i++) {
         expect(tdees[i]).toBeGreaterThan(tdees[i - 1]);
       }
@@ -111,7 +110,7 @@ describe("calculateCalorieRecommendation", () => {
         "cut",
       );
 
-      // Cut = TDEE - 500
+      // Изгаряне = TDEE - 500
       expect(result.goal.calories).toBe(result.tdee - 500);
     });
 
@@ -134,7 +133,7 @@ describe("calculateCalorieRecommendation", () => {
       );
 
       expect(aggCut.goal.calories).toBeLessThan(cut.goal.calories);
-      expect(cut.goal.calories - aggCut.goal.calories).toBe(250); // -500 vs -750
+      expect(cut.goal.calories - aggCut.goal.calories).toBe(250); // -500 срещу -750
     });
 
     it("adds calories for lean bulk goal", () => {
@@ -198,11 +197,11 @@ describe("calculateCalorieRecommendation", () => {
 
       const { protein, fats, carbs } = result.goal.macros;
 
-      // Protein should be 40% of calories (highest macro)
+      // Протеинът трябва да е 40% от калориите (най-висок макрос)
       expect(protein).toBeGreaterThan(fats);
       expect(protein).toBeGreaterThan(carbs);
 
-      // Check approximate percentages (with rounding tolerance)
+      // Проверка на приблизителните проценти (с толеранс за закръгляване)
       const proteinCals = protein * 4;
       const proteinPercent = proteinCals / result.goal.calories;
       expect(proteinPercent).toBeCloseTo(0.4, 1);
@@ -220,7 +219,7 @@ describe("calculateCalorieRecommendation", () => {
 
       const { protein, fats, carbs } = result.goal.macros;
 
-      // Carbs should be highest for bulking (45%)
+      // Въглехидратите трябва да са най-високи при качване (45%)
       expect(carbs).toBeGreaterThan(protein);
       expect(carbs).toBeGreaterThan(fats);
     });
@@ -261,7 +260,7 @@ describe("calculateCalorieRecommendation", () => {
       const { protein, fats, carbs } = result.goal.macros;
       const totalCalories = protein * 4 + fats * 9 + carbs * 4;
 
-      // Allow ±5% variance due to rounding
+      // Допускане на ±5% отклонение поради закръгляване
       const variance = Math.abs(totalCalories - result.goal.calories);
       const allowedVariance = result.goal.calories * 0.05;
 
@@ -294,6 +293,7 @@ describe("calculateCalorieRecommendation", () => {
     });
 
     it("returns rounded integer values", () => {
+      // Проверка, че резултатите са закръглени цели числа
       const result = calculateCalorieRecommendation(75.5, 182.3, 28, "male", "moderate", "cut");
 
       expect(Number.isInteger(result.bmr)).toBe(true);
@@ -304,8 +304,9 @@ describe("calculateCalorieRecommendation", () => {
 
   describe("Real-world scenarios", () => {
     it("typical office worker wanting to lose weight", () => {
+      // Типичен служител на бюро, който иска да свали тегло
       const result = calculateCalorieRecommendation(
-        85, // slightly overweight
+        85, // леко наднормено тегло
         175,
         35,
         "male",
@@ -314,11 +315,12 @@ describe("calculateCalorieRecommendation", () => {
       );
 
       expect(result.goal.calories).toBeLessThan(result.tdee);
-      expect(result.goal.calories).toBeGreaterThan(1500); // Not too aggressive
-      expect(result.goal.macros.protein).toBeGreaterThan(100); // Adequate protein
+      expect(result.goal.calories).toBeGreaterThan(1500); // Не прекалено агресивно
+      expect(result.goal.macros.protein).toBeGreaterThan(100); // Достатъчно протеин
     });
 
     it("young athlete wanting to gain muscle", () => {
+      // Млад спортист, който иска да качи мускулна маса
       const result = calculateCalorieRecommendation(70, 180, 20, "male", "very_active", "lean_bulk");
 
       expect(result.goal.calories).toBeGreaterThan(result.tdee);
@@ -327,11 +329,12 @@ describe("calculateCalorieRecommendation", () => {
     });
 
     it("woman on recomposition journey", () => {
+      // Жена в процес на рекомпозиция на тялото
       const result = calculateCalorieRecommendation(65, 165, 28, "female", "moderate", "recomposition");
 
       expect(result.goal.calories).toBeLessThan(result.tdee);
-      expect(result.goal.calories).toBe(result.tdee - 200); // Recomposition = -200 cal
-      expect(result.goal.macros.protein).toBeGreaterThan(80); // High protein for body recomp
+      expect(result.goal.calories).toBe(result.tdee - 200); // Рекомпозиция = -200 кал
+      expect(result.goal.macros.protein).toBeGreaterThan(80); // Висок протеин за рекомпозиция
     });
   });
 });

@@ -1,7 +1,6 @@
-// tests/recommendedGoal.test.ts
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-// Mocks MUST be before other imports
+// Mock-овете ТРЯБВА да са преди другите импорти
 vi.mock("@/lib/db/clients/server", () => ({
   getServerClient: vi.fn(),
 }));
@@ -15,14 +14,10 @@ import { getServerClient } from "@/lib/db/clients/server";
 import { calculateBMI, calculateBodyFat } from "@/server/health";
 import { getRecommendedGoal, getMostRecommendedGoal } from "@/server/recommendedGoal";
 
-// ─── Helpers ────────────────────────────────────────────────────────────────
-
 function mockHealthCalcs(bmi: number, bodyFat: number) {
   vi.mocked(calculateBMI).mockReturnValue({ bmi: String(bmi) } as any);
   vi.mocked(calculateBodyFat).mockReturnValue({ bodyFat } as any);
 }
-
-// ─── getRecommendedGoal ──────────────────────────────────────────────────────
 
 describe("getRecommendedGoal", () => {
   afterEach(() => vi.clearAllMocks());
@@ -260,8 +255,8 @@ describe("getMostRecommendedGoal", () => {
       const result = await getMostRecommendedGoal();
 
       expect(result.success).toBe(true);
-      // Both have count 1 — the reduce returns whichever comes last (current > max)
-      // In this case "maintenance" would win due to strict `>` comparison
+      // И двете имат count 1 — reduce връща последно срещнатото (current > max)
+      // В случая "maintenance" печели заради строгото сравнение `>`
       expect((result as any).data.count).toBe(1);
     });
 
