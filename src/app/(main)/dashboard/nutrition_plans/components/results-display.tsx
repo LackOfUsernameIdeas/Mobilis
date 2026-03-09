@@ -8,10 +8,10 @@ import { Badge } from "@/components/ui/badge";
 import MealModal from "./meal-modal";
 import { Button } from "@/components/ui/button";
 import { Loader } from "../../_components/loader";
-import { Clock, Utensils, Activity } from "lucide-react";
+import { Clock, Utensils, Activity, TrendingUp } from "lucide-react";
 import { fetchNutritionPlan, getMealIconName, getMealBadgeBg as getMealBadgeBgHelper } from "../helper_functions";
 import { MEAL_TYPE_TRANSLATIONS, FORM_TEXT, RESULTS_TEXT } from "../constants";
-import type { ResultsDisplayProps, NutritionPlan, DayPlan, NutritionMeal } from "../types";
+import type { ResultsDisplayProps, NutritionPlan, DayPlan, NutritionMeal, WeightPrognosis } from "../types";
 
 export default function ResultsDisplay({ userId, answers, userStats, onReset }: ResultsDisplayProps) {
   const [recommendations, setRecommendations] = useState<NutritionPlan | null>(null);
@@ -287,6 +287,78 @@ export default function ResultsDisplay({ userId, answers, userStats, onReset }: 
                       ))}
                     </Tabs>
                   </motion.div>
+
+                  {recommendations.prognosis && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        duration: 0.3,
+                        delay: 0.32,
+                        ease: [0.21, 0.47, 0.32, 0.98] as any,
+                      }}
+                    >
+                      <Card className="border-border overflow-hidden border-2">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-foreground flex items-center gap-2 text-lg">
+                            <TrendingUp className="text-primary h-5 w-5" />
+                            {RESULTS_TEXT.prognosisTitle}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                            {recommendations.prognosis.estimated_date && (
+                              <div className="bg-muted/50 rounded-lg p-3">
+                                <p className="text-muted-foreground text-xs">{RESULTS_TEXT.prognosisEstimatedDate}</p>
+                                <p className="text-foreground font-semibold">
+                                  {recommendations.prognosis.estimated_date}
+                                </p>
+                                {recommendations.prognosis.estimated_weeks && (
+                                  <p className="text-muted-foreground text-xs">
+                                    ({recommendations.prognosis.estimated_weeks} седмици)
+                                  </p>
+                                )}
+                              </div>
+                            )}
+                            <div className="bg-muted/50 rounded-lg p-3">
+                              <p className="text-muted-foreground text-xs">{RESULTS_TEXT.prognosisWeeklyChange}</p>
+                              <p className="text-foreground font-semibold">{recommendations.prognosis.weekly_change}</p>
+                            </div>
+                            <div className="bg-muted/50 rounded-lg p-3">
+                              <p className="text-muted-foreground text-xs">{RESULTS_TEXT.prognosisConfidence}</p>
+                              <p className="text-foreground font-semibold capitalize">
+                                {recommendations.prognosis.confidence}
+                              </p>
+                            </div>
+                          </div>
+
+                          {recommendations.prognosis.milestones && recommendations.prognosis.milestones.length > 0 && (
+                            <div>
+                              <p className="text-foreground mb-2 text-sm font-semibold">
+                                {RESULTS_TEXT.prognosisMilestones}
+                              </p>
+                              <div className="space-y-2">
+                                {recommendations.prognosis.milestones.map(
+                                  (milestone: { week: number; note: string }, idx: number) => (
+                                    <div key={idx} className="flex items-start gap-3">
+                                      <span className="bg-primary text-primary-foreground mt-0.5 flex-shrink-0 rounded-full px-2 py-0.5 text-xs font-medium">
+                                        {milestone.week}. сед.
+                                      </span>
+                                      <span className="text-foreground/80 text-sm">{milestone.note}</span>
+                                    </div>
+                                  ),
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          <p className="text-muted-foreground border-border border-t pt-3 text-xs italic">
+                            {recommendations.prognosis.note}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  )}
 
                   {recommendations.nutrition_tips && recommendations.nutrition_tips.length > 0 && (
                     <motion.div

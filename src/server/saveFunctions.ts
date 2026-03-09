@@ -625,3 +625,64 @@ export const saveUserMetrics = async (
 
   return result;
 };
+
+// Интерфейс за прогноза за тегло
+interface WeightPrognosisMilestone {
+  week: number;
+  note: string;
+}
+
+interface WeightPrognosis {
+  estimated_weeks: number | null;
+  estimated_date: string | null;
+  weekly_change: string;
+  milestones: WeightPrognosisMilestone[];
+  confidence: "ниска" | "средна" | "висока";
+  note: string;
+}
+
+// Запазва прогнозата за тегло в базата данни
+export const saveWeightPrognosis = async (userId: string, prognosis: WeightPrognosis) => {
+  try {
+    // Взима последния nutrition_generations id за този потребител
+    const { data: generationData, error: generationError } = await supabase
+      .from("nutrition_generations")
+      .select("id")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
+
+    if (generationError) {
+      console.error("Error fetching latest nutrition generation:", generationError);
+      throw new Error(`Failed to fetch generation: ${generationError.message}`);
+    }
+
+    const generationId = generationData.id;
+
+    const { data, error } = await supabase
+      .from("nutrition_weight_prognosis")
+      .insert({
+        user_id: userId,
+        generation_id: generationId,
+        estimated_weeks: prognosis.estimated_weeks,
+        estimated_date: prognosis.estimated_date,
+        weekly_change: prognosis.weekly_change,
+        milestones: prognosis.milestones,
+        confidence: prognosis.confidence,
+        note: prognosis.note,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Error saving weight prognosis:", error);
+      throw new Error(`Failed to save weight prognosis: ${error.message}`);
+    }
+
+    return { success: true, data };
+  } catch (error) {
+    console.error("Error in saveWeightPrognosis:", error);
+    throw error;
+  }
+};

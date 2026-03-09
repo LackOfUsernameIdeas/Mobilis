@@ -1,4 +1,4 @@
-import { saveUserPreferences, saveNutritionRecommendations } from "@/server/saveFunctions";
+import { saveUserPreferences, saveNutritionRecommendations, saveWeightPrognosis } from "@/server/saveFunctions";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -15,39 +15,62 @@ export async function POST(req: NextRequest) {
     const userPrompt = generateUserPrompt(answers, userStats);
     const responseFormat = generateResponseFormat();
 
-    const response = await fetch("https://api.openai.com/v1/responses", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "gpt-5.2",
-        input: [
-          {
-            role: "system",
-            content: systemPrompt,
-          },
-          {
-            role: "user",
-            content: userPrompt,
-          },
-        ],
-        text: responseFormat,
-      }),
-    });
+    const prognosisSystemPrompt = generatePrognosisSystemPrompt();
+    const prognosisUserPrompt = generatePrognosisUserPrompt(answers, userStats);
+    const prognosisResponseFormat = generatePrognosisResponseFormat();
 
-    if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.statusText}`);
-    }
+    const [response, prognosisResponse] = await Promise.all([
+      fetch("https://api.openai.com/v1/responses", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "gpt-5.2",
+          input: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userPrompt },
+          ],
+          text: responseFormat,
+        }),
+      }),
+      fetch("https://api.openai.com/v1/responses", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "gpt-5.2",
+          max_output_tokens: 1000,
+          input: [
+            { role: "system", content: prognosisSystemPrompt },
+            { role: "user", content: prognosisUserPrompt },
+          ],
+          text: prognosisResponseFormat,
+        }),
+      }),
+    ]);
+
+    if (!response.ok) throw new Error(`OpenAI API error: ${response.statusText}`);
+    if (!prognosisResponse.ok) throw new Error(`OpenAI prognosis API error: ${prognosisResponse.statusText}`);
 
     const data = await response.json();
+    const prognosisData = await prognosisResponse.json();
+
     const nutritionRecommendations = data.output[0].content[0].text;
+    const prognosisText = prognosisData.output[0].content[0].text;
 
     const nutritionPlanParsed = JSON.parse(nutritionRecommendations);
-    saveNutritionRecommendations(userId, nutritionPlanParsed);
+    const prognosisParsed = JSON.parse(prognosisText);
 
-    return NextResponse.json(nutritionRecommendations);
+    const fullResponse = { ...nutritionPlanParsed, prognosis: prognosisParsed };
+
+    saveNutritionRecommendations(userId, nutritionPlanParsed);
+    saveWeightPrognosis(userId, prognosisParsed);
+
+    return NextResponse.json(JSON.stringify(fullResponse));
   } catch (error) {
     console.error("Error generating recommendations:", error);
     return NextResponse.json({ error: "Failed to generate recommendations" }, { status: 500 });
@@ -532,6 +555,111 @@ function generateResponseFormat() {
           },
         },
         required: ["weekly_plan", "nutrition_tips"],
+        additionalProperties: false,
+      },
+    },
+  };
+}
+
+function generatePrognosisSystemPrompt(): string {
+  return `Ти си персонален треньор и диетолог с дълбоки познания в спортната наука и физиологията. 
+          Задачата ти е да изготвяш реалистични и научно обосновани прогнози за физическия напредък на потребителя въз основа на предоставените данни.
+          Винаги отговаряй САМО с валиден JSON формат, без допълнителен текст или markdown.
+          Бъди реалистичен и честен - не обещавай невъзможни резултати.`;
+}
+
+function generatePrognosisUserPrompt(answers: Record<string, any>, userStats?: any): string {
+  const currentDate = new Date();
+  const goalDescriptions: Record<string, string> = {
+    cut: "Изгаряне на мазнини (калориен дефицит ~500 kcal)",
+    aggressive_cut: "Интензивно изгаряне на мазнини (калориен дефицит ~750 kcal)",
+    lean_bulk: "Чисто покачване на маса (калориен суфицит ~300 kcal)",
+    dirty_bulk: "Интензивно покачване на маса (калориен суфицит ~500 kcal)",
+    recomposition: "Телесна рекомпозиция (леко под поддръжка ~-200 kcal)",
+    maintenance: "Поддържане на текущата форма",
+    aesthetic: "Естетика и пропорции (умерен дефицит ~-300 kcal)",
+    strength: "Максимална сила (леко над поддръжка ~+200 kcal)",
+  };
+
+  return `Изготви реалистична прогноза за напредъка на потребител със следните данни:
+
+        **Лични данни:**
+        - Пол: ${userStats?.gender || "не е посочен"}
+        - Тегло: ${userStats?.weight || "не е посочено"} кг
+        - Височина: ${userStats?.height || "не е посочена"} см
+        - Възраст: ${userStats?.age || "не е посочена"} години
+        - Body Fat: ${userStats?.bodyFat || "не е изчислен"}%
+        - Чиста телесна маса: ${userStats?.leanBodyMass || "не е изчислена"} кг
+        - Активност: ${userStats?.activityLevel || "умерена"}
+
+        **Цел и план:**
+        - Основна цел: ${goalDescriptions[answers.mainGoal] || answers.mainGoal}
+        - Целево тегло: ${answers.targetWeight === "yes" ? answers.targetWeightValue + " кг" : "не е посочено"}
+        - Тренировъчни дни: ${(answers.trainingDays || []).length} пъти седмично
+        - Дневни калории: ${answers.calories} kcal
+        - Протеини: ${answers.protein}g | Въглехидрати: ${answers.carbs}g | Мазнини: ${answers.fats}g
+
+        **Текуща дата:** ${currentDate.toLocaleDateString("bg-BG", { month: "long", year: "numeric" })}
+
+        Изготви прогноза като вземеш предвид:
+        - За cut/aggressive_cut/aesthetic: очаквана загуба на тегло на седмица, седмици до целта (ако е посочена)
+        - За lean_bulk/dirty_bulk/strength: очаквано покачване на маса на седмица, седмици до целта (ако е посочена)
+        - За recomposition: очаквана промяна в body fat % и lean mass за 8, 12 и 16 седмици (без целево тегло)
+        - За maintenance: кратка бележка, без estimated_weeks и milestones
+        - Включи 3-4 реалистични етапа (milestones) с конкретни резултати по седмици
+        - Посочи очакваната дата на постигане на целта (на български, напр. "Юли 2026") или null ако не е приложимо
+        - Посочи седмичната промяна като текст (напр. "-0.5 кг/седмица" или "+0.25 кг lean маса/седмица")
+        - Оцени точността на прогнозата като "ниска", "средна" или "висока" спрямо наличните данни
+        - Добави кратка бележка с условията за постигане на прогнозата`;
+}
+
+function generatePrognosisResponseFormat() {
+  return {
+    format: {
+      type: "json_schema",
+      name: "weight_prognosis",
+      strict: true,
+      schema: {
+        type: "object",
+        properties: {
+          estimated_weeks: {
+            type: ["number", "null"],
+            description: "Очакван брой седмици до целта. null за maintenance или recomposition.",
+          },
+          estimated_date: {
+            type: ["string", "null"],
+            description:
+              "Очаквана дата за постигане на целта на български (напр. 'Юли 2026'). null ако не е приложимо.",
+          },
+          weekly_change: {
+            type: "string",
+            description: "Очаквана седмична промяна като текст (напр. '-0.5 кг/седмица').",
+          },
+          milestones: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                week: { type: "number", description: "Номер на седмицата" },
+                note: { type: "string", description: "Описание на очаквания резултат на български" },
+              },
+              required: ["week", "note"],
+              additionalProperties: false,
+            },
+            minItems: 0,
+            maxItems: 4,
+          },
+          confidence: {
+            type: "string",
+            enum: ["ниска", "средна", "висока"],
+            description: "Точност на прогнозата спрямо наличните данни",
+          },
+          note: {
+            type: "string",
+            description: "Кратка бележка с условията и предположенията за прогнозата на български",
+          },
+        },
+        required: ["estimated_weeks", "estimated_date", "weekly_change", "milestones", "confidence", "note"],
         additionalProperties: false,
       },
     },

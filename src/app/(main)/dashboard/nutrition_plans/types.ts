@@ -73,9 +73,24 @@ export interface DayPlan {
   meals: NutritionMeal[];
 }
 
+export interface WeightPrognosisMilestone {
+  week: number;
+  note: string;
+}
+
+export interface WeightPrognosis {
+  estimated_weeks: number | null;
+  estimated_date: string | null;
+  weekly_change: string;
+  milestones: WeightPrognosisMilestone[];
+  confidence: "ниска" | "средна" | "висока";
+  note: string;
+}
+
 export interface NutritionPlan {
   weekly_plan: DayPlan[];
   nutrition_tips: string[];
+  prognosis: WeightPrognosis;
 }
 
 export interface NutritionFormProps {

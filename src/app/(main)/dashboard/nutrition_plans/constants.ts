@@ -157,6 +157,11 @@ export const RESULTS_TEXT = {
   dailyMacrosTitle: "Препоръчителни стойности на макроси за ден:",
   totalMacrosTitle: "Общо стойности на макроси за деня:",
   nutritionTipsTitle: "💡 Хранителни съвети:",
+  prognosisTitle: "📈 Прогноза за напредък",
+  prognosisEstimatedDate: "Очаквана дата",
+  prognosisWeeklyChange: "Седмична промяна",
+  prognosisConfidence: "Точност на прогнозата",
+  prognosisMilestones: "Очаквани етапи",
   errorMessage: "Нещо се обърка. Моля, опитайте отново.",
   orientative: "*ориентировъчно",
   macroLabels: {
