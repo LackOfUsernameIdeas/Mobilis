@@ -95,6 +95,7 @@ export const saveUserPreferences = async (userId: string, category: string, answ
         user_id: userId,
         mainGoal: answers.mainGoal || "",
         trainingTime: answers.trainingTime || "",
+        trainingDays: Array.isArray(answers.trainingDays) ? answers.trainingDays : [],
         targetWeight: answers.targetWeight || "no",
         targetWeightValue: answers.targetWeight === "yes" ? parseFloat(answers.targetWeightValue) || null : null,
         healthIssues: answers.healthIssues || "",

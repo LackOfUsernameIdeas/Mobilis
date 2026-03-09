@@ -16,6 +16,7 @@ import {
   CUISINE_OPTIONS,
   GOAL_OPTIONS,
   TRAINING_TIME_OPTIONS,
+  TRAINING_DAYS_OPTIONS,
   INPUT_LIMITS,
   ANIMATION_VARIANTS,
   FORM_TEXT,
@@ -27,6 +28,7 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
   const [answers, setAnswers] = useState<FormAnswers>({
     mainGoal: usersStats?.goal || "",
     trainingTime: "",
+    trainingDays: [],
     targetWeight: "",
     targetWeightValue: "",
     healthIssues: "",
@@ -80,6 +82,12 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
       title: "По кое време намирате (или бихте желали да намирате) възможност да тренирате?",
       type: "radio",
       options: TRAINING_TIME_OPTIONS,
+    },
+    {
+      field: "trainingDays",
+      title: "В кои дни от седмицата тренирате? (минимум 2 дни)",
+      type: "checkbox-days",
+      options: TRAINING_DAYS_OPTIONS,
     },
     {
       field: "targetWeight",
@@ -167,6 +175,10 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
         return !!answers.targetWeightValue && answers.targetWeightValue.trim() !== "";
       }
       return false;
+    }
+
+    if (currentField === "trainingDays") {
+      return answers.trainingDays.length >= 2;
     }
 
     if (currentField === "nutrients") {
@@ -276,6 +288,48 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
                         })}
                       </div>
                     </RadioGroup>
+                  )}
+
+                  {question.type === "checkbox-days" && (
+                    <div className="space-y-2 sm:space-y-3">
+                      {answers.trainingDays.length === 1 && (
+                        <p className="text-muted-foreground text-xs">Изберете поне още един ден</p>
+                      )}
+                      <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                        {(question.options as QuestionOption[])?.map((option, index) => (
+                          <motion.div
+                            key={option.value}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{
+                              duration: 0.2,
+                              delay: index * 0.05,
+                              ease: [0.21, 0.47, 0.32, 0.98] as any,
+                            }}
+                          >
+                            <Label
+                              htmlFor={`day-${option.value}`}
+                              className="hover:bg-muted/50 flex cursor-pointer items-center space-x-2 rounded-lg p-2 transition-colors sm:space-x-3 sm:p-3"
+                            >
+                              <Checkbox
+                                id={`day-${option.value}`}
+                                checked={answers.trainingDays.includes(option.value)}
+                                onCheckedChange={(checked) => {
+                                  const updated = checked
+                                    ? [...answers.trainingDays, option.value]
+                                    : answers.trainingDays.filter((d) => d !== option.value);
+                                  handleChange("trainingDays", updated);
+                                }}
+                                className="h-4 w-4 flex-shrink-0"
+                              />
+                              <span className="text-foreground flex-1 text-xs font-normal sm:text-sm">
+                                {option.label}
+                              </span>
+                            </Label>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
                   )}
 
                   {question.type === "target-weight" && (

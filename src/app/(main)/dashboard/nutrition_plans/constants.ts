@@ -54,6 +54,16 @@ export const TRAINING_TIME_OPTIONS: QuestionOption[] = [
   { value: "evening", label: "Вечер", description: "17:00-21:00" },
 ];
 
+export const TRAINING_DAYS_OPTIONS: QuestionOption[] = [
+  { value: "monday", label: "Понеделник" },
+  { value: "tuesday", label: "Вторник" },
+  { value: "wednesday", label: "Сряда" },
+  { value: "thursday", label: "Четвъртък" },
+  { value: "friday", label: "Петък" },
+  { value: "saturday", label: "Събота" },
+  { value: "sunday", label: "Неделя" },
+];
+
 export const MEAL_TYPE_TRANSLATIONS: Record<string, string> = {
   breakfast: "Закуска",
   morning_snack: "Предиобедна закуска",

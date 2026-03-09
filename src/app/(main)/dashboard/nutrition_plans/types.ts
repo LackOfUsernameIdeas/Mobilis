@@ -14,6 +14,7 @@ export interface UserStats {
 export interface FormAnswers {
   mainGoal: string;
   trainingTime: string;
+  trainingDays: string[];
   targetWeight: string;
   targetWeightValue: string;
   healthIssues: string;
@@ -33,8 +34,8 @@ export interface QuestionOption {
 export interface FormQuestion {
   field: string;
   title: string;
-  type: "radio" | "checkbox" | "textarea" | "target-weight" | "nutrients";
-  options?: QuestionOption[] | string[];
+  type: "radio" | "checkbox" | "checkbox-days" | "textarea" | "target-weight" | "nutrients";
+  options?: QuestionOption[] | number[] | string[];
   placeholder?: string;
   description?: string;
   currentWeight?: number;

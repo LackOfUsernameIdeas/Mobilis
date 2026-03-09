@@ -166,82 +166,86 @@ export default function ResultsDisplay({ userId, answers, userStats, onReset }: 
                               <CardContent className="relative space-y-4">
                                 {/* Meals Grid */}
                                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                                  {day.meals.map((meal: NutritionMeal, mealIdx: number) => (
-                                    <motion.div
-                                      key={mealIdx}
-                                      initial={{ opacity: 0, y: 10 }}
-                                      animate={{ opacity: 1, y: 0 }}
-                                      transition={{
-                                        duration: 0.3,
-                                        delay: 0.15 + mealIdx * 0.05,
-                                        ease: [0.21, 0.47, 0.32, 0.98] as any,
-                                      }}
-                                    >
-                                      <Card
-                                        className="border-border hover:border-primary/50 group cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
-                                        onClick={() => handleMealClick(meal)}
+                                  {[...day.meals]
+                                    .sort((a, b) => a.time.localeCompare(b.time))
+                                    .map((meal: NutritionMeal, mealIdx: number) => (
+                                      <motion.div
+                                        key={mealIdx}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{
+                                          duration: 0.3,
+                                          delay: 0.15 + mealIdx * 0.05,
+                                          ease: [0.21, 0.47, 0.32, 0.98] as any,
+                                        }}
                                       >
-                                        <CardHeader className="pb-3">
-                                          <div className="flex items-start justify-between">
-                                            <div className="flex-1">
-                                              <div className="mb-1 flex items-center gap-2">
-                                                {getMealIcon(meal.meal_type)}
-                                                <CardTitle className="text-foreground text-sm">
-                                                  {MEAL_TYPE_TRANSLATIONS[meal.meal_type]}
-                                                </CardTitle>
+                                        <Card
+                                          className="border-border hover:border-primary/50 group cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
+                                          onClick={() => handleMealClick(meal)}
+                                        >
+                                          <CardHeader className="pb-3">
+                                            <div className="flex items-start justify-between">
+                                              <div className="flex-1">
+                                                <div className="mb-1 flex items-center gap-2">
+                                                  {getMealIcon(meal.meal_type)}
+                                                  <CardTitle className="text-foreground text-sm">
+                                                    {MEAL_TYPE_TRANSLATIONS[meal.meal_type]}
+                                                  </CardTitle>
+                                                </div>
+                                                <Badge
+                                                  className={`flex items-center gap-1 text-xs ${getMealBadgeBg(
+                                                    meal.meal_type,
+                                                  )}`}
+                                                >
+                                                  <Clock className="h-3 w-3" />
+                                                  {meal.time}
+                                                </Badge>
+                                                <p className="text-muted-foreground mt-1 text-[10px]">
+                                                  {RESULTS_TEXT.orientative}
+                                                </p>
                                               </div>
-                                              <Badge
-                                                className={`flex items-center gap-1 text-xs ${getMealBadgeBg(
-                                                  meal.meal_type,
-                                                )}`}
-                                              >
-                                                <Clock className="h-3 w-3" />
-                                                {meal.time}
-                                              </Badge>
-                                              <p className="text-muted-foreground mt-1 text-[10px]">
-                                                {RESULTS_TEXT.orientative}
-                                              </p>
                                             </div>
-                                          </div>
-                                        </CardHeader>
-                                        <CardContent className="space-y-2 pb-4">
-                                          <p className="text-muted-foreground line-clamp-2 text-xs">
-                                            {meal.description}
-                                          </p>
-                                          <div className="bg-muted/50 grid grid-cols-2 gap-2 rounded p-2 text-xs">
-                                            <div>
-                                              <span className="text-muted-foreground">
-                                                {RESULTS_TEXT.macroLabels.cal}{" "}
-                                              </span>
-                                              <span className="text-foreground font-medium">
-                                                {meal.macros.calories}
-                                              </span>
+                                          </CardHeader>
+                                          <CardContent className="space-y-2 pb-4">
+                                            <p className="text-muted-foreground line-clamp-2 text-xs">
+                                              {meal.description}
+                                            </p>
+                                            <div className="bg-muted/50 grid grid-cols-2 gap-2 rounded p-2 text-xs">
+                                              <div>
+                                                <span className="text-muted-foreground">
+                                                  {RESULTS_TEXT.macroLabels.cal}{" "}
+                                                </span>
+                                                <span className="text-foreground font-medium">
+                                                  {meal.macros.calories}
+                                                </span>
+                                              </div>
+                                              <div>
+                                                <span className="text-muted-foreground">
+                                                  {RESULTS_TEXT.macroLabels.p}{" "}
+                                                </span>
+                                                <span className="text-foreground font-medium">
+                                                  {meal.macros.protein}g
+                                                </span>
+                                              </div>
+                                              <div>
+                                                <span className="text-muted-foreground">
+                                                  {RESULTS_TEXT.macroLabels.c}{" "}
+                                                </span>
+                                                <span className="text-foreground font-medium">
+                                                  {meal.macros.carbs}g
+                                                </span>
+                                              </div>
+                                              <div>
+                                                <span className="text-muted-foreground">
+                                                  {RESULTS_TEXT.macroLabels.f}{" "}
+                                                </span>
+                                                <span className="text-foreground font-medium">{meal.macros.fats}g</span>
+                                              </div>
                                             </div>
-                                            <div>
-                                              <span className="text-muted-foreground">
-                                                {RESULTS_TEXT.macroLabels.p}{" "}
-                                              </span>
-                                              <span className="text-foreground font-medium">
-                                                {meal.macros.protein}g
-                                              </span>
-                                            </div>
-                                            <div>
-                                              <span className="text-muted-foreground">
-                                                {RESULTS_TEXT.macroLabels.c}{" "}
-                                              </span>
-                                              <span className="text-foreground font-medium">{meal.macros.carbs}g</span>
-                                            </div>
-                                            <div>
-                                              <span className="text-muted-foreground">
-                                                {RESULTS_TEXT.macroLabels.f}{" "}
-                                              </span>
-                                              <span className="text-foreground font-medium">{meal.macros.fats}g</span>
-                                            </div>
-                                          </div>
-                                        </CardContent>
-                                      </Card>
-                                    </motion.div>
-                                  ))}
+                                          </CardContent>
+                                        </Card>
+                                      </motion.div>
+                                    ))}
                                 </div>
                                 {/* Day Summary */}
                                 <motion.div

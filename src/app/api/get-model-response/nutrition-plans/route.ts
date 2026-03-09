@@ -79,6 +79,19 @@ function generateUserPrompt(answers: Record<string, any>, userStats?: any): stri
 
   const trainingPeriodBG = trainingPeriodMap[trainingTime] || "следобед";
 
+  const dayNameMap: Record<string, string> = {
+    monday: "Понеделник",
+    tuesday: "Вторник",
+    wednesday: "Сряда",
+    thursday: "Четвъртък",
+    friday: "Петък",
+    saturday: "Събота",
+    sunday: "Неделя",
+  };
+
+  const trainingDays: string[] = answers.trainingDays || [];
+  const trainingDaysBG = trainingDays.map((d: string) => dayNameMap[d] || d).join(", ");
+
   return `Създай персонализиран седмичен хранителен план за потребител със следните характеристики:
 
         **Лични данни:**
@@ -94,6 +107,8 @@ function generateUserPrompt(answers: Record<string, any>, userStats?: any): stri
         **Хранителни предпочитания и цели:**
         - Основна цел: ${answers.mainGoal || "не е посочена"}
         - Период от деня, в който потребителя тренира: ${trainingPeriodBG}
+        - Тренировъчни дни: ${trainingDaysBG || "не са посочени"} (${trainingDays.length} от 7 дни)
+        - Почивни дни: останалите ${7 - trainingDays.length} дни от седмицата
         - Целево тегло: ${answers.targetWeight === "yes" ? answers.targetWeightValue + " кг" : "не е посочено"}
         - Здравословни проблеми или алергии: ${answers.healthIssues || "Няма"}
         - Предпочитани кухни: ${answers.cuisinePreference?.join(", ") || "Нямам предпочитания"}
@@ -109,9 +124,15 @@ function generateUserPrompt(answers: Record<string, any>, userStats?: any): stri
         - Закуска (освен ако тренировката е сутрин - тогава закуската е след тренировката)
         - Обяд
         - Вечеря
-        - Задължително предтренировъчно хранене 
-        - Задължително следтренировъчно хранене
         - 1-2 междинни закуски според нуждата за покриване на дневните калории
+
+        ТРЕНИРОВЪЧНИ ДНИ (${trainingDaysBG}):
+        - Включвай pre_workout_snack и post_workout_snack САМО в тези дни
+        - Позиционирай ги правилно спрямо ${trainingPeriodBG}
+
+        ПОЧИВНИ ДНИ (останалите ${7 - trainingDays.length} дни):
+        - НЕ включвай pre_workout_snack или post_workout_snack
+        - Замести калориите с допълнителна междинна закуска при нужда
 
         Подреди храненията естествено според времето на деня и тренировката. Времената на храненията трябва да са логични и последователни през деня.
 
@@ -254,7 +275,7 @@ function generateUserPrompt(answers: Record<string, any>, userStats?: any): stri
         2. Сума от протеините = ${answers.protein}g (±10g)
         3. Сума от въглехидратите = ${answers.carbs}g (±15g)
         4. Сума от мазнините = ${answers.fats}g (±10g)
-        5. Задължително 1 pre_workout_snack и 1 post_workout_snack
+        5. Тренировъчните дни (${trainingDaysBG}) ТРЯБВА да имат точно 1 pre_workout_snack и 1 post_workout_snack. Почивните дни НЕ трябва да имат pre_workout_snack или post_workout_snack.
         6. Времената на храненията са последователни с минимум 2 часа разлика
         
         ЗА РАЗНООБРАЗИЕ:
@@ -310,7 +331,7 @@ function generateUserPrompt(answers: Record<string, any>, userStats?: any): stri
         - ВСИЧКИ текстове (name, description, ingredients.name, instructions) трябва да са на БЪЛГАРСКИ
         - Избягвай думите 'предтренировъчно' и 'следтренировъчно' в ИМЕНАТА на ястията, знае се от meal_type.
         - Използвай само български единици: "г" (грама), "мл" (милилитри), "бр" (броя), "ч.л." (чаена лъжичка), "с.л." (супена лъжичка)
-        - Предтренировъчното и следтренировъчното хранене са ЗАДЪЛЖИТЕЛНИ и трябва да са позиционирани правилно спрямо периода на тренировка - ${trainingPeriodBG}
+        - pre_workout_snack и post_workout_snack се включват САМО в тренировъчните дни (${trainingDaysBG}) и трябва да са позиционирани правилно спрямо периода на тренировка - ${trainingPeriodBG}
         - Времената на храненията са логични и последователни
         - Няма отрицателни числа НИКЪДЕ
         - РАЗНООБРАЗИЕТО Е ЗАДЪЛЖИТЕЛНО - не повтаряй същите макроси!
