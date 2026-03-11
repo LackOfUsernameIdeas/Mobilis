@@ -599,7 +599,7 @@ function generatePrognosisUserPrompt(answers: Record<string, any>, userStats?: a
         - Дневни калории: ${answers.calories} kcal
         - Протеини: ${answers.protein}g | Въглехидрати: ${answers.carbs}g | Мазнини: ${answers.fats}g
 
-        **Текуща дата:** ${currentDate.toLocaleDateString("bg-BG", { month: "long", year: "numeric" })}
+        **Текуща дата:** ${currentDate.toLocaleDateString("bg-BG", { day: "numeric", month: "long", year: "numeric" })}
 
         Изготви прогноза като вземеш предвид:
         - За cut/aggressive_cut/aesthetic: очаквана загуба на тегло на седмица, седмици до целта (ако е посочена)
@@ -607,7 +607,7 @@ function generatePrognosisUserPrompt(answers: Record<string, any>, userStats?: a
         - За recomposition: очаквана промяна в body fat % и lean mass за 8, 12 и 16 седмици (без целево тегло)
         - За maintenance: кратка бележка, без estimated_weeks и milestones
         - Включи 3-4 реалистични етапа (milestones) с конкретни резултати по седмици
-        - Посочи очакваната дата на постигане на целта (на български, напр. "Юли 2026") или null ако не е приложимо
+        - Посочи очакваната дата на постигане на целта като конкретен период от месеца — използвай "началото на", "средата на" или "края на" + месец + година (напр. "началото на Юли 2026"). Правило: ден 1–10 = "началото на", ден 11–20 = "средата на", ден 21–31 = "края на". null ако не е приложимо.
         - Посочи седмичната промяна като текст (напр. "-0.5 кг/седмица" или "+0.25 кг lean маса/седмица")
         - Добави кратка бележка с условията за постигане на прогнозата`;
 }
@@ -628,7 +628,7 @@ function generatePrognosisResponseFormat() {
           estimated_date: {
             type: ["string", "null"],
             description:
-              "Очаквана дата за постигане на целта на български (напр. 'Юли 2026'). null ако не е приложимо.",
+              "Очаквана дата за постигане на целта на български като период от месеца (напр. 'началото на Юли 2026', 'средата на Октомври 2026', 'края на Март 2027'). null ако не е приложимо.",
           },
           weekly_change: {
             type: "string",

@@ -288,72 +288,6 @@ export default function ResultsDisplay({ userId, answers, userStats, onReset }: 
                     </Tabs>
                   </motion.div>
 
-                  {recommendations.prognosis && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{
-                        duration: 0.3,
-                        delay: 0.32,
-                        ease: [0.21, 0.47, 0.32, 0.98] as any,
-                      }}
-                    >
-                      <Card className="border-border overflow-hidden border-2">
-                        <CardHeader className="pb-3">
-                          <CardTitle className="text-foreground flex items-center gap-2 text-lg">
-                            <TrendingUp className="text-primary h-5 w-5" />
-                            {RESULTS_TEXT.prognosisTitle}
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                            {recommendations.prognosis.estimated_date && (
-                              <div className="bg-muted/50 rounded-lg p-3">
-                                <p className="text-muted-foreground text-xs">{RESULTS_TEXT.prognosisEstimatedDate}</p>
-                                <p className="text-foreground font-semibold">
-                                  {recommendations.prognosis.estimated_date}
-                                </p>
-                                {recommendations.prognosis.estimated_weeks && (
-                                  <p className="text-muted-foreground text-xs">
-                                    ({recommendations.prognosis.estimated_weeks} седмици)
-                                  </p>
-                                )}
-                              </div>
-                            )}
-                            <div className="bg-muted/50 rounded-lg p-3">
-                              <p className="text-muted-foreground text-xs">{RESULTS_TEXT.prognosisWeeklyChange}</p>
-                              <p className="text-foreground font-semibold">{recommendations.prognosis.weekly_change}</p>
-                            </div>
-                          </div>
-
-                          {recommendations.prognosis.milestones && recommendations.prognosis.milestones.length > 0 && (
-                            <div>
-                              <p className="text-foreground mb-2 text-sm font-semibold">
-                                {RESULTS_TEXT.prognosisMilestones}
-                              </p>
-                              <div className="space-y-2">
-                                {recommendations.prognosis.milestones.map(
-                                  (milestone: { week: number; note: string }, idx: number) => (
-                                    <div key={idx} className="flex items-start gap-3">
-                                      <span className="bg-primary text-primary-foreground mt-0.5 flex-shrink-0 rounded-full px-2 py-0.5 text-xs font-medium">
-                                        {milestone.week}. сед.
-                                      </span>
-                                      <span className="text-foreground/80 text-sm">{milestone.note}</span>
-                                    </div>
-                                  ),
-                                )}
-                              </div>
-                            </div>
-                          )}
-
-                          <p className="text-muted-foreground border-border border-t pt-3 text-xs italic">
-                            {recommendations.prognosis.note}
-                          </p>
-                        </CardContent>
-                      </Card>
-                    </motion.div>
-                  )}
-
                   {recommendations.nutrition_tips && recommendations.nutrition_tips.length > 0 && (
                     <motion.div
                       initial={{ opacity: 0, x: -10 }}
@@ -374,6 +308,96 @@ export default function ResultsDisplay({ userId, answers, userStats, onReset }: 
                           </li>
                         ))}
                       </ul>
+                    </motion.div>
+                  )}
+
+                  {recommendations.prognosis && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        duration: 0.3,
+                        delay: 0.32,
+                        ease: [0.21, 0.47, 0.32, 0.98] as any,
+                      }}
+                      className="space-y-3"
+                    >
+                      {/* Header */}
+                      <div className="flex items-center gap-2">
+                        <TrendingUp className="text-primary h-5 w-5" />
+                        <h2 className="text-foreground text-xl font-semibold">{RESULTS_TEXT.prognosisTitle}</h2>
+                      </div>
+
+                      {/* Top stats row */}
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        {recommendations.prognosis.estimated_date && (
+                          <div className="bg-muted/50 border-border flex flex-col justify-center rounded-xl border p-4 shadow-sm">
+                            <p className="text-muted-foreground mb-1 text-xs tracking-wide uppercase">
+                              {RESULTS_TEXT.prognosisEstimatedDate}
+                            </p>
+                            <p className="text-foreground text-xl font-bold">
+                              {recommendations.prognosis.estimated_date}
+                            </p>
+                            {recommendations.prognosis.estimated_weeks && (
+                              <p className="text-muted-foreground mt-0.5 text-xs">
+                                ~{recommendations.prognosis.estimated_weeks} седмици
+                              </p>
+                            )}
+                          </div>
+                        )}
+                        <div className="bg-muted/50 border-border flex flex-col justify-center rounded-xl border p-4 shadow-sm">
+                          <p className="text-muted-foreground mb-1 text-xs tracking-wide uppercase">
+                            {RESULTS_TEXT.prognosisWeeklyChange}
+                          </p>
+                          <p className="text-foreground text-xl font-bold">{recommendations.prognosis.weekly_change}</p>
+                        </div>
+                      </div>
+
+                      {/* Milestones timeline */}
+                      {recommendations.prognosis.milestones && recommendations.prognosis.milestones.length > 0 && (
+                        <div className="border-border rounded-xl border p-4 shadow-sm">
+                          <p className="text-foreground mb-4 text-sm font-semibold">
+                            {RESULTS_TEXT.prognosisMilestones}
+                          </p>
+                          <div className="relative space-y-0">
+                            {recommendations.prognosis.milestones.map(
+                              (
+                                milestone: { week: number; note: string },
+                                idx: number,
+                                arr: { week: number; note: string }[],
+                              ) => (
+                                <div key={idx} className="flex gap-4">
+                                  {/* Timeline spine */}
+                                  <div className="flex flex-col items-center">
+                                    <div className="bg-primary text-primary-foreground flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold">
+                                      {milestone.week}
+                                    </div>
+                                    {idx < arr.length - 1 && (
+                                      <div className="bg-border my-1 w-px flex-1" style={{ minHeight: "1.5rem" }} />
+                                    )}
+                                  </div>
+                                  {/* Content */}
+                                  <div className={`pb-5 ${idx === arr.length - 1 ? "pb-0" : ""}`}>
+                                    <p className="text-muted-foreground mb-0.5 text-xs font-medium tracking-wide uppercase">
+                                      Седмица {milestone.week}
+                                    </p>
+                                    <p className="text-foreground/80 text-sm leading-relaxed">{milestone.note}</p>
+                                  </div>
+                                </div>
+                              ),
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Note */}
+                      {recommendations.prognosis.note && (
+                        <div className="border-primary/20 bg-primary/5 rounded-xl border p-4 shadow-sm">
+                          <p className="text-foreground/70 text-sm leading-relaxed italic">
+                            {recommendations.prognosis.note}
+                          </p>
+                        </div>
+                      )}
                     </motion.div>
                   )}
 
