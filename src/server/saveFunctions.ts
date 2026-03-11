@@ -637,7 +637,6 @@ interface WeightPrognosis {
   estimated_date: string | null;
   weekly_change: string;
   milestones: WeightPrognosisMilestone[];
-  confidence: "ниска" | "средна" | "висока";
   note: string;
 }
 
@@ -669,7 +668,6 @@ export const saveWeightPrognosis = async (userId: string, prognosis: WeightProgn
         estimated_date: prognosis.estimated_date,
         weekly_change: prognosis.weekly_change,
         milestones: prognosis.milestones,
-        confidence: prognosis.confidence,
         note: prognosis.note,
       })
       .select()

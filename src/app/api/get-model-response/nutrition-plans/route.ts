@@ -609,7 +609,6 @@ function generatePrognosisUserPrompt(answers: Record<string, any>, userStats?: a
         - Включи 3-4 реалистични етапа (milestones) с конкретни резултати по седмици
         - Посочи очакваната дата на постигане на целта (на български, напр. "Юли 2026") или null ако не е приложимо
         - Посочи седмичната промяна като текст (напр. "-0.5 кг/седмица" или "+0.25 кг lean маса/седмица")
-        - Оцени точността на прогнозата като "ниска", "средна" или "висока" спрямо наличните данни
         - Добави кратка бележка с условията за постигане на прогнозата`;
 }
 
@@ -649,17 +648,12 @@ function generatePrognosisResponseFormat() {
             minItems: 0,
             maxItems: 4,
           },
-          confidence: {
-            type: "string",
-            enum: ["ниска", "средна", "висока"],
-            description: "Точност на прогнозата спрямо наличните данни",
-          },
           note: {
             type: "string",
             description: "Кратка бележка с условията и предположенията за прогнозата на български",
           },
         },
-        required: ["estimated_weeks", "estimated_date", "weekly_change", "milestones", "confidence", "note"],
+        required: ["estimated_weeks", "estimated_date", "weekly_change", "milestones", "note"],
         additionalProperties: false,
       },
     },

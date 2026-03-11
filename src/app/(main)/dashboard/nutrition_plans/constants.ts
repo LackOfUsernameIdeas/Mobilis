@@ -160,7 +160,6 @@ export const RESULTS_TEXT = {
   prognosisTitle: "📈 Прогноза за напредък",
   prognosisEstimatedDate: "Очаквана дата",
   prognosisWeeklyChange: "Седмична промяна",
-  prognosisConfidence: "Точност на прогнозата",
   prognosisMilestones: "Очаквани етапи",
   errorMessage: "Нещо се обърка. Моля, опитайте отново.",
   orientative: "*ориентировъчно",

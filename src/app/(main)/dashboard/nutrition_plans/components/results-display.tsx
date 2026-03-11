@@ -324,12 +324,6 @@ export default function ResultsDisplay({ userId, answers, userStats, onReset }: 
                               <p className="text-muted-foreground text-xs">{RESULTS_TEXT.prognosisWeeklyChange}</p>
                               <p className="text-foreground font-semibold">{recommendations.prognosis.weekly_change}</p>
                             </div>
-                            <div className="bg-muted/50 rounded-lg p-3">
-                              <p className="text-muted-foreground text-xs">{RESULTS_TEXT.prognosisConfidence}</p>
-                              <p className="text-foreground font-semibold capitalize">
-                                {recommendations.prognosis.confidence}
-                              </p>
-                            </div>
                           </div>
 
                           {recommendations.prognosis.milestones && recommendations.prognosis.milestones.length > 0 && (

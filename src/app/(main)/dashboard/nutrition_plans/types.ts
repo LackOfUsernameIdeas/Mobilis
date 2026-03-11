@@ -83,7 +83,6 @@ export interface WeightPrognosis {
   estimated_date: string | null;
   weekly_change: string;
   milestones: WeightPrognosisMilestone[];
-  confidence: "ниска" | "средна" | "висока";
   note: string;
 }
 
