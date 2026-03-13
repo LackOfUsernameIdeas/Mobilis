@@ -12,14 +12,16 @@ export async function POST(req: NextRequest) {
     saveUserPreferences(userId, "nutrition", answers);
 
     const systemPrompt = generateSystemPrompt();
-    const userPrompt = generateUserPrompt(answers, userStats);
     const responseFormat = generateResponseFormat();
 
-    const prognosisSystemPrompt = generatePrognosisSystemPrompt();
-    const prognosisUserPrompt = generatePrognosisUserPrompt(answers, userStats);
-    const prognosisResponseFormat = generatePrognosisResponseFormat();
+    const hasTargetWeight =
+      answers.targetWeight === "yes" &&
+      !!answers.targetWeightValue &&
+      (userStats?.weight === undefined || Math.abs(parseFloat(answers.targetWeightValue) - userStats.weight) >= 0.5);
 
-    const [response, prognosisResponse] = await Promise.all([
+    const userPrompt = generateUserPrompt(answers, userStats, hasTargetWeight);
+
+    const fetchRequests: Promise<Response>[] = [
       fetch("https://api.openai.com/v1/responses", {
         method: "POST",
         headers: {
@@ -35,40 +37,54 @@ export async function POST(req: NextRequest) {
           text: responseFormat,
         }),
       }),
-      fetch("https://api.openai.com/v1/responses", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "gpt-5.2",
-          max_output_tokens: 1000,
-          input: [
-            { role: "system", content: prognosisSystemPrompt },
-            { role: "user", content: prognosisUserPrompt },
-          ],
-          text: prognosisResponseFormat,
+    ];
+
+    if (hasTargetWeight) {
+      const prognosisSystemPrompt = generatePrognosisSystemPrompt();
+      const prognosisUserPrompt = generatePrognosisUserPrompt(answers, userStats, hasTargetWeight);
+      const prognosisResponseFormat = generatePrognosisResponseFormat();
+
+      fetchRequests.push(
+        fetch("https://api.openai.com/v1/responses", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "gpt-5.2",
+            max_output_tokens: 1000,
+            input: [
+              { role: "system", content: prognosisSystemPrompt },
+              { role: "user", content: prognosisUserPrompt },
+            ],
+            text: prognosisResponseFormat,
+          }),
         }),
-      }),
-    ]);
+      );
+    }
+
+    const [response, prognosisResponse] = await Promise.all(fetchRequests);
 
     if (!response.ok) throw new Error(`OpenAI API error: ${response.statusText}`);
-    if (!prognosisResponse.ok) throw new Error(`OpenAI prognosis API error: ${prognosisResponse.statusText}`);
+    if (prognosisResponse && !prognosisResponse.ok)
+      throw new Error(`OpenAI prognosis API error: ${prognosisResponse.statusText}`);
 
     const data = await response.json();
-    const prognosisData = await prognosisResponse.json();
-
     const nutritionRecommendations = data.output[0].content[0].text;
-    const prognosisText = prognosisData.output[0].content[0].text;
-
     const nutritionPlanParsed = JSON.parse(nutritionRecommendations);
-    const prognosisParsed = JSON.parse(prognosisText);
+
+    let prognosisParsed = null;
+    if (hasTargetWeight && prognosisResponse) {
+      const prognosisData = await prognosisResponse.json();
+      const prognosisText = prognosisData.output[0].content[0].text;
+      prognosisParsed = JSON.parse(prognosisText);
+      saveWeightPrognosis(userId, prognosisParsed);
+    }
 
     const fullResponse = { ...nutritionPlanParsed, prognosis: prognosisParsed };
 
     saveNutritionRecommendations(userId, nutritionPlanParsed);
-    saveWeightPrognosis(userId, prognosisParsed);
 
     return NextResponse.json(JSON.stringify(fullResponse));
   } catch (error) {
@@ -89,7 +105,7 @@ function generateSystemPrompt(): string {
         `;
 }
 
-function generateUserPrompt(answers: Record<string, any>, userStats?: any): string {
+function generateUserPrompt(answers: Record<string, any>, userStats?: any, hasTargetWeight?: boolean): string {
   const trainingTime = answers.trainingTime || "afternoon";
 
   const trainingPeriodMap: Record<string, string> = {
@@ -132,7 +148,7 @@ function generateUserPrompt(answers: Record<string, any>, userStats?: any): stri
         - Период от деня, в който потребителя тренира: ${trainingPeriodBG}
         - Тренировъчни дни: ${trainingDaysBG || "не са посочени"} (${trainingDays.length} от 7 дни)
         - Почивни дни: останалите ${7 - trainingDays.length} дни от седмицата
-        - Целево тегло: ${answers.targetWeight === "yes" ? answers.targetWeightValue + " кг" : "не е посочено"}
+        - Целево тегло: ${hasTargetWeight ? answers.targetWeightValue + " кг" : "не е посочено"}
         - Здравословни проблеми или алергии: ${answers.healthIssues || "Няма"}
         - Предпочитани кухни: ${answers.cuisinePreference?.join(", ") || "Нямам предпочитания"}
 
@@ -568,20 +584,51 @@ function generatePrognosisSystemPrompt(): string {
           Бъди реалистичен и честен - не обещавай невъзможни резултати.`;
 }
 
-function generatePrognosisUserPrompt(answers: Record<string, any>, userStats?: any): string {
+// Базиран на CDC, NHS и рецензирани научни публикации
+const GOAL_CALORIE_BALANCE: Record<string, number> = {
+  cut: -500,
+  aggressive_cut: -750,
+  lean_bulk: +300,
+  dirty_bulk: +500,
+  recomposition: -200,
+  maintenance: 0,
+  aesthetic: -300,
+  strength: +200,
+};
+
+// 1 кг телесна мазнина ≈ 7700 kcal (CDC / NHS)
+const KCAL_PER_KG = 7700;
+
+function generatePrognosisUserPrompt(answers: Record<string, any>, userStats?: any, hasTargetWeight?: boolean): string {
   const currentDate = new Date();
-  const goalDescriptions: Record<string, string> = {
-    cut: "Изгаряне на мазнини (калориен дефицит ~500 kcal)",
-    aggressive_cut: "Интензивно изгаряне на мазнини (калориен дефицит ~750 kcal)",
-    lean_bulk: "Чисто покачване на маса (калориен суфицит ~300 kcal)",
-    dirty_bulk: "Интензивно покачване на маса (калориен суфицит ~500 kcal)",
-    recomposition: "Телесна рекомпозиция (леко под поддръжка ~-200 kcal)",
+
+  const goalLabels: Record<string, string> = {
+    cut: "Изгаряне на мазнини",
+    aggressive_cut: "Интензивно изгаряне на мазнини",
+    lean_bulk: "Чисто покачване на маса",
+    dirty_bulk: "Интензивно покачване на маса",
+    recomposition: "Телесна рекомпозиция",
     maintenance: "Поддържане на текущата форма",
-    aesthetic: "Естетика и пропорции (умерен дефицит ~-300 kcal)",
-    strength: "Максимална сила (леко над поддръжка ~+200 kcal)",
+    aesthetic: "Естетика и пропорции",
+    strength: "Максимална сила",
   };
 
-  return `Изготви реалистична прогноза за напредъка на потребител със следните данни:
+  const dailyBalance = GOAL_CALORIE_BALANCE[answers.mainGoal] ?? 0;
+  const weeklyBalanceKcal = dailyBalance * 7;
+  const weeklyChangeKg = weeklyBalanceKcal / KCAL_PER_KG;
+  const weeklyChangeText =
+    weeklyChangeKg === 0
+      ? "0 кг/седмица (поддържане)"
+      : `${weeklyChangeKg > 0 ? "+" : ""}${weeklyChangeKg.toFixed(2)} кг/седмица`;
+
+  const targetWeightVal = hasTargetWeight ? parseFloat(answers.targetWeightValue) : null;
+  const currentWeight = userStats?.weight ?? null;
+  const estimatedWeeks =
+    targetWeightVal !== null && currentWeight !== null && weeklyChangeKg !== 0
+      ? Math.round(Math.abs((targetWeightVal - currentWeight) / weeklyChangeKg))
+      : null;
+
+  return `Изготви реалистична прогноза за напредъка на потребител въз основа на НАУЧНО ИЗЧИСЛЕНИТЕ стойности по-долу:
 
         **Лични данни:**
         - Пол: ${userStats?.gender || "не е посочен"}
@@ -593,22 +640,28 @@ function generatePrognosisUserPrompt(answers: Record<string, any>, userStats?: a
         - Активност: ${userStats?.activityLevel || "умерена"}
 
         **Цел и план:**
-        - Основна цел: ${goalDescriptions[answers.mainGoal] || answers.mainGoal}
-        - Целево тегло: ${answers.targetWeight === "yes" ? answers.targetWeightValue + " кг" : "не е посочено"}
+        - Основна цел: ${goalLabels[answers.mainGoal] || answers.mainGoal}
+        - Калориен баланс: ${dailyBalance > 0 ? "+" : ""}${dailyBalance} kcal/ден спрямо TDEE
+        - Целево тегло: ${hasTargetWeight ? answers.targetWeightValue + " кг" : "не е посочено"}
         - Тренировъчни дни: ${(answers.trainingDays || []).length} пъти седмично
         - Дневни калории: ${answers.calories} kcal
-        - Протеини: ${answers.protein}g | Въглехидрати: ${answers.carbs}g | Мазнини: ${answers.fats}g
+
+        **Научно изчислена прогноза (1 кг мазнина = ${KCAL_PER_KG} kcal — CDC/NHS):**
+        - ${dailyBalance > 0 ? "+" : ""}${dailyBalance} kcal/ден × 7 дни = ${weeklyBalanceKcal > 0 ? "+" : ""}${weeklyBalanceKcal} kcal/седмица
+        - Очаквана седмична промяна: **${weeklyChangeText}**
+        ${estimatedWeeks !== null ? `- Изчислени седмици до целта: **~${estimatedWeeks} седмици**` : ""}
 
         **Текуща дата:** ${currentDate.toLocaleDateString("bg-BG", { day: "numeric", month: "long", year: "numeric" })}
 
+        ВАЖНО: Използвай ТОЧНО горните изчислени стойности. НЕ измисляй различна седмична промяна.
         Изготви прогноза като вземеш предвид:
-        - За cut/aggressive_cut/aesthetic: очаквана загуба на тегло на седмица, седмици до целта (ако е посочена)
-        - За lean_bulk/dirty_bulk/strength: очаквано покачване на маса на седмица, седмици до целта (ако е посочена)
-        - За recomposition: очаквана промяна в body fat % и lean mass за 8, 12 и 16 седмици (без целево тегло)
+        - За cut/aggressive_cut/aesthetic: използвай изчислената седмична загуба (${weeklyChangeText}) и седмиците до целта
+        - За lean_bulk/dirty_bulk/strength: използвай изчисленото седмично покачване (${weeklyChangeText}) и седмиците до целта
+        - За recomposition: очаквана промяна в body fat % и lean mass за 8, 12 и 16 седмици
         - За maintenance: кратка бележка, без estimated_weeks и milestones
-        - Включи 3-4 реалистични етапа (milestones) с конкретни резултати по седмици
+        - Включи 3-4 реалистични етапа (milestones) с конкретни тегла по седмици, базирани на ${weeklyChangeText}
         - Посочи очакваната дата на постигане на целта като конкретен период от месеца — използвай "началото на", "средата на" или "края на" + месец + година (напр. "началото на Юли 2026"). Правило: ден 1–10 = "началото на", ден 11–20 = "средата на", ден 21–31 = "края на". null ако не е приложимо.
-        - Посочи седмичната промяна като текст (напр. "-0.5 кг/седмица" или "+0.25 кг lean маса/седмица")
+        - Седмичната промяна в JSON трябва да е точно: "${weeklyChangeText}"
         - Добави кратка бележка с условията за постигане на прогнозата`;
 }
 

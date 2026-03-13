@@ -49,7 +49,7 @@ export const validateNumericInput = (value: string, pattern: RegExp, maxValue: n
 export const calculateWeightDifference = (targetWeight: number, currentWeight: number): string => {
   const difference = targetWeight - currentWeight;
   const sign = difference > 0 ? "+" : "";
-  return `${sign}${difference.toFixed(1)} кг от текущото тегло`;
+  return `${sign}${difference.toFixed(2)} кг от текущото тегло`;
 };
 
 export const handleExclusiveCheckbox = (

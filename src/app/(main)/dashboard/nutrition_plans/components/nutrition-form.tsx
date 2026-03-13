@@ -172,7 +172,11 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
       const answer = answers.targetWeight;
       if (answer === "no") return true;
       if (answer === "yes") {
-        return !!answers.targetWeightValue && answers.targetWeightValue.trim() !== "";
+        if (!answers.targetWeightValue || answers.targetWeightValue.trim() === "") return false;
+        const targetVal = parseFloat(answers.targetWeightValue);
+        const currentVal = usersStats?.weight;
+        if (currentVal !== undefined && Math.abs(targetVal - currentVal) < 0.5) return false;
+        return true;
       }
       return false;
     }
@@ -421,11 +425,17 @@ export default function NutritionForm({ onSubmit, usersStats }: NutritionFormPro
                                 {FORM_TEXT.targetWeight.unit}
                               </span>
                             </div>
-                            {answers.targetWeightValue && usersStats?.weight && (
-                              <p className="text-muted-foreground text-xs">
-                                {calculateWeightDifference(parseFloat(answers.targetWeightValue), usersStats?.weight)}
-                              </p>
-                            )}
+                            {answers.targetWeightValue &&
+                              usersStats?.weight &&
+                              (Math.abs(parseFloat(answers.targetWeightValue) - usersStats.weight) < 0.5 ? (
+                                <p className="text-destructive text-xs font-medium">
+                                  Целевото тегло не може да бъде същото като текущото ви тегло
+                                </p>
+                              ) : (
+                                <p className="text-muted-foreground text-xs">
+                                  {calculateWeightDifference(parseFloat(answers.targetWeightValue), usersStats?.weight)}
+                                </p>
+                              ))}
                           </motion.div>
                         )}
                       </AnimatePresence>
