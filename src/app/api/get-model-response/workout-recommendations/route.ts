@@ -161,7 +161,6 @@ function generateUserPrompt(category: string, answers: Record<string, any>, user
       - Честота на тренировки: ${answers.frequency || "не е посочена"} дни седмично
       - Загряване преди и разтягане след тренировка: ${answers.warmupCooldown || "не е посочено"}
       - Фокус върху конкретна мускулна група: ${answers.muscleGroups || "Нямам предпочитания"}
-      - Целево тегло: ${answers.targetWeight === "yes" ? answers.targetWeightValue : "не е посочено"} кг 
       - Здравословни проблеми, контузии или ограничения: ${answers.healthIssues || "Няма"}
       - Специфични упражнения за включване: ${answers.specificExercises || "Няма"}
 
@@ -207,7 +206,6 @@ function generateUserPrompt(category: string, answers: Record<string, any>, user
       - Честота на тренировки: ${answers.frequency || "не е посочена"} дни седмично
       - Загряване преди и разтягане след тренировка: ${answers.warmupCooldown || "не е посочено"}
       - Фокус върху конкретна мускулна група: ${answers.muscleGroups || "Нямам предпочитания"}
-      - Целево тегло: ${answers.targetWeight === "yes" ? answers.targetWeightValue : "не е посочено"} кг 
       - Здравословни проблеми, контузии или ограничения: ${answers.healthIssues || "Няма"}
       - Специфични упражнения за включване: ${answers.specificExercises || "Няма"}
 

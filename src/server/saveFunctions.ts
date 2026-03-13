@@ -13,8 +13,6 @@ interface UserPreferences {
   // Специфични полета за фитнес зала/калистеника (nullable за йога)
   warmupCooldown?: string;
   muscleGroups?: string[];
-  targetWeight?: string;
-  targetWeightValue?: string;
 
   // Специфични полета за йога (nullable за фитнес/калистеника)
   yogaStyle?: string;
@@ -135,8 +133,6 @@ export const saveUserPreferences = async (userId: string, category: string, answ
     if (category === "gym" || category === "calisthenics") {
       preferences.warmupCooldown = answers.warmupCooldown || "";
       preferences.muscleGroups = Array.isArray(answers.muscleGroups) ? answers.muscleGroups : [];
-      preferences.targetWeight = answers.targetWeight || "";
-      preferences.targetWeightValue = answers.targetWeightValue || 0;
     }
 
     // Добавя специфични полета за йога
