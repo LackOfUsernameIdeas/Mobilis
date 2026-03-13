@@ -1,4 +1,5 @@
 import { getServiceClient } from "@/lib/db/clients/supabase";
+import { WeightPrognosis } from "@/app/(main)/dashboard/nutrition_plans/types";
 
 const supabase = getServiceClient();
 
@@ -621,20 +622,6 @@ export const saveUserMetrics = async (
 
   return result;
 };
-
-// Интерфейс за прогноза за тегло
-interface WeightPrognosisMilestone {
-  week: number;
-  note: string;
-}
-
-interface WeightPrognosis {
-  estimated_weeks: number | null;
-  estimated_date: string | null;
-  weekly_change: string;
-  milestones: WeightPrognosisMilestone[];
-  note: string;
-}
 
 // Запазва прогнозата за тегло в базата данни
 export const saveWeightPrognosis = async (userId: string, prognosis: WeightPrognosis) => {

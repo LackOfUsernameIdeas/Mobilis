@@ -93,7 +93,7 @@ export function HealthProgressChart({ chartData }: HealthProgressChartProps) {
 
   return (
     <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }}>
-      <Card className="@container/card">
+      <Card className="@container/card mt-8">
         <CardHeader>
           <CardTitle>Проследяване на напредъка</CardTitle>
           <CardDescription>Напредък на теглото и телесните мазнини във времето</CardDescription>

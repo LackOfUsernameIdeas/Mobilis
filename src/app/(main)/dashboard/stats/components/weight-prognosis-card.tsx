@@ -1,0 +1,104 @@
+import React from "react";
+import { ArrowRight, Weight } from "lucide-react";
+import Link from "next/link";
+import { WeightPrognosis } from "@/app/(main)/dashboard/nutrition_plans/types";
+
+interface Props {
+  data?: WeightPrognosis | null;
+  onOpenDetails?: () => void;
+  emptyStateLink?: string;
+  emptyStateText?: string;
+}
+
+export default function WeightPrognosisCard({ data, onOpenDetails }: Props) {
+  if (!data) {
+    return <EmptyState />;
+  }
+
+  const previewMilestones = data.milestones?.slice(0, 3) ?? [];
+
+  return (
+    <div className="border-border bg-card flex w-full flex-col gap-6 rounded-lg border p-6 shadow-sm transition-all duration-200 hover:shadow-md">
+      <div className="flex items-start justify-between">
+        <div className="flex items-start gap-3">
+          <div className="bg-primary/10 rounded-lg p-2">
+            <Weight className="text-primary h-5 w-5" />
+          </div>
+          <h3 className="text-card-foreground text-lg font-semibold">Прогноза за постигане на целево тегло</h3>
+        </div>
+
+        {onOpenDetails && (
+          <button
+            onClick={onOpenDetails}
+            className="text-primary hover:text-primary/80 inline-flex items-center gap-1 text-sm font-medium transition-colors"
+          >
+            Детайли <ArrowRight className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+
+      <div className="grid grid-cols-3 gap-4">
+        <StatCard label="Целева дата" value={data.estimated_date ?? "—"} />
+        <StatCard label="Оставащи седмици" value={data.estimated_weeks ? `~${data.estimated_weeks}` : "—"} />
+        <StatCard label="Седмична промяна" value={data.weekly_change} />
+      </div>
+
+      {previewMilestones.length > 0 && (
+        <div>
+          <p className="text-card-foreground mb-3 text-sm font-medium">Следващи етапи</p>
+
+          <div className="flex gap-3">
+            {previewMilestones.map((m) => (
+              <div
+                key={m.week}
+                className="border-border bg-secondary/30 hover:bg-secondary/50 flex-1 rounded-lg border p-3 text-sm transition-colors"
+              >
+                <p className="text-muted-foreground text-xs">Седмица {m.week}</p>
+
+                <p className="text-card-foreground mt-1 line-clamp-2 text-sm font-medium">{m.note}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {data.note && (
+        <div className="bg-muted/50 text-muted-foreground border-border rounded-lg border p-3 text-xs">{data.note}</div>
+      )}
+    </div>
+  );
+}
+
+function StatCard({ label, value }: { label: string; value: string | number }) {
+  return (
+    <div className="border-border bg-secondary/50 hover:bg-secondary/70 rounded-lg border p-4 transition-colors">
+      <p className="text-muted-foreground text-xs font-medium">{label}</p>
+      <p className="text-card-foreground mt-2 text-xl font-semibold">{value}</p>
+    </div>
+  );
+}
+
+function EmptyState() {
+  return (
+    <div className="border-border bg-card flex w-full items-center justify-center rounded-lg border p-12">
+      <div className="flex flex-col items-center text-center">
+        <div className="bg-muted mb-4 rounded-full p-4">
+          <Weight className="text-muted-foreground h-6 w-6" />
+        </div>
+
+        <h3 className="text-card-foreground mb-2 text-lg font-semibold">Задайте целево тегло</h3>
+
+        <p className="text-muted-foreground mb-6 max-w-sm text-sm">
+          Ако желаете да видите план как да постигнете ваше целево тегло, създадете прогноза.
+        </p>
+
+        <Link
+          href="/dashboard/workout_recommendations"
+          className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all active:scale-95"
+        >
+          Създайте прогноза тук <ArrowRight className="h-4 w-4" />
+        </Link>
+      </div>
+    </div>
+  );
+}
