@@ -18,9 +18,9 @@ export default function WeightPrognosisCard({ data, onOpenDetails }: Props) {
   const previewMilestones = data.milestones?.slice(0, 3) ?? [];
 
   return (
-    <div className="border-border bg-card flex w-full flex-col gap-6 rounded-lg border p-6 shadow-sm transition-all duration-200 hover:shadow-md">
+    <div className="border-border bg-card flex w-full flex-col gap-6 rounded-xl border p-6 shadow-sm transition-all duration-200">
       <div className="flex items-start justify-between">
-        <div className="flex items-start gap-3">
+        <div className="flex items-center gap-3">
           <div className="bg-primary/10 rounded-lg p-2">
             <Weight className="text-primary h-5 w-5" />
           </div>
@@ -38,24 +38,31 @@ export default function WeightPrognosisCard({ data, onOpenDetails }: Props) {
       </div>
 
       <div className="grid grid-cols-3 gap-4">
-        <StatCard label="Целева дата" value={data.estimated_date ?? "—"} />
+        <StatCard label="Очаквано време за постигане на целта" value={data.estimated_date ?? "—"} />
         <StatCard label="Оставащи седмици" value={data.estimated_weeks ? `~${data.estimated_weeks}` : "—"} />
         <StatCard label="Седмична промяна" value={data.weekly_change} />
       </div>
 
       {previewMilestones.length > 0 && (
-        <div>
-          <p className="text-card-foreground mb-3 text-sm font-medium">Следващи етапи</p>
-
-          <div className="flex gap-3">
-            {previewMilestones.map((m) => (
-              <div
-                key={m.week}
-                className="border-border bg-secondary/30 hover:bg-secondary/50 flex-1 rounded-lg border p-3 text-sm transition-colors"
-              >
-                <p className="text-muted-foreground text-xs">Седмица {m.week}</p>
-
-                <p className="text-card-foreground mt-1 line-clamp-2 text-sm font-medium">{m.note}</p>
+        <div className="border-border rounded-xl border p-4 shadow-sm">
+          <p className="text-card-foreground mb-4 text-sm font-semibold">Очаквани етапи</p>
+          <div className="relative space-y-0">
+            {previewMilestones.map((m, idx, arr) => (
+              <div key={m.week} className="flex gap-4">
+                <div className="flex flex-col items-center">
+                  <div className="bg-primary text-primary-foreground flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold">
+                    {m.week}
+                  </div>
+                  {idx < arr.length - 1 && (
+                    <div className="bg-border my-1 w-px flex-1" style={{ minHeight: "1.5rem" }} />
+                  )}
+                </div>
+                <div className={idx === arr.length - 1 ? "pb-0" : "pb-5"}>
+                  <p className="text-muted-foreground mb-0.5 text-xs font-medium tracking-wide uppercase">
+                    Седмица {m.week}
+                  </p>
+                  <p className="text-foreground/80 text-sm leading-relaxed">{m.note}</p>
+                </div>
               </div>
             ))}
           </div>
