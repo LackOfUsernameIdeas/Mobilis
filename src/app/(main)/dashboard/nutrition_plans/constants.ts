@@ -160,7 +160,7 @@ export const RESULTS_TEXT = {
   prognosisTitle: "Прогноза за постигане на целево тегло",
   prognosisEstimatedDate: "Очаквано време за постигане на целта",
   prognosisWeeklyChange: "Седмична промяна",
-  prognosisMilestones: "Очаквани етапи",
+  prognosisMilestones: "Очаквани етапи на развитие",
   errorMessage: "Нещо се обърка. Моля, опитайте отново.",
   orientative: "*ориентировъчно",
   macroLabels: {

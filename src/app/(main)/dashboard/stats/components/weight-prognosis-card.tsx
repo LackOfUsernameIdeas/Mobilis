@@ -42,7 +42,7 @@ export default function WeightPrognosisCard({ data, onOpenDetails }: Props) {
 
       {data.milestones && data.milestones.length > 0 && (
         <div className="border-border rounded-xl border p-4 shadow-sm">
-          <p className="text-card-foreground mb-4 text-sm font-semibold">Очаквани етапи</p>
+          <p className="text-card-foreground mb-4 text-sm font-semibold">Очаквани етапи на развитие</p>
           <div className="relative space-y-0">
             {data.milestones.map((m, idx, arr) => (
               <div key={m.week} className="flex gap-4">
