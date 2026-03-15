@@ -80,7 +80,7 @@ function StatCard({ label, value }: { label: string; value: string | number }) {
 
 function EmptyState() {
   return (
-    <div className="border-border bg-card flex w-full items-center justify-center rounded-lg border p-12">
+    <div className="border-muted-foreground/40 bg-card flex w-full items-center justify-center rounded-lg border-2 border-dashed p-12">
       <div className="flex flex-col items-center text-center">
         <div className="bg-muted mb-4 rounded-full p-4">
           <Weight className="text-muted-foreground h-6 w-6" />
@@ -89,14 +89,15 @@ function EmptyState() {
         <h3 className="text-card-foreground mb-2 text-lg font-semibold">Задайте целево тегло</h3>
 
         <p className="text-muted-foreground mb-6 max-w-sm text-sm">
-          Ако желаете да видите план как да постигнете ваше целево тегло, създадете прогноза.
+          Персонализираната прогноза ви показва реалистичен път до целевото ви тегло - конкретни етапи и очаквани
+          резултати.
         </p>
 
         <Link
-          href="/dashboard/workout_recommendations"
+          href="/dashboard/nutrition_plans"
           className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all active:scale-95"
         >
-          Създайте прогноза тук <ArrowRight className="h-4 w-4" />
+          Създайте хранителен план и получете прогноза <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
     </div>
