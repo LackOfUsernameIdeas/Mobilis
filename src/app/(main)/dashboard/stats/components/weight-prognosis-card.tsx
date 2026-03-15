@@ -1,4 +1,3 @@
-import React from "react";
 import { ArrowRight, Weight } from "lucide-react";
 import Link from "next/link";
 import { WeightPrognosis } from "@/app/(main)/dashboard/nutrition_plans/types";
@@ -14,8 +13,6 @@ export default function WeightPrognosisCard({ data, onOpenDetails }: Props) {
   if (!data) {
     return <EmptyState />;
   }
-
-  const previewMilestones = data.milestones?.slice(0, 3) ?? [];
 
   return (
     <div className="border-border bg-card flex w-full flex-col gap-6 rounded-xl border p-6 shadow-sm transition-all duration-200">
@@ -43,11 +40,11 @@ export default function WeightPrognosisCard({ data, onOpenDetails }: Props) {
         <StatCard label="Седмична промяна" value={data.weekly_change} />
       </div>
 
-      {previewMilestones.length > 0 && (
+      {data.milestones && data.milestones.length > 0 && (
         <div className="border-border rounded-xl border p-4 shadow-sm">
           <p className="text-card-foreground mb-4 text-sm font-semibold">Очаквани етапи</p>
           <div className="relative space-y-0">
-            {previewMilestones.map((m, idx, arr) => (
+            {data.milestones.map((m, idx, arr) => (
               <div key={m.week} className="flex gap-4">
                 <div className="flex flex-col items-center">
                   <div className="bg-primary text-primary-foreground flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold">
