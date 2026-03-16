@@ -84,6 +84,7 @@ export interface WeightPrognosis {
   weekly_change: string;
   milestones: WeightPrognosisMilestone[];
   note: string;
+  created_at: string;
 }
 
 export interface NutritionPlan {

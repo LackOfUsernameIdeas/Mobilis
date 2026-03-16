@@ -107,3 +107,68 @@ export function formatMeal(meal: Meal) {
     instructions: nutrition.instructions ?? [],
   };
 }
+
+// ─── Weight Prognosis Helpers ────────────────────────────────────────────────
+
+const NOW_OFFSET = 1000 * 60 * 60 * 24 * 7 * 9; // +9 weeks — remove before deploy
+function now() {
+  return Date.now() + NOW_OFFSET;
+}
+
+export function getPrognosisWeeksElapsed(createdAt: string): number {
+  return Math.floor((now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24 * 7));
+}
+
+export function getPrognosisDaysElapsed(createdAt: string): number {
+  const created = new Date(createdAt);
+  const createdMidnightUTC = Date.UTC(created.getUTCFullYear(), created.getUTCMonth(), created.getUTCDate());
+  const simulated = new Date(now());
+  const todayMidnightUTC = Date.UTC(simulated.getUTCFullYear(), simulated.getUTCMonth(), simulated.getUTCDate());
+  return Math.floor((todayMidnightUTC - createdMidnightUTC) / (1000 * 60 * 60 * 24));
+}
+
+export function getPrognosisAgeLabel(createdAt: string): string {
+  const msElapsed = now() - new Date(createdAt).getTime();
+  const diffHours = Math.floor(msElapsed / (1000 * 60 * 60));
+  const diffDays = Math.floor(msElapsed / (1000 * 60 * 60 * 24));
+
+  if (diffHours < 1) return "току-що";
+  if (diffHours < 24) return `преди ${diffHours} часа`;
+  if (diffDays === 1) return "преди 1 ден";
+  if (diffDays < 7) return `преди ${diffDays} дни`;
+
+  const diffWeeks = Math.floor(diffDays / 7);
+  return diffWeeks === 1 ? "преди 1 седмица" : `преди ${diffWeeks} седмици`;
+}
+
+/**
+ * Изчислява процента на напредък по прогнозата (0–100).
+ */
+export function getPrognosisProgressPercent(createdAt: string, estimatedWeeks: number): number {
+  if (estimatedWeeks <= 0) return 0;
+  const totalDays = estimatedWeeks * 7;
+  return Math.min(100, Math.round((getPrognosisDaysElapsed(createdAt) / totalDays) * 100));
+}
+/**
+ * Дали прогнозираният период е изтекъл.
+ */
+export function isPrognosisStale(createdAt: string, estimatedWeeks: number): boolean {
+  return getPrognosisDaysElapsed(createdAt) >= estimatedWeeks * 7;
+}
+
+/**
+ * Дали даден етап (по номер на седмица) вече е изминал.
+ */
+export function isMilestonePast(createdAt: string, milestoneWeek: number): boolean {
+  return getPrognosisDaysElapsed(createdAt) >= milestoneWeek * 7;
+}
+
+/**
+ * Дали даден етап е текущата активна седмица.
+ */
+export function isMilestoneCurrent(createdAt: string, milestoneWeek: number): boolean {
+  const daysElapsed = getPrognosisDaysElapsed(createdAt);
+  const prevMilestoneDay = (milestoneWeek - 1) * 7;
+  const thisMilestoneDay = milestoneWeek * 7;
+  return daysElapsed >= prevMilestoneDay && daysElapsed < thisMilestoneDay;
+}
