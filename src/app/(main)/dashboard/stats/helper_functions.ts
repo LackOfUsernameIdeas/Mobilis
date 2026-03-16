@@ -110,25 +110,24 @@ export function formatMeal(meal: Meal) {
 
 // ─── Weight Prognosis Helpers ────────────────────────────────────────────────
 
-const NOW_OFFSET = 1000 * 60 * 60 * 24 * 7 * 9; // +9 weeks — remove before deploy
-function now() {
-  return Date.now() + NOW_OFFSET;
-}
-
-export function getPrognosisWeeksElapsed(createdAt: string): number {
-  return Math.floor((now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24 * 7));
-}
-
+/**
+ * Връща броя изминали цели дни от датата на генериране на прогнозата.
+ * Сравнява UTC полунощ на двете дати, за да избегне отместване на часовата зона.
+ */
 export function getPrognosisDaysElapsed(createdAt: string): number {
   const created = new Date(createdAt);
   const createdMidnightUTC = Date.UTC(created.getUTCFullYear(), created.getUTCMonth(), created.getUTCDate());
-  const simulated = new Date(now());
-  const todayMidnightUTC = Date.UTC(simulated.getUTCFullYear(), simulated.getUTCMonth(), simulated.getUTCDate());
+  const today = new Date();
+  const todayMidnightUTC = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate());
   return Math.floor((todayMidnightUTC - createdMidnightUTC) / (1000 * 60 * 60 * 24));
 }
 
+/**
+ * Връща четим относителен етикет за времето от генерирането.
+ * Пример: "преди 3 седмици", "преди 1 ден", "току-що"
+ */
 export function getPrognosisAgeLabel(createdAt: string): string {
-  const msElapsed = now() - new Date(createdAt).getTime();
+  const msElapsed = Date.now() - new Date(createdAt).getTime();
   const diffHours = Math.floor(msElapsed / (1000 * 60 * 60));
   const diffDays = Math.floor(msElapsed / (1000 * 60 * 60 * 24));
 
@@ -149,6 +148,7 @@ export function getPrognosisProgressPercent(createdAt: string, estimatedWeeks: n
   const totalDays = estimatedWeeks * 7;
   return Math.min(100, Math.round((getPrognosisDaysElapsed(createdAt) / totalDays) * 100));
 }
+
 /**
  * Дали прогнозираният период е изтекъл.
  */
@@ -168,7 +168,5 @@ export function isMilestonePast(createdAt: string, milestoneWeek: number): boole
  */
 export function isMilestoneCurrent(createdAt: string, milestoneWeek: number): boolean {
   const daysElapsed = getPrognosisDaysElapsed(createdAt);
-  const prevMilestoneDay = (milestoneWeek - 1) * 7;
-  const thisMilestoneDay = milestoneWeek * 7;
-  return daysElapsed >= prevMilestoneDay && daysElapsed < thisMilestoneDay;
+  return daysElapsed >= (milestoneWeek - 1) * 7 && daysElapsed < milestoneWeek * 7;
 }

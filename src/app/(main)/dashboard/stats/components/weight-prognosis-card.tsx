@@ -4,7 +4,6 @@ import { WeightPrognosis } from "@/app/(main)/dashboard/nutrition_plans/types";
 import {
   getPrognosisAgeLabel,
   getPrognosisProgressPercent,
-  getPrognosisWeeksElapsed,
   getPrognosisDaysElapsed,
   isMilestoneCurrent,
   isMilestonePast,
@@ -19,14 +18,13 @@ interface Props {
 export default function WeightPrognosisCard({ data, onOpenDetails }: Props) {
   if (!data) return <EmptyState />;
 
-  const stale = isPrognosisStale(data.created_at, data.estimated_weeks ?? 0);
-  const weeksElapsed = getPrognosisWeeksElapsed(data.created_at);
-  const progressPercent = getPrognosisProgressPercent(data.created_at, data.estimated_weeks ?? 0);
-  const ageLabel = getPrognosisAgeLabel(data.created_at);
-  const remainingWeeks = Math.max(0, (data.estimated_weeks ?? 0) - weeksElapsed);
-
   const daysElapsed = getPrognosisDaysElapsed(data.created_at);
   const totalDays = (data.estimated_weeks ?? 0) * 7;
+  const stale = isPrognosisStale(data.created_at, data.estimated_weeks ?? 0);
+  const progressPercent = getPrognosisProgressPercent(data.created_at, data.estimated_weeks ?? 0);
+  const ageLabel = getPrognosisAgeLabel(data.created_at);
+  const remainingWeeks = Math.max(0, Math.ceil((totalDays - daysElapsed) / 7));
+
   return (
     <div
       className={`border-border bg-card flex w-full flex-col gap-6 rounded-xl border p-6 shadow-sm transition-all duration-200 ${stale ? "border-orange-300 dark:border-orange-800" : ""}`}
@@ -66,7 +64,7 @@ export default function WeightPrognosisCard({ data, onOpenDetails }: Props) {
       </div>
 
       {/* Progress bar */}
-      {(data.estimated_weeks ?? 0) > 0 && (
+      {totalDays > 0 && (
         <div className="space-y-1.5">
           <div className="flex justify-between text-xs font-medium">
             <span className="text-muted-foreground">Прогрес по прогноза</span>
@@ -92,7 +90,7 @@ export default function WeightPrognosisCard({ data, onOpenDetails }: Props) {
         <StatCard
           label="Оставащи седмици"
           value={stale ? "—" : remainingWeeks > 0 ? `~${remainingWeeks}` : "Достигнато"}
-          originalValue={data.estimated_weeks ? `~${data.estimated_weeks}` : undefined}
+          originalValue={daysElapsed >= 7 && data.estimated_weeks ? `~${data.estimated_weeks}` : undefined}
           stale={stale}
         />
         <StatCard label="Седмична промяна" value={data.weekly_change} stale={false} />
