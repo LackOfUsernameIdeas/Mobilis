@@ -127,17 +127,28 @@ export function getPrognosisDaysElapsed(createdAt: string): number {
  * Пример: "преди 3 седмици", "преди 1 ден", "току-що"
  */
 export function getPrognosisAgeLabel(createdAt: string): string {
-  const msElapsed = Date.now() - new Date(createdAt).getTime();
-  const diffHours = Math.floor(msElapsed / (1000 * 60 * 60));
-  const diffDays = Math.floor(msElapsed / (1000 * 60 * 60 * 24));
+  const diffDays = getPrognosisDaysElapsed(createdAt);
 
-  if (diffHours < 1) return "току-що";
-  if (diffHours < 24) return `преди ${diffHours} часа`;
+  if (diffDays === 0) {
+    // Under a day — fall back to hours for freshly generated prognoses
+    const diffHours = Math.floor((Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60));
+    if (diffHours < 1) return "току-що";
+    return `преди ${diffHours} часа`;
+  }
+
   if (diffDays === 1) return "преди 1 ден";
   if (diffDays < 7) return `преди ${diffDays} дни`;
 
   const diffWeeks = Math.floor(diffDays / 7);
-  return diffWeeks === 1 ? "преди 1 седмица" : `преди ${diffWeeks} седмици`;
+  const remainderDays = diffDays % 7;
+
+  if (remainderDays === 0) {
+    return diffWeeks === 1 ? "преди 1 седмица" : `преди ${diffWeeks} седмици`;
+  }
+
+  const weeksLabel = diffWeeks === 1 ? "1 седмица" : `${diffWeeks} седмици`;
+  const daysLabel = remainderDays === 1 ? "1 ден" : `${remainderDays} дни`;
+  return `преди ${weeksLabel} и ${daysLabel}`;
 }
 
 /**
