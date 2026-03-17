@@ -9,6 +9,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "User id and answers are required" }, { status: 400 });
     }
 
+    console.log(
+      "Request received for Nutrition Plans for user:",
+      userId,
+      "with answers:",
+      answers,
+      "and userStats:",
+      userStats,
+    );
+
     saveUserPreferences(userId, "nutrition", answers);
 
     const systemPrompt = generateSystemPrompt();

@@ -103,7 +103,6 @@ export async function GET(request: Request) {
       measurementsData as { created_at: string; weight: number }[],
     );
 
-    console.log(`Successfully merged ${combined.length} entries for user ${userId}`);
     return NextResponse.json(combined);
   } catch (error) {
     console.error("Internal server error:", error);

@@ -112,6 +112,8 @@ export const fetchNutritionPlan = async (userId: string, answers: Record<string,
       throw new Error("Failed to fetch nutrition plan");
     }
 
+    console.log("Fetching Nutrition Plans for user:", userId);
+
     const responseJson = await response.json();
     return JSON.parse(responseJson);
   } catch (error) {

@@ -32,6 +32,8 @@ export const fetchWorkoutRecommendations = async (
     throw new Error("An error occurred while fetching recommendations");
   }
 
+  console.log("Fetching Workout Recommendations for user:", userId, category);
+
   const responseJson = await response.json();
   return JSON.parse(responseJson);
 };

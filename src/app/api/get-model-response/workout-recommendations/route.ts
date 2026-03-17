@@ -86,6 +86,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Category, user id and answers are required" }, { status: 400 });
     }
 
+    console.log(
+      "Request received for Workout Recommendations for user:",
+      userId,
+      "category",
+      category,
+      "with answers:",
+      answers,
+      "and userStats:",
+      userStats,
+    );
+
     saveUserPreferences(userId, category, answers);
 
     const systemPrompt = generateSystemPrompt(category);
