@@ -2,7 +2,10 @@ import { getBrowserClient } from "@/lib/db/clients/browser";
 import type { NutrientRecommendationParams, NutrientRecommendations } from "./types";
 
 /**
- * Извлича URL за вграждане на YouTube видео за дадена заявка
+ * Извлича URL за вграждане на YouTube видео по подадена заявка.
+ *
+ * @param query - Търсена заявка (напр. "рецепта за салата")
+ * @returns URL за вграждане на намереното видео или `null` при грешка
  */
 export const fetchYouTubeEmbed = async (query: string): Promise<string | null> => {
   try {
@@ -16,7 +19,11 @@ export const fetchYouTubeEmbed = async (query: string): Promise<string | null> =
 };
 
 /**
- * Извлича препоръки за хранителни вещества въз основа на потребителски параметри
+ * Извлича препоръки за хранителни вещества въз основа на потребителски параметри.
+ * Изпраща POST заявка към API-то за изчисляване на калории и макронутриенти.
+ *
+ * @param params - Потребителски параметри (тегло, ръст, цел и др.)
+ * @returns Обект с калории, протеини, въглехидрати и мазнини или `null` при грешка
  */
 export const fetchNutrientRecommendations = async (
   params: NutrientRecommendationParams,
@@ -43,7 +50,14 @@ export const fetchNutrientRecommendations = async (
 };
 
 /**
- * Валидира числов вход въз основа на шаблон и максимална стойност
+ * Валидира числов вход спрямо регулярен израз и максимално допустима стойност.
+ * Позволява празен стринг (полето може да е незапълнено) или стойност, която
+ * отговаря на шаблона и не надвишава зададения максимум.
+ *
+ * @param value - Въведената стойност като текст
+ * @param pattern - Регулярен израз за допустим формат (напр. само цифри)
+ * @param max - Максимално допустима числова стойност
+ * @returns `true` ако входът е валиден, иначе `false`
  */
 export const validateNumericInput = (value: string, pattern: RegExp, max: number): boolean => {
   if (value === "" || pattern.test(value)) {
@@ -56,7 +70,12 @@ export const validateNumericInput = (value: string, pattern: RegExp, max: number
 };
 
 /**
- * Изчислява разликата в теглото от текущото тегло
+ * Изчислява разликата между целевото и текущото тегло и я форматира като четим текст.
+ * Положителните стойности се предхождат от знак „+".
+ *
+ * @param targetWeight - Желаното целево тегло в килограми
+ * @param currentWeight - Текущото тегло на потребителя в килограми
+ * @returns Форматиран текст, напр. `"+3.50 кг от текущото тегло"`
  */
 export const calculateWeightDifference = (targetWeight: number, currentWeight: number): string => {
   const diff = targetWeight - currentWeight;
@@ -65,7 +84,15 @@ export const calculateWeightDifference = (targetWeight: number, currentWeight: n
 };
 
 /**
- * Извлича препоръки за хранителен план от API
+ * Извлича персонализиран хранителен план от AI модела въз основа на
+ * отговорите от въпросника и здравните показатели на потребителя.
+ * При неуспешен отговор от сървъра хвърля грешка.
+ *
+ * @param userId - Уникален идентификатор на потребителя
+ * @param answers - Отговори от здравния въпросник
+ * @param userStats - Здравни показатели (тегло, ръст, възраст и др.)
+ * @returns Разпарсен обект с хранителния план
+ * @throws Грешка ако заявката е неуспешна или отговорът е невалиден
  */
 export const fetchNutritionPlan = async (userId: string, answers: Record<string, any>, userStats: any) => {
   try {
@@ -94,7 +121,12 @@ export const fetchNutritionPlan = async (userId: string, answers: Record<string,
 };
 
 /**
- * Получава икона на ястие въз основа на типа ястие
+ * Връща името на иконата за даден тип хранене.
+ * Предтренировъчните и следтренировъчните закуски получават икона „Activity",
+ * всички останали типове — „Utensils".
+ *
+ * @param mealType - Тип на храненето (напр. `"pre_workout_snack"`, `"breakfast"`)
+ * @returns Името на Lucide иконата като стринг
  */
 export const getMealIconName = (mealType: string): string => {
   if (mealType === "pre_workout_snack" || mealType === "post_workout_snack") {
@@ -104,7 +136,12 @@ export const getMealIconName = (mealType: string): string => {
 };
 
 /**
- * Получава класа за фон на значката на ястието въз основа на типа ястие
+ * Връща Tailwind CSS клас за фон на значката към даден тип хранене.
+ * Тренировъчните закуски се оцветяват с основния цвят на приложението,
+ * останалите типове — с цвета на преден план.
+ *
+ * @param mealType - Тип на храненето (напр. `"post_workout_snack"`, `"dinner"`)
+ * @returns Tailwind клас за фон — `"bg-primary"` или `"bg-foreground"`
  */
 export const getMealBadgeBg = (mealType: string): string => {
   if (mealType === "pre_workout_snack" || mealType === "post_workout_snack") {

@@ -1,7 +1,10 @@
-import { DayRecommendationNutrition, DayRecommendationWorkout, Exercise, Meal } from "./types";
+import { Exercise, Meal } from "./types";
 
 /**
- * Сортира дни чрез извличане на числова стойност от формат "Ден X"
+ * Сортира масив от дни по номера им, извлечен от формат „Ден X".
+ *
+ * @param days - Масив от обекти с поле `day` във формат „Ден 1", „Ден 2" и т.н.
+ * @returns Нов сортиран масив — оригиналният не се променя
  */
 export function sortDaysByNumber<T extends { day: string }>(days: T[]): T[] {
   return [...days].sort((a, b) => {
@@ -12,10 +15,12 @@ export function sortDaysByNumber<T extends { day: string }>(days: T[]): T[] {
 }
 
 /**
- * Намира текущия незавършен ден от списъка
- * @param sortedDays - Сортиран масив с дни
- * @param currentDay - Сегашният ден
- * @returns Текущ незавършен ден или последен ден ако всички са завършени
+ * Намира обекта на текущия ден от сортиран масив с дни.
+ * Ако денят не е намерен, връща последния елемент (всички дни са завършени).
+ *
+ * @param sortedDays - Предварително сортиран масив с дни
+ * @param currentDay - Текущият ден като стринг, напр. „Ден 3"
+ * @returns Намереният обект за текущия ден или последният в масива
  */
 export function getCurrentDayObject<Day extends { day: string }>(sortedDays: Day[], currentDay: string): Day {
   for (const day of sortedDays) {
@@ -26,12 +31,27 @@ export function getCurrentDayObject<Day extends { day: string }>(sortedDays: Day
   return sortedDays[sortedDays.length - 1];
 }
 
+/**
+ * Връща вариант за Badge компонента въз основа на BMI категория.
+ * Нормалното тегло е `"default"`, недохранването и затлъстяването — `"destructive"`,
+ * всичко останало — `"secondary"`.
+ *
+ * @param category - BMI категория на английски (напр. `"Normal"`, `"Obesity"`)
+ * @returns Вариант за Badge: `"default"`, `"destructive"` или `"secondary"`
+ */
 export const getBMIVariant = (category: string): "default" | "destructive" | "secondary" => {
   if (category === "Normal") return "default";
   if (category.includes("Thinness") || category.includes("Obesity")) return "destructive";
   return "secondary";
 };
 
+/**
+ * Връща описание на здравословното състояние и препоръка за действие
+ * според BMI категорията на потребителя.
+ *
+ * @param category - BMI категория на български (напр. `"Нормално"`, `"Затлъстяване I клас"`)
+ * @returns Описателен текст с препоръка или съобщение за липса на информация
+ */
 export const getBMIDescription = (category: string): string => {
   const descriptions: Record<string, string> = {
     "Сериозно недохранване":
@@ -53,6 +73,13 @@ export const getBMIDescription = (category: string): string => {
   return descriptions[category] || "Няма налична информация.";
 };
 
+/**
+ * Връща описание и препоръка за действие според категорията на телесните мазнини.
+ *
+ * @param category - Категория на телесните мазнини на английски
+ *   (`"critical"`, `"essential"`, `"athletes"`, `"fitness"`, `"average"`, `"obese"`)
+ * @returns Описателен текст с препоръка или съобщение за липса на информация
+ */
 export const getBodyFatDescription = (category: string): string => {
   const descriptions: Record<string, string> = {
     critical:
@@ -71,6 +98,13 @@ export const getBodyFatDescription = (category: string): string => {
   return descriptions[category] || "Няма налична информация.";
 };
 
+/**
+ * Форматира обект с упражнение до опростена структура, подходяща за показване в UI.
+ * Извлича само полетата, необходими за визуализация — без излишни релационни данни.
+ *
+ * @param exercise - Пълен обект с упражнение от базата данни
+ * @returns Опростен обект с име, серии, повторения и мускулна активация
+ */
 export function formatExercise(exercise: Exercise) {
   return {
     exercise_name: String(exercise.exercise_name),
@@ -80,6 +114,13 @@ export function formatExercise(exercise: Exercise) {
   };
 }
 
+/**
+ * Форматира обект с хранене до плоска структура, подходяща за показване в UI.
+ * Обединява основните полета на храненето с хранителните стойности от релацията.
+ *
+ * @param meal - Пълен обект с хранене от базата данни, включително `nutrition_meals`
+ * @returns Форматиран обект с макронутриенти, съставки, инструкции и времена за приготвяне
+ */
 export function formatMeal(meal: Meal) {
   const nutrition = meal.nutrition_meals ?? {};
 
@@ -113,6 +154,9 @@ export function formatMeal(meal: Meal) {
 /**
  * Връща броя изминали цели дни от датата на генериране на прогнозата.
  * Сравнява UTC полунощ на двете дати, за да избегне отместване на часовата зона.
+ *
+ * @param createdAt - ISO стринг с датата на създаване на прогнозата
+ * @returns Брой изминали цели дни като цяло число
  */
 export function getPrognosisDaysElapsed(createdAt: string): number {
   const created = new Date(createdAt);
@@ -123,14 +167,16 @@ export function getPrognosisDaysElapsed(createdAt: string): number {
 }
 
 /**
- * Връща четим относителен етикет за времето от генерирането.
- * Пример: "преди 3 седмици", "преди 1 ден", "току-що"
+ * Връща четим относителен етикет за времето, изминало от генерирането на прогнозата.
+ * При под 1 ден показва часове, при под 7 дни — дни, иначе — седмици и дни.
+ *
+ * @param createdAt - ISO стринг с датата на създаване на прогнозата
+ * @returns Текст като `"преди 3 седмици"`, `"преди 1 ден"` или `"току-що"`
  */
 export function getPrognosisAgeLabel(createdAt: string): string {
   const diffDays = getPrognosisDaysElapsed(createdAt);
 
   if (diffDays === 0) {
-    // Under a day — fall back to hours for freshly generated prognoses
     const diffHours = Math.floor((Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60));
     if (diffHours < 1) return "току-що";
     return `преди ${diffHours} часа`;
@@ -152,7 +198,12 @@ export function getPrognosisAgeLabel(createdAt: string): string {
 }
 
 /**
- * Изчислява процента на напредък по прогнозата (0–100).
+ * Изчислява процента на напредък по прогнозата спрямо общия прогнозиран период.
+ * Резултатът е ограничен между 0 и 100.
+ *
+ * @param createdAt - ISO стринг с датата на създаване на прогнозата
+ * @param estimatedWeeks - Прогнозираният брой седмици за постигане на целта
+ * @returns Процент на напредък като цяло число между 0 и 100
  */
 export function getPrognosisProgressPercent(createdAt: string, estimatedWeeks: number): number {
   if (estimatedWeeks <= 0) return 0;
@@ -161,21 +212,34 @@ export function getPrognosisProgressPercent(createdAt: string, estimatedWeeks: n
 }
 
 /**
- * Дали прогнозираният период е изтекъл.
+ * Проверява дали прогнозираният период е изтекъл напълно.
+ *
+ * @param createdAt - ISO стринг с датата на създаване на прогнозата
+ * @param estimatedWeeks - Прогнозираният брой седмици
+ * @returns `true` ако са изминали повече дни от общия прогнозиран период
  */
 export function isPrognosisStale(createdAt: string, estimatedWeeks: number): boolean {
   return getPrognosisDaysElapsed(createdAt) >= estimatedWeeks * 7;
 }
 
 /**
- * Дали даден етап (по номер на седмица) вече е изминал.
+ * Проверява дали даден етап (по номер на седмица) вече е изминал изцяло.
+ *
+ * @param createdAt - ISO стринг с датата на създаване на прогнозата
+ * @param milestoneWeek - Номер на седмицата на етапа (напр. `2` за втора седмица)
+ * @returns `true` ако броят изминали дни надвишава края на зададената седмица
  */
 export function isMilestonePast(createdAt: string, milestoneWeek: number): boolean {
   return getPrognosisDaysElapsed(createdAt) >= milestoneWeek * 7;
 }
 
 /**
- * Дали даден етап е текущата активна седмица.
+ * Проверява дали даден етап е текущата активна седмица на прогнозата.
+ * Активна е седмицата, в която попада броят изминали дни.
+ *
+ * @param createdAt - ISO стринг с датата на създаване на прогнозата
+ * @param milestoneWeek - Номер на седмицата на етапа (напр. `1` за първа седмица)
+ * @returns `true` ако текущият ден попада в рамките на зададената седмица
  */
 export function isMilestoneCurrent(createdAt: string, milestoneWeek: number): boolean {
   const daysElapsed = getPrognosisDaysElapsed(createdAt);

@@ -3,7 +3,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Clock, ChefHat, Flame, Activity } from "lucide-react";
+import { Clock, ChefHat, Activity } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 interface MealModalProps {
