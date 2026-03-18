@@ -406,33 +406,6 @@ function generateResponseFormat() {
                   pattern: "^Ден [1-7]$",
                   description: "Ден във формат 'Ден 1', 'Ден 2', и така нататък.",
                 },
-                total_macros: {
-                  type: "object",
-                  properties: {
-                    calories: {
-                      type: "number",
-                      minimum: 1000,
-                      description: "Общи калории за деня (ТРЯБВА да е положително число >= 1000)",
-                    },
-                    protein: {
-                      type: "number",
-                      minimum: 50,
-                      description: "Общи протеини за деня в грамове (ТРЯБВА да е положително число >= 50)",
-                    },
-                    carbs: {
-                      type: "number",
-                      minimum: 0,
-                      description: "Общи въглехидрати за деня в грамове (може да е 0 за кето)",
-                    },
-                    fats: {
-                      type: "number",
-                      minimum: 20,
-                      description: "Общи мазнини за деня в грамове (ТРЯБВА да е положително число >= 20)",
-                    },
-                  },
-                  required: ["calories", "protein", "carbs", "fats"],
-                  additionalProperties: false,
-                },
                 meals: {
                   type: "array",
                   minItems: 5,
@@ -563,7 +536,7 @@ function generateResponseFormat() {
                   },
                 },
               },
-              required: ["day", "total_macros", "meals"],
+              required: ["day", "meals"],
               additionalProperties: false,
             },
           },

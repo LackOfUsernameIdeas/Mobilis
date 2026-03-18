@@ -98,24 +98,38 @@ export const fetchNutritionPlan = async (userId: string, answers: Record<string,
   try {
     const response = await fetch("/api/get-model-response/nutrition-plans", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userId,
-        answers,
-        userStats,
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, answers, userStats }),
     });
 
-    if (!response.ok) {
-      throw new Error("Failed to fetch nutrition plan");
-    }
+    if (!response.ok) throw new Error("Failed to fetch nutrition plan");
 
     console.log("Fetching Nutrition Plans for user:", userId);
 
     const responseJson = await response.json();
-    return JSON.parse(responseJson);
+    const plan = JSON.parse(responseJson);
+
+    for (const day of plan.weekly_plan) {
+      const totals = day.meals.reduce(
+        (acc: { calories: number; protein: number; carbs: number; fats: number }, meal: any) => {
+          acc.calories += meal.macros.calories ?? 0;
+          acc.protein += meal.macros.protein ?? 0;
+          acc.carbs += meal.macros.carbs ?? 0;
+          acc.fats += meal.macros.fats ?? 0;
+          return acc;
+        },
+        { calories: 0, protein: 0, carbs: 0, fats: 0 },
+      );
+
+      day.total_macros = {
+        calories: Math.round(totals.calories * 100) / 100,
+        protein: Math.round(totals.protein * 100) / 100,
+        carbs: Math.round(totals.carbs * 100) / 100,
+        fats: Math.round(totals.fats * 100) / 100,
+      };
+    }
+
+    return plan;
   } catch (error) {
     console.error("Error fetching nutrition plan:", error);
     throw error;
