@@ -8,7 +8,6 @@ import { saveUserMeasurements, saveUserMetrics } from "@/server/saveFunctions";
  */
 export async function checkTodayMeasurements() {
   const supabase = await getServerClient();
-  console.log("Checking today's measurements for user");
 
   const {
     data: { user },
