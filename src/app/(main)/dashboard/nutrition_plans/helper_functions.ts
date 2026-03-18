@@ -96,40 +96,43 @@ export const calculateWeightDifference = (targetWeight: number, currentWeight: n
  */
 export const fetchNutritionPlan = async (userId: string, answers: Record<string, any>, userStats: any) => {
   try {
-    const response = await fetch("/api/get-model-response/nutrition-plans", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId, answers, userStats }),
-    });
+    const hasTargetWeight =
+      answers.targetWeight === "yes" &&
+      !!answers.targetWeightValue &&
+      (userStats?.weight === undefined || Math.abs(parseFloat(answers.targetWeightValue) - userStats.weight) >= 0.5);
 
-    if (!response.ok) throw new Error("Failed to fetch nutrition plan");
+    const requests: [Promise<Response>, Promise<Response> | null] = [
+      fetch("/api/get-model-response/nutrition-plans", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, answers, userStats }),
+      }),
+      hasTargetWeight
+        ? fetch("/api/get-model-response/weight-prognosis", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId, answers, userStats }),
+          })
+        : null,
+    ];
+
+    const [nutritionResponse, prognosisResponse] = await Promise.all(requests);
+
+    if (!nutritionResponse.ok) throw new Error("Failed to fetch nutrition plan");
+    if (prognosisResponse && !prognosisResponse.ok) throw new Error("Failed to fetch weight prognosis");
 
     console.log("Fetching Nutrition Plans for user:", userId);
 
-    const responseJson = await response.json();
-    const plan = JSON.parse(responseJson);
+    const nutritionJson = await nutritionResponse.json();
+    const plan = JSON.parse(nutritionJson);
 
-    for (const day of plan.weekly_plan) {
-      const totals = day.meals.reduce(
-        (acc: { calories: number; protein: number; carbs: number; fats: number }, meal: any) => {
-          acc.calories += meal.macros.calories ?? 0;
-          acc.protein += meal.macros.protein ?? 0;
-          acc.carbs += meal.macros.carbs ?? 0;
-          acc.fats += meal.macros.fats ?? 0;
-          return acc;
-        },
-        { calories: 0, protein: 0, carbs: 0, fats: 0 },
-      );
-
-      day.total_macros = {
-        calories: Math.round(totals.calories * 100) / 100,
-        protein: Math.round(totals.protein * 100) / 100,
-        carbs: Math.round(totals.carbs * 100) / 100,
-        fats: Math.round(totals.fats * 100) / 100,
-      };
+    let prognosis = null;
+    if (prognosisResponse) {
+      const prognosisJson = await prognosisResponse.json();
+      prognosis = JSON.parse(prognosisJson);
     }
 
-    return plan;
+    return { ...plan, prognosis };
   } catch (error) {
     console.error("Error fetching nutrition plan:", error);
     throw error;
