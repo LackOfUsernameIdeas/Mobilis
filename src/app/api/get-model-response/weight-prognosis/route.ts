@@ -1,3 +1,4 @@
+import { computeHasTargetWeight } from "@/app/(main)/dashboard/nutrition_plans/helper_functions";
 import { saveWeightPrognosis } from "@/server/saveFunctions";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -22,10 +23,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "User id and answers are required" }, { status: 400 });
     }
 
-    const hasTargetWeight =
-      answers.targetWeight === "yes" &&
-      !!answers.targetWeightValue &&
-      (userStats?.weight === undefined || Math.abs(parseFloat(answers.targetWeightValue) - userStats.weight) >= 0.5);
+    const hasTargetWeight = computeHasTargetWeight(answers, userStats);
 
     const systemPrompt = generatePrognosisSystemPrompt();
     const userPrompt = generatePrognosisUserPrompt(answers, userStats, hasTargetWeight);
