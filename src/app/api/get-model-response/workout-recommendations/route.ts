@@ -86,6 +86,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Category, user id and answers are required" }, { status: 400 });
     }
 
+    console.log(
+      "Request received for Workout Recommendations for user:",
+      userId,
+      "category",
+      category,
+      "with answers:",
+      answers,
+      "and userStats:",
+      userStats,
+    );
+
     saveUserPreferences(userId, category, answers);
 
     const systemPrompt = generateSystemPrompt(category);
@@ -161,7 +172,6 @@ function generateUserPrompt(category: string, answers: Record<string, any>, user
       - Честота на тренировки: ${answers.frequency || "не е посочена"} дни седмично
       - Загряване преди и разтягане след тренировка: ${answers.warmupCooldown || "не е посочено"}
       - Фокус върху конкретна мускулна група: ${answers.muscleGroups || "Нямам предпочитания"}
-      - Целево тегло: ${answers.targetWeight === "yes" ? answers.targetWeightValue : "не е посочено"} кг 
       - Здравословни проблеми, контузии или ограничения: ${answers.healthIssues || "Няма"}
       - Специфични упражнения за включване: ${answers.specificExercises || "Няма"}
 
@@ -207,7 +217,6 @@ function generateUserPrompt(category: string, answers: Record<string, any>, user
       - Честота на тренировки: ${answers.frequency || "не е посочена"} дни седмично
       - Загряване преди и разтягане след тренировка: ${answers.warmupCooldown || "не е посочено"}
       - Фокус върху конкретна мускулна група: ${answers.muscleGroups || "Нямам предпочитания"}
-      - Целево тегло: ${answers.targetWeight === "yes" ? answers.targetWeightValue : "не е посочено"} кг 
       - Здравословни проблеми, контузии или ограничения: ${answers.healthIssues || "Няма"}
       - Специфични упражнения за включване: ${answers.specificExercises || "Няма"}
 

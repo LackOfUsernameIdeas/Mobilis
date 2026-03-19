@@ -14,6 +14,7 @@ export interface UserStats {
 export interface FormAnswers {
   mainGoal: string;
   trainingTime: string;
+  trainingDays: string[];
   targetWeight: string;
   targetWeightValue: string;
   healthIssues: string;
@@ -33,8 +34,8 @@ export interface QuestionOption {
 export interface FormQuestion {
   field: string;
   title: string;
-  type: "radio" | "checkbox" | "textarea" | "target-weight" | "nutrients";
-  options?: QuestionOption[] | string[];
+  type: "radio" | "checkbox" | "checkbox-days" | "textarea" | "target-weight" | "nutrients";
+  options?: QuestionOption[] | number[] | string[];
   placeholder?: string;
   description?: string;
   currentWeight?: number;
@@ -72,9 +73,24 @@ export interface DayPlan {
   meals: NutritionMeal[];
 }
 
+export interface WeightPrognosisMilestone {
+  week: number;
+  note: string;
+}
+
+export interface WeightPrognosis {
+  estimated_weeks: number | null;
+  estimated_date: string | null;
+  weekly_change: string;
+  milestones: WeightPrognosisMilestone[];
+  note: string;
+  created_at: string;
+}
+
 export interface NutritionPlan {
   weekly_plan: DayPlan[];
   nutrition_tips: string[];
+  prognosis: WeightPrognosis;
 }
 
 export interface NutritionFormProps {

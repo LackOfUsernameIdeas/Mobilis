@@ -1,12 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  compiler: {
-    removeConsole: process.env.NODE_ENV === "production",
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   output: "standalone",
+  serverExternalPackages: ['sharp', 'canvas', 'jsdom'],
+  turbopack: {},
   async redirects() {
     return [
       {

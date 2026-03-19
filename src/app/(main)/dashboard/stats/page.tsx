@@ -13,15 +13,18 @@ import {
   fetchUserWorkoutOverview,
   fetchUserNutritionOverview,
   fetchBodyFatWeightHistory,
+  fetchUserWeightPrognosis,
 } from "@/lib/db/clients/get";
 import { WorkoutExercisesCard } from "@/app/(main)/dashboard/stats/components/workout-exercises-card";
 import { NutrientStatsCard } from "@/app/(main)/dashboard/stats/components/nutrient-stats-cards";
 import { MacronutrientChartCard } from "@/app/(main)/dashboard/stats/components/macronutrient-chart-card";
+import { WeightPrognosis } from "@/app/(main)/dashboard/nutrition_plans/types";
 import { BMIData, BodyFatData, GoalData, NutrientData, WorkoutData, BodyFatWeightEntry, NutritionData } from "./types";
 import { MealPlanCard } from "@/app/(main)/dashboard/stats/components/meal-plan-card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
 import { Unauthorized } from "@/app/(main)/dashboard/_components/unauthorized";
+import WeightPrognosisCard from "@/app/(main)/dashboard/stats/components/weight-prognosis-card";
 
 type ActivePlan = "workout" | "nutrition";
 
@@ -34,6 +37,7 @@ export default function HomePage() {
   const [chartData, setChartData] = useState<BodyFatWeightEntry[] | null>(null);
   const [workoutData, setWorkoutData] = useState<WorkoutData | null>(null);
   const [nutritionData, setNutritionData] = useState<NutritionData | null>(null);
+  const [prognosis, setPrognosis] = useState<WeightPrognosis | null>(null);
   const [activePlan, setActivePlan] = useState<ActivePlan>("workout");
   const [loading, setLoading] = useState(true);
 
@@ -46,6 +50,8 @@ export default function HomePage() {
         const chartData = await fetchBodyFatWeightHistory(user.id);
         const workout = await fetchUserWorkoutOverview(user.id);
         const nutrition = await fetchUserNutritionOverview(user.id);
+        const prognosis = await fetchUserWeightPrognosis(user.id);
+        console.log("prognosis", prognosis);
 
         setBmiData(metrics.bmiData);
         setBodyFatData(metrics.bodyFatData);
@@ -54,6 +60,7 @@ export default function HomePage() {
         setChartData(chartData);
         setWorkoutData(workout);
         setNutritionData(nutrition);
+        setPrognosis(prognosis);
         console.log("workout", workout);
         console.log("nutrition", nutrition);
       } catch (error) {
@@ -168,6 +175,7 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
+            <WeightPrognosisCard data={prognosis} />
             {chartData.length > 1 && <HealthProgressChart chartData={chartData} />}
           </motion.div>
         </>

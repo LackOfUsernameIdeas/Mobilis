@@ -1,4 +1,5 @@
 import { getServiceClient } from "@/lib/db/clients/supabase";
+import { WeightPrognosis } from "@/app/(main)/dashboard/nutrition_plans/types";
 
 const supabase = getServiceClient();
 
@@ -13,8 +14,6 @@ interface UserPreferences {
   // Специфични полета за фитнес зала/калистеника (nullable за йога)
   warmupCooldown?: string;
   muscleGroups?: string[];
-  targetWeight?: string;
-  targetWeightValue?: string;
 
   // Специфични полета за йога (nullable за фитнес/калистеника)
   yogaStyle?: string;
@@ -95,6 +94,7 @@ export const saveUserPreferences = async (userId: string, category: string, answ
         user_id: userId,
         mainGoal: answers.mainGoal || "",
         trainingTime: answers.trainingTime || "",
+        trainingDays: Array.isArray(answers.trainingDays) ? answers.trainingDays : [],
         targetWeight: answers.targetWeight || "no",
         targetWeightValue: answers.targetWeight === "yes" ? parseFloat(answers.targetWeightValue) || null : null,
         healthIssues: answers.healthIssues || "",
@@ -134,8 +134,6 @@ export const saveUserPreferences = async (userId: string, category: string, answ
     if (category === "gym" || category === "calisthenics") {
       preferences.warmupCooldown = answers.warmupCooldown || "";
       preferences.muscleGroups = Array.isArray(answers.muscleGroups) ? answers.muscleGroups : [];
-      preferences.targetWeight = answers.targetWeight || "";
-      preferences.targetWeightValue = answers.targetWeightValue || 0;
     }
 
     // Добавя специфични полета за йога
@@ -623,4 +621,49 @@ export const saveUserMetrics = async (
   }
 
   return result;
+};
+
+// Запазва прогнозата за тегло в базата данни
+export const saveWeightPrognosis = async (userId: string, prognosis: WeightPrognosis) => {
+  try {
+    // Взима последния nutrition_generations id за този потребител
+    const { data: generationData, error: generationError } = await supabase
+      .from("nutrition_generations")
+      .select("id")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
+
+    if (generationError) {
+      console.error("Error fetching latest nutrition generation:", generationError);
+      throw new Error(`Failed to fetch generation: ${generationError.message}`);
+    }
+
+    const generationId = generationData.id;
+
+    const { data, error } = await supabase
+      .from("nutrition_weight_prognosis")
+      .insert({
+        user_id: userId,
+        generation_id: generationId,
+        estimated_weeks: prognosis.estimated_weeks,
+        estimated_date: prognosis.estimated_date,
+        weekly_change: prognosis.weekly_change,
+        milestones: prognosis.milestones,
+        note: prognosis.note,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Error saving weight prognosis:", error);
+      throw new Error(`Failed to save weight prognosis: ${error.message}`);
+    }
+
+    return { success: true, data };
+  } catch (error) {
+    console.error("Error in saveWeightPrognosis:", error);
+    throw error;
+  }
 };

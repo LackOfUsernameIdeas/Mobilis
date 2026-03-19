@@ -136,6 +136,25 @@ export async function fetchUserNutritionOverview(userId: string) {
 }
 
 /**
+ * Извлича прогнозата за теглото на потребителя
+ * @param userId - потребителското id
+ */
+export async function fetchUserWeightPrognosis(userId: string) {
+  const response = await fetch(`/api/user-weight-prognosis?userId=${userId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch weight prognosis");
+  }
+
+  return response.json();
+}
+
+/**
  * Извлича прогреса за конкретен ден в тренировъчната/хранителна сесия
  * @param userId - потребителското id
  * @param type - workout / meal

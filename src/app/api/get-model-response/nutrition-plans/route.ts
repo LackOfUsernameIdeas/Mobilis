@@ -9,11 +9,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "User id and answers are required" }, { status: 400 });
     }
 
+    console.log(
+      "Request received for Nutrition Plans for user:",
+      userId,
+      "with answers:",
+      answers,
+      "and userStats:",
+      userStats,
+    );
+
     saveUserPreferences(userId, "nutrition", answers);
 
     const systemPrompt = generateSystemPrompt();
-    const userPrompt = generateUserPrompt(answers, userStats);
     const responseFormat = generateResponseFormat();
+    const hasTargetWeight =
+      answers.targetWeight === "yes" &&
+      !!answers.targetWeightValue &&
+      (userStats?.weight === undefined || Math.abs(parseFloat(answers.targetWeightValue) - userStats.weight) >= 0.5);
+    const userPrompt = generateUserPrompt(answers, userStats, hasTargetWeight);
 
     const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
@@ -24,30 +37,42 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         model: "gpt-5.2",
         input: [
-          {
-            role: "system",
-            content: systemPrompt,
-          },
-          {
-            role: "user",
-            content: userPrompt,
-          },
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
         ],
         text: responseFormat,
       }),
     });
 
-    if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.statusText}`);
-    }
+    if (!response.ok) throw new Error(`OpenAI API error: ${response.statusText}`);
 
     const data = await response.json();
     const nutritionRecommendations = data.output[0].content[0].text;
-
     const nutritionPlanParsed = JSON.parse(nutritionRecommendations);
+
+    for (const day of nutritionPlanParsed.weekly_plan) {
+      const totals = day.meals.reduce(
+        (acc: { calories: number; protein: number; carbs: number; fats: number }, meal: any) => {
+          acc.calories += meal.macros.calories ?? 0;
+          acc.protein += meal.macros.protein ?? 0;
+          acc.carbs += meal.macros.carbs ?? 0;
+          acc.fats += meal.macros.fats ?? 0;
+          return acc;
+        },
+        { calories: 0, protein: 0, carbs: 0, fats: 0 },
+      );
+
+      day.total_macros = {
+        calories: Math.round(totals.calories * 100) / 100,
+        protein: Math.round(totals.protein * 100) / 100,
+        carbs: Math.round(totals.carbs * 100) / 100,
+        fats: Math.round(totals.fats * 100) / 100,
+      };
+    }
+
     saveNutritionRecommendations(userId, nutritionPlanParsed);
 
-    return NextResponse.json(nutritionRecommendations);
+    return NextResponse.json(JSON.stringify(nutritionPlanParsed));
   } catch (error) {
     console.error("Error generating recommendations:", error);
     return NextResponse.json({ error: "Failed to generate recommendations" }, { status: 500 });
@@ -66,7 +91,7 @@ function generateSystemPrompt(): string {
         `;
 }
 
-function generateUserPrompt(answers: Record<string, any>, userStats?: any): string {
+function generateUserPrompt(answers: Record<string, any>, userStats?: any, hasTargetWeight?: boolean): string {
   const trainingTime = answers.trainingTime || "afternoon";
 
   const trainingPeriodMap: Record<string, string> = {
@@ -78,6 +103,19 @@ function generateUserPrompt(answers: Record<string, any>, userStats?: any): stri
   };
 
   const trainingPeriodBG = trainingPeriodMap[trainingTime] || "следобед";
+
+  const dayNameMap: Record<string, string> = {
+    monday: "Понеделник",
+    tuesday: "Вторник",
+    wednesday: "Сряда",
+    thursday: "Четвъртък",
+    friday: "Петък",
+    saturday: "Събота",
+    sunday: "Неделя",
+  };
+
+  const trainingDays: string[] = answers.trainingDays || [];
+  const trainingDaysBG = trainingDays.map((d: string) => dayNameMap[d] || d).join(", ");
 
   return `Създай персонализиран седмичен хранителен план за потребител със следните характеристики:
 
@@ -94,7 +132,9 @@ function generateUserPrompt(answers: Record<string, any>, userStats?: any): stri
         **Хранителни предпочитания и цели:**
         - Основна цел: ${answers.mainGoal || "не е посочена"}
         - Период от деня, в който потребителя тренира: ${trainingPeriodBG}
-        - Целево тегло: ${answers.targetWeight === "yes" ? answers.targetWeightValue + " кг" : "не е посочено"}
+        - Тренировъчни дни: ${trainingDaysBG || "не са посочени"} (${trainingDays.length} от 7 дни)
+        - Почивни дни: останалите ${7 - trainingDays.length} дни от седмицата
+        - Целево тегло: ${hasTargetWeight ? answers.targetWeightValue + " кг" : "не е посочено"}
         - Здравословни проблеми или алергии: ${answers.healthIssues || "Няма"}
         - Предпочитани кухни: ${answers.cuisinePreference?.join(", ") || "Нямам предпочитания"}
 
@@ -109,9 +149,15 @@ function generateUserPrompt(answers: Record<string, any>, userStats?: any): stri
         - Закуска (освен ако тренировката е сутрин - тогава закуската е след тренировката)
         - Обяд
         - Вечеря
-        - Задължително предтренировъчно хранене 
-        - Задължително следтренировъчно хранене
         - 1-2 междинни закуски според нуждата за покриване на дневните калории
+
+        ТРЕНИРОВЪЧНИ ДНИ (${trainingDaysBG}):
+        - Включвай pre_workout_snack и post_workout_snack САМО в тези дни
+        - Позиционирай ги правилно спрямо ${trainingPeriodBG}
+
+        ПОЧИВНИ ДНИ (останалите ${7 - trainingDays.length} дни):
+        - НЕ включвай pre_workout_snack или post_workout_snack
+        - Замести калориите с допълнителна междинна закуска при нужда
 
         Подреди храненията естествено според времето на деня и тренировката. Времената на храненията трябва да са логични и последователни през деня.
 
@@ -254,7 +300,7 @@ function generateUserPrompt(answers: Record<string, any>, userStats?: any): stri
         2. Сума от протеините = ${answers.protein}g (±10g)
         3. Сума от въглехидратите = ${answers.carbs}g (±15g)
         4. Сума от мазнините = ${answers.fats}g (±10g)
-        5. Задължително 1 pre_workout_snack и 1 post_workout_snack
+        5. Тренировъчните дни (${trainingDaysBG}) ТРЯБВА да имат точно 1 pre_workout_snack и 1 post_workout_snack. Почивните дни НЕ трябва да имат pre_workout_snack или post_workout_snack.
         6. Времената на храненията са последователни с минимум 2 часа разлика
         
         ЗА РАЗНООБРАЗИЕ:
@@ -310,7 +356,7 @@ function generateUserPrompt(answers: Record<string, any>, userStats?: any): stri
         - ВСИЧКИ текстове (name, description, ingredients.name, instructions) трябва да са на БЪЛГАРСКИ
         - Избягвай думите 'предтренировъчно' и 'следтренировъчно' в ИМЕНАТА на ястията, знае се от meal_type.
         - Използвай само български единици: "г" (грама), "мл" (милилитри), "бр" (броя), "ч.л." (чаена лъжичка), "с.л." (супена лъжичка)
-        - Предтренировъчното и следтренировъчното хранене са ЗАДЪЛЖИТЕЛНИ и трябва да са позиционирани правилно спрямо периода на тренировка - ${trainingPeriodBG}
+        - pre_workout_snack и post_workout_snack се включват САМО в тренировъчните дни (${trainingDaysBG}) и трябва да са позиционирани правилно спрямо периода на тренировка - ${trainingPeriodBG}
         - Времената на храненията са логични и последователни
         - Няма отрицателни числа НИКЪДЕ
         - РАЗНООБРАЗИЕТО Е ЗАДЪЛЖИТЕЛНО - не повтаряй същите макроси!
@@ -336,33 +382,6 @@ function generateResponseFormat() {
                   type: "string",
                   pattern: "^Ден [1-7]$",
                   description: "Ден във формат 'Ден 1', 'Ден 2', и така нататък.",
-                },
-                total_macros: {
-                  type: "object",
-                  properties: {
-                    calories: {
-                      type: "number",
-                      minimum: 1000,
-                      description: "Общи калории за деня (ТРЯБВА да е положително число >= 1000)",
-                    },
-                    protein: {
-                      type: "number",
-                      minimum: 50,
-                      description: "Общи протеини за деня в грамове (ТРЯБВА да е положително число >= 50)",
-                    },
-                    carbs: {
-                      type: "number",
-                      minimum: 0,
-                      description: "Общи въглехидрати за деня в грамове (може да е 0 за кето)",
-                    },
-                    fats: {
-                      type: "number",
-                      minimum: 20,
-                      description: "Общи мазнини за деня в грамове (ТРЯБВА да е положително число >= 20)",
-                    },
-                  },
-                  required: ["calories", "protein", "carbs", "fats"],
-                  additionalProperties: false,
                 },
                 meals: {
                   type: "array",
@@ -494,7 +513,7 @@ function generateResponseFormat() {
                   },
                 },
               },
-              required: ["day", "total_macros", "meals"],
+              required: ["day", "meals"],
               additionalProperties: false,
             },
           },

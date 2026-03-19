@@ -8,6 +8,8 @@ import Footer from "./components/Footer";
 import { features } from "./constants";
 
 export default function LandingPage() {
+  console.log("Rendering Landing Page");
+
   return (
     <div className="bg-background min-h-screen">
       <Header />

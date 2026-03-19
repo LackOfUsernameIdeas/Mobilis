@@ -9,8 +9,6 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Scale } from "lucide-react";
 import { FormAnswers, Question, QuestionOption } from "../types";
 import {
   MUSCLE_GROUP_OPTIONS,
@@ -22,7 +20,7 @@ import {
   ANIMATION_VARIANTS,
   NO_PREFERENCE_OPTION,
 } from "../constants";
-import { calculateWeightDifference, handleExclusiveCheckbox } from "../helper_functions";
+import { handleExclusiveCheckbox } from "../helper_functions";
 
 interface GymCalisthenicsFormProps {
   onSubmit: (answers: FormAnswers) => void;
@@ -38,8 +36,6 @@ interface GymCalisthenicsAnswers {
   frequency: number;
   warmupCooldown: string;
   muscleGroups: string[];
-  targetWeight: string;
-  targetWeightValue: string;
   healthIssues: string;
   specificExercises: string;
 }
@@ -58,8 +54,6 @@ export default function GymCalisthenicsForm({
     frequency: 0,
     warmupCooldown: "",
     muscleGroups: [],
-    targetWeight: "",
-    targetWeightValue: "",
     healthIssues: "",
     specificExercises: "",
   });
@@ -96,12 +90,6 @@ export default function GymCalisthenicsForm({
       options: MUSCLE_GROUP_OPTIONS,
     },
     {
-      field: "targetWeight",
-      title: "Има ли конкретно целево тегло, до което желаете да стигнете?",
-      type: "target-weight",
-      currentWeight: usersWeight,
-    },
-    {
       field: "healthIssues",
       title: "Съществуват ли някакви здравословни проблеми, контузии или ограничения?",
       type: "textarea",
@@ -116,19 +104,10 @@ export default function GymCalisthenicsForm({
   ];
 
   const handleChange = (field: string, value: any) => {
-    setAnswers((prev) => {
-      if (field === "targetWeight" && value === "no") {
-        return {
-          ...prev,
-          [field]: value,
-          targetWeightValue: "",
-        };
-      }
-      return {
-        ...prev,
-        [field]: value,
-      };
-    });
+    setAnswers((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
   const handleMuscleGroupChange = (group: string, checked: boolean) => {
@@ -138,26 +117,9 @@ export default function GymCalisthenicsForm({
     }));
   };
 
-  const handleNumericInput = (value: string) => {
-    if (value === "" || /^\d{0,3}(\.\d{0,2})?$/.test(value)) {
-      const numericValue = parseFloat(value);
-      if (isNaN(numericValue) || numericValue <= 200) {
-        handleChange("targetWeightValue", value);
-      }
-    }
-  };
-
   const isCurrentQuestionAnswered = (): boolean => {
     const currentField = questions[currentQuestion].field;
     const answer = answers[currentField as keyof GymCalisthenicsAnswers];
-
-    if (currentField === "targetWeight") {
-      if (answer === "no") return true;
-      if (answer === "yes") {
-        return !!(answers.targetWeightValue && answers.targetWeightValue.trim() !== "");
-      }
-      return false;
-    }
 
     if (typeof answer === "string") return answer.trim() !== "";
     if (typeof answer === "number") return answer > 0;
@@ -343,103 +305,6 @@ export default function GymCalisthenicsForm({
                         ))}
                       </div>
                     </RadioGroup>
-                  )}
-
-                  {question.type === "target-weight" && (
-                    <div className="space-y-4">
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3, ease: [0.21, 0.47, 0.32, 0.98] }}
-                      >
-                        <div className="bg-muted/50 border-border group hover:border-primary/30 relative overflow-hidden rounded-lg border-2 p-4 transition-all duration-300">
-                          <div className="from-primary/5 to-primary/0 absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                          <div className="relative flex items-center gap-3">
-                            <div className="bg-primary/10 rounded-full p-2">
-                              <Scale className="text-primary h-5 w-5" />
-                            </div>
-                            <div>
-                              <p className="text-muted-foreground text-xs">
-                                {GYM_FORM_TEXT.targetWeight.currentWeight}
-                              </p>
-                              <p className="text-foreground text-lg font-semibold">
-                                {usersWeight} {GYM_FORM_TEXT.targetWeight.unit}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-
-                      <RadioGroup
-                        value={answers.targetWeight}
-                        onValueChange={(value) => handleChange("targetWeight", value)}
-                      >
-                        <div className="space-y-3">
-                          {[
-                            { value: "yes", label: GYM_FORM_TEXT.targetWeight.yes },
-                            { value: "no", label: GYM_FORM_TEXT.targetWeight.no },
-                          ].map((option, index) => (
-                            <motion.div
-                              key={option.value}
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{
-                                duration: 0.2,
-                                delay: 0.1 + index * 0.1,
-                                ease: [0.21, 0.47, 0.32, 0.98],
-                              }}
-                            >
-                              <Label
-                                htmlFor={`target-${option.value}`}
-                                className="hover:bg-muted/50 flex cursor-pointer items-center space-x-3 rounded-lg p-3 transition-colors"
-                              >
-                                <RadioGroupItem
-                                  value={option.value}
-                                  id={`target-${option.value}`}
-                                  className="h-4 w-4 flex-shrink-0"
-                                />
-                                <span className="text-foreground flex-1 text-sm font-normal">{option.label}</span>
-                              </Label>
-                            </motion.div>
-                          ))}
-                        </div>
-                      </RadioGroup>
-
-                      <AnimatePresence>
-                        {answers.targetWeight === "yes" && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.3, ease: [0.21, 0.47, 0.32, 0.98] }}
-                            className="space-y-2"
-                          >
-                            <Label htmlFor="target-weight-value" className="text-foreground text-xs">
-                              {GYM_FORM_TEXT.targetWeight.inputLabel}
-                            </Label>
-                            <div className="relative">
-                              <Input
-                                id="target-weight-value"
-                                type="text"
-                                inputMode="decimal"
-                                placeholder={GYM_FORM_TEXT.targetWeight.inputPlaceholder}
-                                value={answers.targetWeightValue || ""}
-                                onChange={(e) => handleNumericInput(e.target.value)}
-                                className="bg-input border-border text-foreground placeholder:text-muted-foreground pr-12 text-sm"
-                              />
-                              <span className="text-foreground absolute top-1/2 right-3 -translate-y-1/2 text-sm">
-                                {GYM_FORM_TEXT.targetWeight.unit}
-                              </span>
-                            </div>
-                            {answers.targetWeightValue && (
-                              <p className="text-muted-foreground text-xs">
-                                {calculateWeightDifference(parseFloat(answers.targetWeightValue), usersWeight)}
-                              </p>
-                            )}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
                   )}
 
                   {question.type === "checkbox" && (
