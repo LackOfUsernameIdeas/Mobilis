@@ -96,10 +96,7 @@ export const calculateWeightDifference = (targetWeight: number, currentWeight: n
  */
 export const fetchNutritionPlan = async (userId: string, answers: Record<string, any>, userStats: any) => {
   try {
-    const hasTargetWeight =
-      answers.targetWeight === "yes" &&
-      !!answers.targetWeightValue &&
-      (userStats?.weight === undefined || Math.abs(parseFloat(answers.targetWeightValue) - userStats.weight) >= 0.5);
+    const hasTargetWeight = computeHasTargetWeight(answers, userStats);
 
     const requests: [Promise<Response>, Promise<Response> | null] = [
       fetch("/api/get-model-response/nutrition-plans", {
@@ -167,4 +164,20 @@ export const getMealBadgeBg = (mealType: string): string => {
     return "bg-primary";
   }
   return "bg-foreground";
+};
+
+/**
+ * Проверява дали потребителят има зададено целево тегло, което се различава
+ * значително от текущото му тегло (минимална разлика от 0.5 кг).
+ *
+ * @param answers - Отговори от здравния въпросник
+ * @param userStats - Здравни показатели на потребителя (по избор)
+ * @returns `true` ако е посочено целево тегло и то се различава с поне 0.5 кг от текущото
+ */
+export const computeHasTargetWeight = (answers: Record<string, any>, userStats?: any): boolean => {
+  return (
+    answers.targetWeight === "yes" &&
+    !!answers.targetWeightValue &&
+    (userStats?.weight === undefined || Math.abs(parseFloat(answers.targetWeightValue) - userStats.weight) >= 0.5)
+  );
 };

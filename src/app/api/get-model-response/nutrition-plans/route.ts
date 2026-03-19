@@ -1,3 +1,4 @@
+import { computeHasTargetWeight } from "@/app/(main)/dashboard/nutrition_plans/helper_functions";
 import { saveUserPreferences, saveNutritionRecommendations } from "@/server/saveFunctions";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -22,10 +23,7 @@ export async function POST(req: NextRequest) {
 
     const systemPrompt = generateSystemPrompt();
     const responseFormat = generateResponseFormat();
-    const hasTargetWeight =
-      answers.targetWeight === "yes" &&
-      !!answers.targetWeightValue &&
-      (userStats?.weight === undefined || Math.abs(parseFloat(answers.targetWeightValue) - userStats.weight) >= 0.5);
+    const hasTargetWeight = computeHasTargetWeight(answers, userStats);
     const userPrompt = generateUserPrompt(answers, userStats, hasTargetWeight);
 
     const response = await fetch("https://api.openai.com/v1/responses", {
