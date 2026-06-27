@@ -139,7 +139,7 @@ export const fetchNutritionPlan = async (userId: string, answers: Record<string,
 /**
  * Връща името на иконата за даден тип хранене.
  * Предтренировъчните и следтренировъчните закуски получават икона „Activity",
- * всички останали типове — „Utensils".
+ * всички останали типове - „Utensils".
  *
  * @param mealType - Тип на храненето (напр. `"pre_workout_snack"`, `"breakfast"`)
  * @returns Името на Lucide иконата като стринг
@@ -154,10 +154,10 @@ export const getMealIconName = (mealType: string): string => {
 /**
  * Връща Tailwind CSS клас за фон на значката към даден тип хранене.
  * Тренировъчните закуски се оцветяват с основния цвят на приложението,
- * останалите типове — с цвета на преден план.
+ * останалите типове - с цвета на преден план.
  *
  * @param mealType - Тип на храненето (напр. `"post_workout_snack"`, `"dinner"`)
- * @returns Tailwind клас за фон — `"bg-primary"` или `"bg-foreground"`
+ * @returns Tailwind клас за фон - `"bg-primary"` или `"bg-foreground"`
  */
 export const getMealBadgeBg = (mealType: string): string => {
   if (mealType === "pre_workout_snack" || mealType === "post_workout_snack") {

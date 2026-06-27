@@ -255,7 +255,7 @@ describe("getMostRecommendedGoal", () => {
       const result = await getMostRecommendedGoal();
 
       expect(result.success).toBe(true);
-      // И двете имат count 1 — reduce връща последно срещнатото (current > max)
+      // И двете имат count 1 - reduce връща последно срещнатото (current > max)
       // В случая "maintenance" печели заради строгото сравнение `>`
       expect((result as any).data.count).toBe(1);
     });
