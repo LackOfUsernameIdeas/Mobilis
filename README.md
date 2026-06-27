@@ -82,7 +82,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 
 > **Note on YouTube keys:** The app uses three YouTube API keys and automatically fails over to the next one if a key is exhausted. You can supply just one key in `YOUTUBE_API_KEY_1` and leave the others empty.
 
-> **Note on `NEXT_PUBLIC_BASE_URL`:** Set this to `http://localhost:3000` for local development and to your production domain when deploying.
+> **Note on `NEXT_PUBLIC_BASE_URL`:** Set this to `http://localhost:3000` for local development or to your production domain for deploying.
 
 ---
 
