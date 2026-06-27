@@ -50,7 +50,7 @@ Mobilis/
 ## Tech Stack
 
 **Next.js App (`src/`)**  
-Next.js, React, TypeScript, Tailwind CSS, shadcn/ui, Supabase (Auth + PostgreSQL), OpenAI API (`gpt-5.2` for workout/nutrition/prognosis generation), YouTube Data API, Vitest, Zod, React Hook Form, Recharts, TanStack Query, TanStack Table, Framer Motion
+Next.js, React, TypeScript, Tailwind CSS, shadcn/ui, Supabase (Auth + PostgreSQL), OpenAI API (`gpt-5.2` for workout/nutrition/prognosis generation), YouTube Data API, Vitest
 
 **Posture Correction App (`nuitrack_app/`)**  
 Python, Tkinter, Nuitrack SDK, PyNuitrack, OpenCV, OpenAI API (TTS via `gpt-4o-mini-tts`, `coral` voice), pygame (audio playback), requests
