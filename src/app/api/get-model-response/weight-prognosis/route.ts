@@ -115,7 +115,7 @@ function generatePrognosisUserPrompt(answers: Record<string, any>, userStats?: a
         - Тренировъчни дни: ${(answers.trainingDays || []).length} пъти седмично
         - Дневни калории: ${answers.calories} kcal
 
-        **Научно изчислена прогноза (1 кг мазнина = ${KCAL_PER_KG} kcal — CDC/NHS):**
+        **Научно изчислена прогноза (1 кг мазнина = ${KCAL_PER_KG} kcal - CDC/NHS):**
         - ${dailyBalance > 0 ? "+" : ""}${dailyBalance} kcal/ден × 7 дни = ${weeklyBalanceKcal > 0 ? "+" : ""}${weeklyBalanceKcal} kcal/седмица
         - Очаквана седмична промяна: **${weeklyChangeText}**
         ${estimatedWeeks !== null ? `- Изчислени седмици до целта: **~${estimatedWeeks} седмици**` : ""}
@@ -129,7 +129,7 @@ function generatePrognosisUserPrompt(answers: Record<string, any>, userStats?: a
         - За recomposition: очаквана промяна в body fat % и lean mass за 8, 12 и 16 седмици
         - За maintenance: кратка бележка, без estimated_weeks и milestones
         - Включи 3-4 реалистични етапа (milestones) с конкретни тегла по седмици, базирани на ${weeklyChangeText}
-        - Посочи очакваната дата на постигане на целта като конкретен период от месеца — използвай "началото на", "средата на" или "края на" + месец + година (напр. "началото на Юли 2026"). Правило: ден 1–10 = "началото на", ден 11–20 = "средата на", ден 21–31 = "края на". null ако не е приложимо.
+        - Посочи очакваната дата на постигане на целта като конкретен период от месеца - използвай "началото на", "средата на" или "края на" + месец + година (напр. "началото на Юли 2026"). Правило: ден 1–10 = "началото на", ден 11–20 = "средата на", ден 21–31 = "края на". null ако не е приложимо.
         - Седмичната промяна в JSON трябва да е точно: "${weeklyChangeText}"
         - Добави кратка бележка с условията за постигане на прогнозата`;
 }

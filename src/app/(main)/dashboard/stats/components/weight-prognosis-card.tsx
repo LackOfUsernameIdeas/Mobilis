@@ -78,7 +78,7 @@ export default function WeightPrognosisCard({ data, onOpenDetails }: Props) {
           </div>
           <p className="text-muted-foreground text-xs">
             {stale
-              ? "Прогнозираният период е изтекъл — помислете за нова генерация."
+              ? "Прогнозираният период е изтекъл - помислете за нова генерация."
               : `${daysElapsed} от ${totalDays} дни изминали`}
           </p>
         </div>
@@ -86,10 +86,10 @@ export default function WeightPrognosisCard({ data, onOpenDetails }: Props) {
 
       {/* Stat cards */}
       <div className="grid grid-cols-3 gap-4">
-        <StatCard label="Очаквана дата за постигане" value={data.estimated_date ?? "—"} stale={stale} />
+        <StatCard label="Очаквана дата за постигане" value={data.estimated_date ?? "-"} stale={stale} />
         <StatCard
           label="Оставащи седмици"
-          value={stale ? "—" : remainingWeeks > 0 ? `~${remainingWeeks}` : "Достигнато"}
+          value={stale ? "-" : remainingWeeks > 0 ? `~${remainingWeeks}` : "Достигнато"}
           originalValue={daysElapsed >= 7 && data.estimated_weeks ? `~${data.estimated_weeks}` : undefined}
           stale={stale}
         />
