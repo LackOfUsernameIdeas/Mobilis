@@ -166,8 +166,8 @@ This produces a `.next/` directory. The standalone bundle is at `.next/standalon
 1. In cPanel, create a **Node.js application** in production mode and set up your domain.
 2. Upload the **contents** of `.next/standalone/` to the Node.js application's root directory via FTP. This includes:
    - `.next/`
-   - `src/`
    - `node_modules/` (built locally and transferred to the shared hosting running npm 10.8.2 on Node 20.20.2, which cannot resolve Next.js dependencies, and since sudo is unavailable on shared hosting, npm cannot be upgraded)
+   - `.env`
    - `package.json`
    - `server.js`
 3. Also upload your `.htaccess` file to the application root (first deployment only).
