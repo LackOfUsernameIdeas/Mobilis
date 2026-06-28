@@ -29,7 +29,7 @@ const difficultyMap: Record<Difficulty, string> = {
 export default function ExerciseDetailsModal({ open, onOpenChange, exercise }: ExerciseDetailsModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
+      <DialogContent className="max-h-[90vh] w-[95vw] max-w-2xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl text-pretty">{exercise.name}</DialogTitle>
         </DialogHeader>
