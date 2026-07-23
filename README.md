@@ -1,5 +1,7 @@
 # Mobilis
 
+[![mobilis.noit.eu](https://img.shields.io/badge/Visit%20at%20https://mobilis.noit.eu-fea711?style=for-the-badge)](https://mobilis.noit.eu/)
+
 > **Comprehensive health platform** that analyzes **characteristics of the users' body condition** - **BMI**, **body composition** (via the U.S. Navy method), **BMR** (Mifflin-St Jeor formula), and **TDEE** - combined with personal metrics to determine optimal daily calorie and macronutrient targets, feeding into a **goal selection algorithm** that assigns the most appropriate fitness goal. A distinctive feature is the **corrective exercise program aimed at improving postural health**, which uses the **Orbbec Astra+ 3D depth camera** and specialized algorithms for **real-time tracking and analysis of body movements and poses**
 
 ---
